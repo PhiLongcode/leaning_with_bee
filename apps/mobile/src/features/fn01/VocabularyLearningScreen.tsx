@@ -4,12 +4,15 @@ import * as Speech from 'expo-speech';
 import { getVocabularyLesson, type Vocabulary } from '@hoc-cung-bee/features';
 import { FeatureShell } from '../../components/FeatureShell';
 import { PrimaryButton } from '../../components/PrimaryButton';
+import { AppIcon } from '../../components/ui/AppIcon';
+import { Card } from '../../components/ui/Card';
+import { Chip } from '../../components/ui/Chip';
 import { getVocabularyRepository } from '../../lib/vocabularyRepo';
 import { useTheme } from '../../theme/ThemeContext';
 import { brand } from '../../theme/colors';
 
 export function VocabularyLearningScreen() {
-  const { colors } = useTheme();
+  const { colors, brand: themeBrand, tokens } = useTheme();
   const [items, setItems] = useState<Vocabulary[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -31,6 +34,7 @@ export function VocabularyLearningScreen() {
   }, []);
 
   const current = items[index];
+  const progress = items.length > 0 ? (index + 1) / items.length : 0;
 
   const speak = useCallback(() => {
     if (!current) return;
@@ -41,7 +45,10 @@ export function VocabularyLearningScreen() {
   if (loading) {
     return (
       <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
-        <ActivityIndicator color={colors.surface.successText} />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={themeBrand.primary} />
+          <Text style={{ color: colors.text.secondary, marginTop: 12 }}>Đang tải bài học…</Text>
+        </View>
       </FeatureShell>
     );
   }
@@ -49,7 +56,11 @@ export function VocabularyLearningScreen() {
   if (error || !current) {
     return (
       <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
-        <Text style={{ color: colors.text.secondary }}>{error ?? 'Không có từ trong bài học.'}</Text>
+        <Card variant="outline">
+          <Text style={{ color: colors.text.secondary, lineHeight: 22 }}>
+            {error ?? 'Không có từ trong bài học.'}
+          </Text>
+        </Card>
       </FeatureShell>
     );
   }
@@ -57,17 +68,35 @@ export function VocabularyLearningScreen() {
   return (
     <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.topic, { color: colors.text.tertiary }]}>{current.topic}</Text>
+        <View style={styles.progressWrap}>
+          <View style={[styles.progressTrack, { backgroundColor: colors.border.tertiary }]}>
+            <View
+              style={[
+                styles.progressFill,
+                { backgroundColor: themeBrand.primary, width: `${progress * 100}%` },
+              ]}
+            />
+          </View>
+          <Text style={[styles.progressLabel, { color: colors.text.tertiary }]}>
+            {index + 1} / {items.length}
+          </Text>
+        </View>
+
+        <Chip label={current.topic} tone="info" style={styles.topicChip} />
+
         <View style={styles.wordRow}>
-          <Text style={[styles.word, { color: colors.text.primary }]}>{current.word}</Text>
+          <Text style={[tokens.typography.h1, styles.word, { color: colors.text.primary }]}>
+            {current.word}
+          </Text>
           <Pressable
             onPress={speak}
             style={[styles.audioBtn, { backgroundColor: colors.surface.success }]}
             accessibilityLabel="Nghe phát âm"
           >
-            <Text style={{ color: colors.surface.successText, fontSize: 18 }}>🔊</Text>
+            <AppIcon name="volume" size={20} color={colors.surface.successText} />
           </Pressable>
         </View>
+
         {current.pronunciation ? (
           <Text style={[styles.pron, { color: colors.text.secondary }]}>{current.pronunciation}</Text>
         ) : null}
@@ -76,30 +105,29 @@ export function VocabularyLearningScreen() {
         ) : null}
         <Text style={[styles.meaning, { color: colors.text.primary }]}>{current.meaning}</Text>
 
-        <View style={[styles.block, { backgroundColor: colors.background.secondary, borderColor: colors.border.tertiary }]}>
-          <Text style={[styles.label, { color: colors.surface.successText }]}>Ngữ cảnh</Text>
-          <Text style={{ color: colors.text.primary, lineHeight: 22 }}>{current.context}</Text>
-        </View>
+        <Card style={styles.block}>
+          <Text style={[styles.blockLabel, { color: colors.surface.successText }]}>Ngữ cảnh</Text>
+          <Text style={[tokens.typography.body, { color: colors.text.primary }]}>{current.context}</Text>
+        </Card>
 
-        <View style={[styles.block, { backgroundColor: colors.background.secondary, borderColor: colors.border.tertiary }]}>
-          <Text style={[styles.label, { color: colors.surface.successText }]}>Ví dụ</Text>
-          <Text style={{ color: colors.text.primary, lineHeight: 22 }}>{current.example}</Text>
-        </View>
-
-        <Text style={[styles.counter, { color: colors.text.tertiary }]}>
-          {index + 1} / {items.length}
-        </Text>
+        <Card style={styles.block}>
+          <Text style={[styles.blockLabel, { color: colors.surface.infoText }]}>Ví dụ</Text>
+          <Text style={[tokens.typography.body, { color: colors.text.primary }]}>{current.example}</Text>
+        </Card>
 
         <View style={styles.nav}>
           <PrimaryButton
             label="Trước"
+            variant="secondary"
             onPress={() => setIndex((i) => Math.max(0, i - 1))}
             disabled={index === 0}
+            style={styles.navBtn}
           />
           <PrimaryButton
             label="Tiếp"
             onPress={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
             disabled={index >= items.length - 1}
+            style={styles.navBtn}
           />
         </View>
       </ScrollView>
@@ -108,16 +136,21 @@ export function VocabularyLearningScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { paddingBottom: 32 },
-  topic: { fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+  scroll: { paddingBottom: 32, paddingTop: 8 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 48 },
+  progressWrap: { marginBottom: 16 },
+  progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden' },
+  progressFill: { height: '100%', borderRadius: 3 },
+  progressLabel: { fontSize: 12, textAlign: 'right', marginTop: 6, fontWeight: '600' },
+  topicChip: { alignSelf: 'flex-start', marginBottom: 12 },
   wordRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 4 },
-  word: { fontSize: 28, fontWeight: '700', flex: 1 },
-  audioBtn: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  pron: { fontSize: 14, marginBottom: 4 },
-  pos: { fontSize: 12, fontWeight: '600', marginBottom: 12, textTransform: 'capitalize' },
-  meaning: { fontSize: 16, lineHeight: 24, marginBottom: 16 },
-  block: { padding: 14, borderRadius: 12, borderWidth: 0.5, marginBottom: 12 },
-  label: { fontSize: 11, fontWeight: '600', marginBottom: 6, textTransform: 'uppercase' },
-  counter: { textAlign: 'center', fontSize: 12, marginVertical: 12 },
-  nav: { flexDirection: 'row', gap: 12, justifyContent: 'space-between' },
+  word: { flex: 1, fontSize: 32 },
+  audioBtn: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  pron: { fontSize: 15, marginBottom: 4 },
+  pos: { fontSize: 12, fontWeight: '700', marginBottom: 12, textTransform: 'capitalize' },
+  meaning: { fontSize: 17, lineHeight: 26, marginBottom: 16, fontWeight: '500' },
+  block: { marginBottom: 12 },
+  blockLabel: { fontSize: 11, fontWeight: '700', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.6 },
+  nav: { flexDirection: 'row', gap: 12, marginTop: 8 },
+  navBtn: { flex: 1 },
 });

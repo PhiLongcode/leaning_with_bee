@@ -29,16 +29,19 @@
 ## Chạy app
 
 ```bash
-# Cấu hình Supabase (copy .env.example → apps/mobile/.env)
 npm run install:mobile
-npm run mobile          # Expo dev server
+cp apps/mobile/.env.development.example apps/mobile/.env.development   # sửa URL + key
+npm run mobile:dev      # Dev (mặc định)
+npm run mobile:prod     # Prod local (.env.production)
 npm run mobile:typecheck
 npm run mobile:build:web
 ```
 
-Code FN chỉ sửa trong `src/` (package `@hoc-cung-bee/features`, symlink trong `apps/mobile/node_modules`). **Không** copy sang `apps/mobile/src/fn*/`.
+**Môi trường dev/prod:** [`apps/mobile/ENVIRONMENT.md`](apps/mobile/ENVIRONMENT.md) — Home có card **Trạng thái hệ thống** (cấu hình + kết nối DB).
 
-Schema Supabase: `supabase/migrations/` — `supabase db push` sau khi `supabase link`.
+Code FN chỉ sửa trong `src/` (package `@hoc-cung-bee/features`). **Không** copy sang `apps/mobile/src/fn*/`.
+
+Schema Supabase: [`supabase/README.md`](supabase/README.md) — `npm run db:push` sau `npx supabase link`. Bật **Anonymous sign-ins** trên Dashboard.
 
 ## Bước tiếp theo
 

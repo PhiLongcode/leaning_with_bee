@@ -7,17 +7,31 @@ export const brand = {
 } as const;
 
 export const light = {
-  background: { primary: '#FFFFFF', secondary: '#F5F5F5' },
-  text: { primary: '#1A1A1A', secondary: '#5C5C5C', tertiary: '#888780' },
-  border: { primary: '#D4D4D4', tertiary: '#E8E8E8' },
-  surface: { success: '#EAF3DE', successText: '#3B6D11' },
+  background: { primary: '#F8FAF5', secondary: '#FFFFFF', elevated: '#FFFFFF' },
+  text: { primary: '#1A1F16', secondary: '#5C6356', tertiary: '#8A9186' },
+  border: { primary: '#D8DED0', tertiary: '#E8EDE3' },
+  surface: {
+    success: '#EAF3DE',
+    successText: '#3B6D11',
+    info: '#E6F1FB',
+    infoText: '#185FA5',
+    accent: '#FFF8E6',
+    accentText: '#9A6B00',
+  },
 } as const;
 
 export const dark = {
-  background: { primary: '#1A1A1A', secondary: '#2A2A2A' },
-  text: { primary: '#F5F5F5', secondary: '#A0A0A0', tertiary: '#6B6B6B' },
-  border: { primary: '#404040', tertiary: '#333333' },
-  surface: { success: '#2D4A1A', successText: '#A8D080' },
+  background: { primary: '#121412', secondary: '#1C1F1A', elevated: '#252922' },
+  text: { primary: '#F2F4EF', secondary: '#A8AEA3', tertiary: '#6E7568' },
+  border: { primary: '#3A4034', tertiary: '#2E3329' },
+  surface: {
+    success: '#2D4A1A',
+    successText: '#A8D080',
+    info: '#1A3A5C',
+    infoText: '#8BB8E8',
+    accent: '#3D3520',
+    accentText: '#FAC775',
+  },
 } as const;
 
 export type ThemeColors = typeof light | typeof dark;

@@ -2,9 +2,19 @@
   "name": "hoc-cung-bee",
   "private": true,
   "scripts": {
-    "mobile": "npm run start --prefix apps/mobile",
+    "mobile": "npm run start:dev --prefix apps/mobile",
+    "mobile:dev": "npm run start:dev --prefix apps/mobile",
+    "mobile:prod": "npm run start:prod --prefix apps/mobile",
     "mobile:typecheck": "npm run typecheck --prefix apps/mobile",
     "mobile:build:web": "npm run build:web --prefix apps/mobile",
-    "install:mobile": "npm install --prefix apps/mobile"
+    "install:mobile": "npm install --prefix apps/mobile",
+    "db:push": "npx supabase db push",
+    "db:push:api": "node scripts/db-push-api.js",
+    "db:reset:local": "npx supabase db reset",
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop"
+  },
+  "devDependencies": {
+    "supabase": "^2.101.0"
   }
 }

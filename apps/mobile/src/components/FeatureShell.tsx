@@ -1,43 +1,66 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppIcon } from './ui/AppIcon';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
 
 type Props = {
   title: string;
-  req: string;
+  req?: string;
   children: ReactNode;
 };
 
 export function FeatureShell({ title, req, children }: Props) {
-  const { colors } = useTheme();
+  const { colors, tokens } = useTheme();
   const setScreen = useAppStore((s) => s.setScreen);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background.primary }]}>
+    <View style={[styles.root, { backgroundColor: colors.background.primary, paddingTop: insets.top }]}>
       <View style={[styles.bar, { borderBottomColor: colors.border.tertiary }]}>
-        <Pressable onPress={() => setScreen('home')} hitSlop={8}>
-          <Text style={[styles.back, { color: colors.surface.successText }]}>← Trang chủ</Text>
+        <Pressable
+          onPress={() => setScreen('home')}
+          hitSlop={12}
+          style={[styles.backBtn, { backgroundColor: colors.background.secondary }]}
+        >
+          <AppIcon name="arrowLeft" size={18} color={colors.text.primary} />
         </Pressable>
-        <Text style={[styles.req, { color: colors.text.tertiary }]}>{req}</Text>
+        <View style={styles.barCenter}>
+          <Text style={[styles.title, { color: colors.text.primary }, tokens.typography.h3]} numberOfLines={1}>
+            {title}
+          </Text>
+          {req ? (
+            <Text style={[styles.req, { color: colors.text.tertiary }]}>{req}</Text>
+          ) : null}
+        </View>
+        <View style={styles.barSpacer} />
       </View>
-      <Text style={[styles.title, { color: colors.text.primary }]}>{title}</Text>
-      {children}
+      <View style={styles.body}>{children}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, paddingHorizontal: 20 },
+  root: { flex: 1 },
   bar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    marginBottom: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 12,
   },
-  back: { fontSize: 14, fontWeight: '600' },
-  req: { fontSize: 11, fontWeight: '500' },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 16 },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barCenter: { flex: 1 },
+  barSpacer: { width: 40 },
+  title: {},
+  req: { fontSize: 11, marginTop: 2, fontWeight: '500' },
+  body: { flex: 1, paddingHorizontal: 20 },
 });

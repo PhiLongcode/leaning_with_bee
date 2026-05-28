@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
+import { env, isSupabaseConfigured } from '../config/env';
 
-const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+export { isSupabaseConfigured } from '../config/env';
 
-export const isSupabaseConfigured = Boolean(url && anonKey && !url.includes('YOUR_PROJECT'));
-
-export const supabase = createClient(url || 'https://placeholder.supabase.co', anonKey || 'placeholder', {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
+export const supabase = createClient(
+  env.supabaseUrl || 'https://placeholder.supabase.co',
+  env.supabaseAnonKey || 'placeholder',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
   },
-});
+);

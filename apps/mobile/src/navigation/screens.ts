@@ -1,6 +1,7 @@
 export type Screen =
   | 'splash'
   | 'home'
+  | 'settings'
   | 'fn01_vocabulary'
   | 'fn02_vocab_manage'
   | 'fn03_sentences'

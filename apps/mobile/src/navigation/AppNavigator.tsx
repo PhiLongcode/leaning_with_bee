@@ -1,4 +1,5 @@
 import { HomeScreen } from '../screens/HomeScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { SplashScreen } from '../screens/SplashScreen';
 import { FeatureStubScreen } from '../features/FeatureStubScreen';
 import { VocabularyLearningScreen } from '../features/fn01/VocabularyLearningScreen';
@@ -15,6 +16,7 @@ export function AppNavigator() {
 
   if (screen === 'splash') return <SplashScreen />;
   if (screen === 'home') return <HomeScreen />;
+  if (screen === 'settings') return <SettingsScreen />;
   if (screen === 'fn01_vocabulary') return <VocabularyLearningScreen />;
 
   const meta = screenToMeta(screen);

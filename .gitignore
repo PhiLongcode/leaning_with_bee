@@ -9,7 +9,12 @@ web-build/
 *.mobileprovision
 .env
 .env.local
+.env.development
+.env.production
 apps/mobile/.env
+apps/mobile/.env.development
+apps/mobile/.env.production
+apps/mobile/.env.local
 # Bản copy FN cũ (đã bỏ sync) — không commit lại
 apps/mobile/src/fn*/
 apps/mobile/src/shared/

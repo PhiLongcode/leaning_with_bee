@@ -1,40 +1,88 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { brand } from '../theme/colors';
+import { Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
+
+type Variant = 'primary' | 'secondary' | 'ghost';
 
 type Props = {
   title?: string;
   label?: string;
   onPress: () => void;
   disabled?: boolean;
+  variant?: Variant;
+  style?: ViewStyle;
+  compact?: boolean;
 };
 
-export function PrimaryButton({ title, label, onPress, disabled }: Props) {
+export function PrimaryButton({
+  title,
+  label,
+  onPress,
+  disabled,
+  variant = 'primary',
+  style,
+  compact,
+}: Props) {
+  const { brand, colors, tokens } = useTheme();
   const text = label ?? title ?? '';
+
+  const isPrimary = variant === 'primary';
+  const isGhost = variant === 'ghost';
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [styles.wrap, pressed && !disabled && styles.pressed, disabled && styles.disabled]}
+      style={({ pressed }) => [
+        styles.wrap,
+        style,
+        pressed && !disabled && styles.pressed,
+        disabled && styles.disabled,
+      ]}
     >
-      <View style={styles.btn}>
-        <Text style={styles.text}>{text}</Text>
+      <View
+        style={[
+          styles.btn,
+          compact && styles.btnCompact,
+          isPrimary && {
+            backgroundColor: brand.primary,
+            borderBottomColor: brand.primaryPressed,
+            borderBottomWidth: 3,
+          },
+          variant === 'secondary' && {
+            backgroundColor: colors.background.secondary,
+            borderWidth: 1,
+            borderColor: colors.border.tertiary,
+            borderBottomWidth: 1,
+          },
+          isGhost && { backgroundColor: 'transparent', borderBottomWidth: 0 },
+        ]}
+      >
+        <Text
+          style={[
+            tokens.typography.button,
+            isPrimary && styles.textPrimary,
+            !isPrimary && { color: colors.text.primary },
+          ]}
+        >
+          {text}
+        </Text>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: '100%' },
+  wrap: { flex: 1 },
   btn: {
-    backgroundColor: brand.primary,
     paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    borderBottomWidth: 3,
-    borderBottomColor: brand.primaryPressed,
+    paddingHorizontal: 20,
+    borderRadius: 14,
     alignItems: 'center',
+    minHeight: 48,
+    justifyContent: 'center',
   },
-  pressed: { opacity: 0.9, transform: [{ translateY: 1 }] },
+  btnCompact: { minHeight: 44, paddingVertical: 12 },
+  pressed: { opacity: 0.92, transform: [{ translateY: 1 }] },
   disabled: { opacity: 0.45 },
-  text: { color: '#FFFFFF', fontSize: 14, fontWeight: '600', letterSpacing: 0.5 },
+  textPrimary: { color: '#FFFFFF' },
 });

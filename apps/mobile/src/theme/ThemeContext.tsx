@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { dark, light, type ThemeColors } from './colors';
+import { brand, dark, light, type ThemeColors } from './colors';
+import { radius, shadow, spacing, typography } from './tokens';
 
-type ThemeMode = 'light' | 'dark' | 'system';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 type ThemeContextValue = {
   colors: ThemeColors;
+  brand: typeof brand;
+  tokens: { spacing: typeof spacing; radius: typeof radius; typography: typeof typography; shadow: typeof shadow };
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
   isDark: boolean;
@@ -21,7 +24,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const colors = isDark ? dark : light;
 
   const value = useMemo(
-    () => ({ colors, mode, setMode, isDark }),
+    () => ({
+      colors,
+      brand,
+      tokens: { spacing, radius, typography, shadow },
+      mode,
+      setMode,
+      isDark,
+    }),
     [colors, mode, isDark],
   );
 
