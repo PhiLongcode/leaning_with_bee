@@ -1,0 +1,16 @@
+---
+description: Plugin, đa thiết bị, đa DB, API thứ 3 — port/adapter only
+globs: src/**/infrastructure/**,src/**/application/ports/**
+alwaysApply: false
+---
+
+> **Related:** `docs/02_system_design/extensibility_integration.md` (copy từ repo mẫu khi bootstrap)
+
+# Integration & extensibility
+
+- Web/Mobile: cùng use case; adapters trong infrastructure/presentation/channels.
+- Multi-device: version + idempotency; conflict in domain.
+- Multi-DB: one port per role; adapters in persistence/.
+- 3rd party: infrastructure/external/ + ACL only.
+
+Chi tiết: `extensibility_integration.md`.

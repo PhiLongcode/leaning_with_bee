@@ -1,0 +1,97 @@
+---
+description: Tự check thay đổi lớn → AskQuestion xác nhận trước khi đồng bộ workflow-template
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/07-template-pack-maintenance.mdc` · **Role:** Tự phát hiện thay đổi lớn → hỏi user (trắc nghiệm) → mới sync pack  
+> **Related:** `workflow-template/TEMPLATE_PLAYBOOK.md`, `workflow-template/ISSUES_TO_TEMPLATE.md`  
+> **Do-not:** Tự sync `workflow-template/` khi user chưa chọn **Có**; không copy domain F&B vào pack
+
+# Workflow-template — tự check & xác nhận đồng bộ
+
+## 0. Tự động check (bắt buộc — cuối mỗi task có sửa file)
+
+Trước khi **kết thúc** câu trả lời, AI **phải** rà soát file đã **tạo/sửa/xóa/đổi tên** trong phiên (hoặc diff user yêu cầu) theo bảng **§1 Thay đổi lớn**.
+
+| Kết quả rà soát | Hành động |
+|-----------------|-----------|
+| **Có** thay đổi lớn (§1) và **chưa** đồng bộ pack trong cùng phiên | → **§2 Gate** (AskQuestion) — **không** tự sync |
+| **Không** có thay đổi lớn | Không hỏi; kết thúc bình thường |
+| User **đã** chọn Có/Yes cho gate **cùng phiên** | Chạy checklist §3; không hỏi lại |
+| User nói rõ `bỏ qua sync template` / `không đồng bộ pack` | Không hỏi lần đó |
+
+**Ngoại lệ — vẫn hỏi gate dù đã sửa pack:** thay đổi lớn nằm ở **repo mẫu** (`.cursor/rules/`, `process/templates/`, `process/00_*` meta) mà **chưa** copy sang `workflow-template/` trong phiên.
+
+---
+
+## 1. Thay đổi lớn (trigger đồng bộ pack)
+
+Chỉ cần **một** dòng khớp → coi là **lớn**:
+
+| # | Trigger | Ví dụ path |
+|---|---------|------------|
+| L1 | **Rule AI** | `.cursor/rules/*.mdc` (trừ chỉ sửa comment trong pack) — gồm `11-lesson-learn-gate.mdc` |
+| L2 | **Template process** | `process/templates/*.md` |
+| L3 | **Meta / contract / luồng** | `process/00_directory_contract.md`, `00_naming_convention.md`, `00_cursorrules.md`, `00_file_manifest.md` |
+| L4 | **Cấu trúc docs** | Đổi tên/thêm/xóa thư mục `docs/0N_*` hoặc file SSOT layer (`docs/README.md` đổi pipeline) |
+| L5 | **Prompt history quy trình** | `process/templates/prompt_history_template.md`, `05-prompt-history.mdc` |
+| L6 | **Playbook pack** | `workflow-template/TEMPLATE_PLAYBOOK.md`, `ISSUES_TO_TEMPLATE.md` (lesson → template) |
+| L7 | **File meta pack** | `workflow-template/README.md`, `BOOTSTRAP.md`, `PROJECT_STAMPS.md` (khi maintainer sửa tay) |
+
+**Không phải thay đổi lớn** (không bật gate): chỉ `process/features/fn*/`, nội dung `00_requirement_business.md` (domain), `docs/00_input_raw/requirement_base.md` (data), `src/`, `prompt_history/PRM-*.md` instance, bug/lesson **chỉ** trong FN.
+
+---
+
+## 2. Gate xác nhận — trắc nghiệm (trước khi sửa pack)
+
+Khi §0 phát hiện thay đổi lớn:
+
+### Bước A — Tóm tắt (trong chat, ngắn)
+
+- Liệt kê **file trigger** (L1–L7) và **việc sync dự kiến** (copy rule, template, README pack, CHANGELOG, …).
+- Tham chiếu Playbook **B**: [`workflow-template/TEMPLATE_PLAYBOOK.md`](../workflow-template/TEMPLATE_PLAYBOOK.md).
+
+### Bước B — Hỏi user (bắt buộc)
+
+**Không** kết thúc task chỉ bằng câu «bạn có muốn sync không». Phải dùng **một trong hai**:
+
+1. **Trắc nghiệm (ưu tiên):** công cụ **AskQuestion**, đúng **2 lựa chọn**:
+   - *«Có — đồng bộ workflow-template (Playbook B)»*
+   - *«Không — bỏ qua lần này»*
+2. **Fallback:** *«Trả lời **Yes** để đồng bộ pack, **No** để bỏ qua (hoặc `hủy sync`).»*
+
+**Có (được sync pack):** `yes`, `có`, `xác nhận`, `đồng bộ`, `sync pack`, `ok sync`, `confirm` — **chỉ** khi trả lời **lời mời gate vừa rồi**.
+
+**Không (không sync):** `no`, `không`, `bỏ qua`, `skip`, `hủy sync`, im lặng, hoặc chọn *Không — bỏ qua*.
+
+**Chưa có Có/Không** → **không** sửa `workflow-template/` (trừ user đã yêu cầu rõ «đồng bộ template» ngay từ đầu prompt).
+
+---
+
+## 3. Đồng bộ pack (chỉ sau Có / Yes)
+
+1. [ ] Diff `.cursor/rules/` ↔ `workflow-template/.cursor/rules/` — copy từng `.mdc` đổi
+2. [ ] Copy `process/templates/` đã đổi
+3. [ ] Cập nhật `workflow-template/process/BOOTSTRAP.md`, `README.md` nếu cần
+4. [ ] Tăng `PROJECT_STAMPS.md` + 1 dòng `TEMPLATE_CHANGELOG.md`
+5. [ ] (Lesson) Cập nhật `ISSUES_TO_TEMPLATE.md` nếu có insight mới
+6. [ ] `grep` path cũ trong pack (`MD/`, `Features/`, `00_Index`)
+
+Báo user: version pack mới + danh sách file pack đã sửa.
+
+---
+
+## 4. Cải tiến từ issue (roll-up)
+
+Khi đóng GISS/ISS có lesson **áp dụng mọi fork** → sau khi ghi `00_global_*`, **vẫn chạy §0**: nếu cần sửa pack → **§2 Gate** (không tự sửa pack).
+
+---
+
+## 5. Playbook & PRM
+
+| Việc | Tài liệu |
+|------|----------|
+| Bootstrap / sync / gate | `workflow-template/TEMPLATE_PLAYBOOK.md` (A–E) |
+| Lưu sau sync pack thành công | `05-prompt-history.mdc`, Chế độ `hon_hop` |
+
+AI: user nhắc `workflow-template`, `fork template`, `cập nhật pack` → có thể **bỏ qua gate** nếu prompt đã là lệnh đồng bộ rõ; vẫn chạy §3.

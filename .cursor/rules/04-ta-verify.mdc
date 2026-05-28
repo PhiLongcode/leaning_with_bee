@@ -1,0 +1,11 @@
+---
+description: Map .feature → Playwright E2E
+globs:
+alwaysApply: false
+---
+
+> **File:** `.cursor/rules/04-ta-verify.mdc` · **Role:** map `.feature` → Playwright E2E (`data-testid`)  
+> **Related:** `docs/03_quality_assurance/e2e_playwright_rules.md`, `docs/01_specification/features/`
+
+# TA Verify
+Ở bước hoàn thiện, map các bước trong `.feature` thành kịch bản Playwright E2E (dùng `data-testid`).

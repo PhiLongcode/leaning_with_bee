@@ -1,0 +1,61 @@
+---
+description: Lưu PRM sau xác nhận — có Playbook tái sử dụng (1–2 bước)
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/05-prompt-history.mdc` · **Role:** lưu prompt+output sau xác nhận user  
+> **Related:** `process/prompt_history/`, `process/templates/prompt_history_template.md` · **Do-not:** Ghi khi chưa xác nhận
+
+# Prompt History (xác nhận trước khi lưu)
+
+## Khi nào đề xuất lưu
+
+Sau khi hoàn thành task có **output cụ thể** (file mới/sửa, spec, quyết định, cấu trúc thư mục…), hoặc khi user nói: `lưu prompt`, `lưu lịch sử`, `save prompt`.
+
+## Mục tiêu lưu (ngoài audit)
+
+Mỗi bản ghi PRM phải có **Prompt tái sử dụng (Playbook)**: tổng hợp thành **một block** (khuyến nghị) hoặc **tối đa hai block** nếu bắt buộc tách (vd. bước 1 phân tích, bước 2 thực thi). Người hoặc AI sau này **dán lại** là xử lý được **cùng kiểu tình huống** — không chỉ lưu chat vụn.
+
+## Quy trình lưu file (2 giai đoạn: nháp → xác nhận)
+
+### Giai đoạn 1 — Nháp (chưa ghi file)
+
+Trình bày cho user:
+
+1. **Prompt tái sử dụng (Playbook — bắt buộc)**  
+   - Một khối prompt **có ý nghĩa**: **mục tiêu**, **bối cảnh**, **ràng buộc / file SSOT** (đường dẫn hoặc `@mention`), **chế độ** (`tao_file` | `sua_file` | `hon_hop` | `tu_van` — xem template), **artifact mong đợi**.  
+   - Chế độ **`tao_file`**: Playbook phải liệt kê **đường dẫn file mới** + cập nhật manifest/contract nếu cần; §3 Output có dòng **Tạo**.  
+   - Ưu tiên **một lần gửi**; chỉ tách **hai bước** khi không gộp được mà vẫn rõ ràng.  
+2. **Prompt nguyên văn** — chỉ bắt buộc đầy đủ khi user nói `chi tiết` / `lưu prompt chi tiết`; không thì có thể tóm tắt hoặc *"đã gộp vào Playbook"*.  
+3. **Output**: tóm tắt + **chế độ** + bảng file **Tạo** / Sửa / Xóa  
+4. **ID đề xuất**: `PRM-YYYYMMDD-NNN_<slug>.md`
+
+### Xác nhận — bắt buộc Yes / No hoặc trắc nghiệm
+
+Sau khi trình nháp, **không** kết thúc chỉ bằng câu chữ tự do. AI phải **hỏi xác nhận dạng lựa chọn**, một trong hai cách (ưu tiên cách 1 nếu công cụ hỗ trợ):
+
+1. **Trắc nghiệm (khuyến nghị):** dùng **câu hỏi một chọn một đáp** — trong Cursor Agent ưu tiên công cụ **AskQuestion** với đúng **2 lựa chọn**, ví dụ nhãn *«Có — lưu PRM + cập nhật Index»* và *«Không — hủy»* (tương đương **Yes** / **No**). Nội dung câu hỏi nêu rõ: có ghi file `process/prompt_history/PRM-*.md` hay không.
+2. **Yes / No rõ ràng trong chat:** nếu không dùng được form trắc nghiệm, hỏi thẳng: *«Trả lời **Yes** để lưu, **No** để hủy (hoặc gõ `hủy`).»* — chỉ khi user chọn **Yes** (hoặc từ đồng nghĩa bên dưới) mới được ghi file.
+
+**Yes (được ghi PRM):** `yes`, `có`, `xác nhận`, `ok lưu`, `lưu đi`, `confirm` — **chỉ** khi là câu trả lời cho lời mời xác nhận vừa rồi (không suy diễn từ tin nhắn khác).
+
+**No (không ghi):** `no`, `không`, `hủy`, `cancel`, im lặng, hoặc chọn nhánh *Không — hủy* / *No*.
+
+### Giai đoạn 2 — Ghi file (chỉ sau khi user chọn Yes / Có)
+
+Khi (và chỉ khi) user trả lời **Yes** hoặc tương đương cho lời mời ở trên:
+
+1. Tạo `process/prompt_history/PRM-YYYYMMDD-NNN_<slug>.md` theo `process/templates/prompt_history_template.md` — **bắt buộc có §1 Playbook + Field Chế độ** (đã thống nhất trong nháp).
+2. Cập nhật `process/prompt_history/00_index.md` (thêm 1 dòng bảng + tăng tổng bản ghi).
+3. Báo user: đường dẫn file vừa lưu.
+
+## Không lưu
+
+- Prompt chưa có output / chỉ hỏi ý kiến chung
+- Nội dung nhạy cảm (mật khẩu, token, `.env`) — redact trước khi nháp
+- User chọn **No** / **hủy**, hoặc chưa trả lời **Yes** sau lời mời xác nhận (không ghi PRM)
+
+## Tham chiếu
+
+- Index: `process/prompt_history/00_index.md`
+- Template: `process/templates/prompt_history_template.md` (có **Chế độ**: `tao_file`, `sua_file`, `hon_hop`, `tu_van`)

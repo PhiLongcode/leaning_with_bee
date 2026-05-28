@@ -1,0 +1,47 @@
+---
+description: Chống trùng chức năng khi đồng bộ requirement_base → 00_requirement_business
+globs:
+  - "**/requirement_base.md"
+  - "**/00_requirement_business.md"
+  - "**/requirement_business_template.md"
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/10-requirement-dedup.mdc` · **Role:** Gate dedup khi chuẩn hóa REQ  
+> **Related:** `docs/00_input_raw/requirement_base.md`, `process/00_requirement_business.md`, `process/templates/requirement_business_template.md`
+
+# Requirement dedup (base → business)
+
+## Vai trò file
+
+| File | Vai trò |
+|------|---------|
+| `docs/00_input_raw/requirement_base.md` | **SSOT thô** — ghi nhận đúng ý khách (append khi có bảng mới) |
+| `process/00_requirement_business.md` | **SSOT BDD** — mỗi **chức năng** chỉ **một** REQ; cập nhật khi khách bổ sung |
+
+## Bắt buộc trước khi ghi `00_requirement_business.md`
+
+Với **mỗi dòng** mới từ `requirement_base` (STT / Nghiệp vụ / BM / QĐ):
+
+1. **Đối chiếu** bảng §5 và block §6 hiện có — tìm REQ trùng **năng lực nghiệp vụ** (cùng mục tiêu người dùng, cùng luồng chính, cùng BM/QĐ tương đương).
+2. **Nếu trùng** → **UPDATE** REQ/FN hiện có (Biểu mẫu, Quy định, Gherkin, Ghi chú). **Không** tạo STT/REQ/FN mới; **không** nhân bản folder `src/fn##_*/`.
+3. **Nếu thật sự mới** (không map được REQ nào) → thêm **một** dòng REQ mới + `REQ-XX` + FN mới (theo naming).
+4. **Gộp dòng trùng nguồn thô:** STT khách gửi lặp nội dung (vd. 10–15 = 1–6) — chỉ ghi chú ở `requirement_base`, **không** đưa sang business.
+5. **Ghi §8 Lịch sử:** `Cập nhật REQ-XX` hoặc `Thêm REQ-XX` + nguồn STT base.
+
+## Tiêu chí “trùng chức năng” (chọn ≥2 là trùng)
+
+- Cùng **tên nghiệp vụ** hoặc từ đồng nghĩa rõ (vd. «Gọi thêm món» ⊆ «Lập gọi món / order»).
+- Cùng **mã BM** hoặc cùng **phiếu/màn hình** chính.
+- Cùng **actor + mục tiêu** (vd. thu ngân — thêm món vào order đang mở).
+- Cùng **Feature folder** / `fn##_*/` đã map.
+
+## Cấm
+
+- Duplicate REQ cho cùng chức năng cũ (hai dòng «Quản lý bàn»).
+- Tạo `fn06_*` khi chỉ là phiên bản mới của `fn02_*`.
+- Copy nguyên bảng base vào §5 mà không đối chiếu.
+
+## Báo cáo (khi user yêu cầu hoặc batch lớn)
+
+Tóm tắt: `STT base → REQ-XX (cập nhật | mới | bỏ qua trùng nguồn)`.

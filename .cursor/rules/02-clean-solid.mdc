@@ -1,0 +1,15 @@
+---
+description: OOP domain, SOLID, invariant — module fn##, không object dư
+globs: src/**/domain/**,src/**/application/**,src/**/presentation/**
+alwaysApply: false
+---
+
+> **Related:** `docs/02_system_design/solid_guidelines.md`, `src_module_structure.md` §2.0–§2.2
+
+# Clean, OOP & SOLID (module-first)
+
+- `src/fn##_*/` + domain/application/infrastructure/presentation.
+- **Domain:** Entity/VO, encapsulation, invariant chặt — không anemic, không setter lộ, không class dư.
+- **Use case:** orchestrator only.
+- **UI:** ViewModel + UX only.
+- SSOT: `solid_guidelines.md`, `domain_rules.md`.

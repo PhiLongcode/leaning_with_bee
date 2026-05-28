@@ -1,0 +1,10 @@
+{
+  "name": "hoc-cung-bee",
+  "private": true,
+  "scripts": {
+    "mobile": "npm run start --prefix apps/mobile",
+    "mobile:typecheck": "npm run typecheck --prefix apps/mobile",
+    "mobile:build:web": "npm run build:web --prefix apps/mobile",
+    "install:mobile": "npm install --prefix apps/mobile"
+  }
+}

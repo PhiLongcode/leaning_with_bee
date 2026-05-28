@@ -1,0 +1,668 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .root { padding: 1.5rem 0; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 12px;
+  }
+
+  /* ---- COLOR TOKENS ---- */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    border: 0.5px solid transparent;
+  }
+  .chip-green  { background:#EAF3DE; color:#3B6D11; border-color:#C0DD97; }
+  .chip-gray   { background: var(--color-background-secondary); color: var(--color-text-secondary); border-color: var(--color-border-tertiary); }
+  .chip-blue   { background:#E6F1FB; color:#185FA5; border-color:#B5D4F4; }
+  .chip-amber  { background:#FAEEDA; color:#854F0B; border-color:#FAC775; }
+  .chip-coral  { background:#FAECE7; color:#993C1D; border-color:#F5C4B3; }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green  { background:#639922; }
+  .dot-blue   { background:#378ADD; }
+  .dot-amber  { background:#BA7517; }
+  .dot-coral  { background:#D85A30; }
+  .dot-gray   { background:#888780; }
+  .dot-teal   { background:#1D9E75; }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.25rem;
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .card-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .card-sub   { font-size: 12px; color: var(--color-text-secondary); margin-top: 1px; }
+
+  /* ---- SCREEN MOCKUP ---- */
+  .phone-frame {
+    width: 100px; height: 180px;
+    border: 1.5px solid var(--color-border-secondary);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--color-background-secondary);
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .phone-statusbar {
+    height: 10px;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 8px;
+  }
+  .phone-statusbar span { font-size: 6px; color: var(--color-text-tertiary); }
+  .phone-body { flex: 1; padding: 6px; overflow: hidden; }
+  .screen-label {
+    font-size: 10px; font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-top: 6px; text-align: center;
+  }
+
+  /* ---- FLOW ARROW ---- */
+  .arrow-right {
+    color: var(--color-text-tertiary);
+    font-size: 18px;
+    flex-shrink: 0;
+    align-self: center;
+    margin-bottom: 18px;
+  }
+
+  /* ---- GRID ---- */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    margin: 1.5rem 0;
+  }
+
+  /* ---- ROW ITEM ---- */
+  .row-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .row-item:last-child { border-bottom: none; }
+  .row-item-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.4; }
+  .row-item-sub  { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+
+  /* mini bar */
+  .mini-bar-wrap { display: flex; gap: 3px; margin-top: 4px; }
+  .mini-bar { height: 4px; border-radius: 2px; background: #C0DD97; }
+
+  /* ---- PALETTE SWATCH ---- */
+  .swatch { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+
+  /* ---- STAT ---- */
+  .stat-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: .75rem 1rem;
+    text-align: center;
+  }
+  .stat-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-lbl { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  /* ---- API ROW ---- */
+  .api-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; padding: 5px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .api-row:last-child { border-bottom: none; }
+  .method-tag {
+    font-size: 10px; font-weight: 500; padding: 2px 6px;
+    border-radius: 4px; min-width: 36px; text-align: center;
+  }
+  .get    { background:#EAF3DE; color:#3B6D11; }
+  .post   { background:#E6F1FB; color:#185FA5; }
+  .put    { background:#FAEEDA; color:#854F0B; }
+  .delete { background:#FCEBEB; color:#A32D2D; }
+  .api-path { font-family: var(--font-mono); color: var(--color-text-primary); }
+  .api-desc { color: var(--color-text-secondary); margin-left: auto; }
+
+  /* pill nav */
+  .nav-pill {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .nav-item {
+    font-size: 11px; padding: 3px 10px; border-radius: 12px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+  .nav-item.active {
+    background: #EAF3DE; color: #3B6D11;
+    border-color: #C0DD97;
+  }
+
+  /* phone content helpers */
+  .ph-btn {
+    width: 100%; background: #58CC02; border-radius: 6px;
+    padding: 4px; text-align: center;
+    font-size: 7px; font-weight: 500; color: #fff;
+    margin-bottom: 4px;
+  }
+  .ph-input {
+    width: 100%; border: 0.5px solid var(--color-border-secondary);
+    border-radius: 4px; padding: 3px 5px;
+    font-size: 7px; color: var(--color-text-secondary);
+    background: var(--color-background-primary);
+    margin-bottom: 4px;
+  }
+  .ph-card-mini {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 5px; padding: 4px; margin-bottom: 3px;
+    background: var(--color-background-primary);
+  }
+  .ph-tag { display: inline-block; background: #EAF3DE; color: #3B6D11; border-radius: 3px; font-size: 6px; padding: 1px 4px; }
+  .ph-owl { font-size: 22px; text-align: center; line-height: 1; margin: 8px 0 4px; }
+  .ph-h { font-size: 8px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .ph-p  { font-size: 6px; color: var(--color-text-secondary); line-height: 1.4; }
+  .ph-streak { display: flex; gap: 2px; justify-content: center; margin-top: 4px; }
+  .ph-day { width: 10px; height: 10px; border-radius: 2px; background: #C0DD97; }
+  .ph-day.done { background: #58CC02; }
+  .ph-flag { font-size: 10px; margin-right: 2px; }
+  .ph-lang-row { display: flex; align-items: center; padding: 3px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 7px; color: var(--color-text-primary); }
+  .ph-xp { background: #FAEEDA; color: #854F0B; border-radius: 3px; font-size: 6px; padding: 1px 4px; margin-left: auto; }
+  .ph-translate { font-size: 7px; color: var(--color-text-secondary); font-style: italic; margin: 4px 0 2px; }
+  .ph-answer { border: 0.5px solid #58CC02; border-radius: 4px; padding: 3px 5px; font-size: 7px; color: var(--color-text-primary); background: var(--color-background-primary); }
+</style>
+
+<div class="root">
+  <h2 class="sr-only">Duolingo-style app UI/UX system design</h2>
+
+  <!-- HEADER -->
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+    <div style="width:36px;height:36px;border-radius:10px;background:#EAF3DE;display:flex;align-items:center;justify-content:center;font-size:18px;">🦉</div>
+    <div>
+      <div style="font-size:16px;font-weight:500;color:var(--color-text-primary);">UI/UX System Design</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">English Learning App — Workplace Communication</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:6px;">
+      <span class="chip chip-green"><span class="dot dot-green"></span>Mobile-first</span>
+      <span class="chip chip-blue"><span class="dot dot-blue"></span>AI-assisted</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: DESIGN TOKENS -->
+  <div class="section-label">1. Design tokens</div>
+  <div class="grid-2" style="margin-bottom:1.5rem;">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#EAF3DE;"><i class="ti ti-palette" style="color:#3B6D11;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Color palette</div><div class="card-sub">Brand + semantic</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="swatch" style="background:#58CC02;"></div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Primary Green</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);">#58CC02 — CTA, active, streak</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="swatch" style="background:#1CB0F6;"></div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Accent Blue</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);">#1CB0F6 — info, highlight</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="swatch" style="background:#FF4B4B;"></div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Error Red</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);">#FF4B4B — wrong answer, danger</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="swatch" style="background:#FFC800;"></div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">XP Amber</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);">#FFC800 — XP, achievements</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="swatch" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);"></div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Neutral Surface</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);">bg-secondary — card, input bg</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#E6F1FB;"><i class="ti ti-typography" style="color:#185FA5;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Typography & spacing</div><div class="card-sub">Scale & rhythm</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div class="row-item">
+          <div class="dot dot-gray" style="margin-top:5px;"></div>
+          <div><div class="row-item-text" style="font-size:18px;font-weight:500;">Heading 1 — 24px / 500</div></div>
+        </div>
+        <div class="row-item">
+          <div class="dot dot-gray" style="margin-top:4px;"></div>
+          <div><div class="row-item-text" style="font-size:15px;font-weight:500;">Heading 2 — 18px / 500</div></div>
+        </div>
+        <div class="row-item">
+          <div class="dot dot-gray" style="margin-top:3px;"></div>
+          <div><div class="row-item-text" style="font-size:13px;">Body — 14px / 400, line-height 1.6</div></div>
+        </div>
+        <div class="row-item">
+          <div class="dot dot-gray" style="margin-top:3px;"></div>
+          <div><div class="row-item-text" style="font-size:11px;color:var(--color-text-secondary);">Caption — 12px / 400, muted</div></div>
+        </div>
+      </div>
+      <div style="margin-top:10px;border-top:0.5px solid var(--color-border-tertiary);padding-top:10px;">
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;">Spacing scale (rem)</div>
+        <div style="display:flex;gap:6px;align-items:flex-end;">
+          <div style="width:8px;height:8px;background:#58CC02;border-radius:2px;"></div>
+          <div style="width:12px;height:12px;background:#58CC02;border-radius:2px;"></div>
+          <div style="width:16px;height:16px;background:#58CC02;border-radius:2px;"></div>
+          <div style="width:24px;height:24px;background:#58CC02;border-radius:2px;"></div>
+          <div style="width:32px;height:32px;background:#58CC02;border-radius:2px;"></div>
+          <div style="font-size:10px;color:var(--color-text-tertiary);align-self:center;">4 8 12 16 24 32px</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION 2: SCREEN FLOWS -->
+  <div class="section-label">2. Main screen flows</div>
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1.5rem;">
+
+    <!-- Row 1: Auth flow -->
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:10px;font-weight:500;">Auth flow</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:2px;">
+
+      <!-- Splash -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body" style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
+            <div class="ph-owl">🦉</div>
+            <div style="font-size:9px;font-weight:500;color:#58CC02;text-align:center;">duolingo</div>
+            <div class="ph-p" style="text-align:center;margin-top:4px;">Learn a language<br>for free, forever.</div>
+          </div>
+        </div>
+        <div class="screen-label">Splash</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- Login -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div class="ph-h" style="margin-top:4px;">Log in</div>
+            <div class="ph-input">Email or username</div>
+            <div class="ph-input">Password</div>
+            <div class="ph-btn">LOG IN</div>
+            <div style="font-size:6px;color:#1CB0F6;text-align:center;">Forgot password?</div>
+          </div>
+        </div>
+        <div class="screen-label">Login</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- Sign up -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div class="ph-h" style="margin-top:4px;">Sign up</div>
+            <div class="ph-input">Full name</div>
+            <div class="ph-input">Email</div>
+            <div class="ph-input">Password</div>
+            <div class="ph-btn">CREATE ACCOUNT</div>
+          </div>
+        </div>
+        <div class="screen-label">Sign up</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- Choose language -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div class="ph-h" style="margin-top:4px;">Choose language</div>
+            <div class="ph-lang-row"><span class="ph-flag">🇬🇧</span> English</div>
+            <div class="ph-lang-row"><span class="ph-flag">🇫🇷</span> French</div>
+            <div class="ph-lang-row"><span class="ph-flag">🇩🇪</span> German</div>
+            <div class="ph-lang-row"><span class="ph-flag">🇯🇵</span> Japanese</div>
+          </div>
+        </div>
+        <div class="screen-label">Pick language</div>
+      </div>
+
+    </div>
+
+    <!-- Row 2: Learning flow -->
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:10px;font-weight:500;">Learning flow</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;overflow-x:auto;padding-bottom:2px;">
+
+      <!-- Home -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <span class="ph-tag">🔥 5</span>
+              <span style="font-size:6px;color:#FFC800;font-weight:500;">⭐ 240 XP</span>
+            </div>
+            <div class="ph-h">Welcome back!</div>
+            <div class="ph-card-mini">
+              <div style="font-size:6px;color:#3B6D11;font-weight:500;">Today's Challenge</div>
+              <div class="ph-p">10 vocabulary words</div>
+            </div>
+            <div class="ph-h" style="margin-top:4px;">Your courses</div>
+            <div class="ph-card-mini"><div class="ph-p">🏢 Workplace English</div></div>
+            <div class="ph-card-mini"><div class="ph-p">💻 Developer Vocab</div></div>
+          </div>
+        </div>
+        <div class="screen-label">Home</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- Vocabulary learning -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div style="font-size:6px;color:var(--color-text-tertiary);margin-bottom:3px;">Lesson 01 — Deploy</div>
+            <div class="ph-card-mini" style="background:#EAF3DE;border-color:#C0DD97;">
+              <div style="font-size:8px;font-weight:500;color:#3B6D11;">deploy</div>
+              <div class="ph-p">/dɪˈplɔɪ/  · verb</div>
+            </div>
+            <div class="ph-translate">"We will deploy tonight."</div>
+            <div style="font-size:6px;color:var(--color-text-secondary);margin-bottom:2px;">Nghĩa là?</div>
+            <div class="ph-answer">Triển khai ✓</div>
+            <div style="margin-top:4px;display:flex;gap:2px;">
+              <div style="flex:1;height:3px;background:#58CC02;border-radius:2px;"></div>
+              <div style="flex:1;height:3px;background:#58CC02;border-radius:2px;"></div>
+              <div style="flex:1;height:3px;background:var(--color-background-secondary);border-radius:2px;"></div>
+              <div style="flex:1;height:3px;background:var(--color-background-secondary);border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-label">Vocabulary</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- Context review -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div style="font-size:6px;color:var(--color-text-tertiary);margin-bottom:3px;">Context Review</div>
+            <div class="ph-card-mini">
+              <div class="ph-p">"The backend team <span style="background:#FAEEDA;color:#854F0B;border-radius:2px;padding:0 2px;">deployed</span> the hotfix."</div>
+            </div>
+            <div class="ph-translate">Translate to English:</div>
+            <div style="border:1px dashed var(--color-border-secondary);border-radius:4px;padding:4px;font-size:6px;color:var(--color-text-tertiary);min-height:20px;">Your answer...</div>
+          </div>
+        </div>
+        <div class="screen-label">Context review</div>
+      </div>
+      <div class="arrow-right"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+
+      <!-- AI Chat -->
+      <div>
+        <div class="phone-frame">
+          <div class="phone-statusbar"><span>9:41</span></div>
+          <div class="phone-body">
+            <div style="font-size:6px;color:var(--color-text-tertiary);margin-bottom:3px;">AI Chat — Interview</div>
+            <div style="background:#EAF3DE;border-radius:0 5px 5px 5px;padding:3px 5px;font-size:6px;color:#27500A;margin-bottom:3px;">Hi! Ready for mock interview?</div>
+            <div style="background:var(--color-background-secondary);border-radius:5px 0 5px 5px;padding:3px 5px;font-size:6px;color:var(--color-text-primary);margin-left:10px;margin-bottom:3px;">Yes, let's start!</div>
+            <div style="background:#EAF3DE;border-radius:0 5px 5px 5px;padding:3px 5px;font-size:6px;color:#27500A;">Tell me about yourself</div>
+            <div style="position:absolute;bottom:6px;left:6px;right:6px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:3px 5px;font-size:6px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:4px;">
+              <span style="flex:1;">Type...</span>
+              <i class="ti ti-microphone" style="font-size:10px;color:#58CC02;" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+        <div class="screen-label">AI Chat</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 3: COMPONENT LIBRARY -->
+  <div class="section-label">3. Component library</div>
+  <div class="grid-2" style="margin-bottom:1.5rem;">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#FAEEDA;"><i class="ti ti-components" style="color:#854F0B;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Buttons & states</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:#58CC02;color:#fff;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;border-bottom:3px solid #46A302;">Primary CTA</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);">Lesson start, Submit</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:var(--color-background-secondary);color:var(--color-text-primary);font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;border:0.5px solid var(--color-border-secondary);">Secondary</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);">Skip, Cancel</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;border-bottom:3px solid #791F1F;">Wrong</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);">Incorrect answer</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="background:#EAF3DE;color:#3B6D11;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;border-bottom:3px solid #27500A;">Correct</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);">Correct answer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#E1F5EE;"><i class="ti ti-cards" style="color:#0F6E56;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Flashcard component</div></div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:10px;padding:12px;text-align:center;position:relative;">
+        <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;">Deploy</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:8px;">/dɪˈplɔɪ/ · verb</div>
+        <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:6px;font-size:11px;color:var(--color-text-secondary);font-style:italic;margin-bottom:8px;">"We will deploy the new version tonight."</div>
+        <div style="font-size:12px;font-weight:500;color:#3B6D11;">Triển khai</div>
+        <div style="display:flex;gap:6px;margin-top:10px;">
+          <div style="flex:1;background:#FCEBEB;color:#A32D2D;font-size:10px;font-weight:500;padding:4px;border-radius:6px;text-align:center;border-bottom:2px solid #791F1F;">Again</div>
+          <div style="flex:1;background:#FAEEDA;color:#854F0B;font-size:10px;font-weight:500;padding:4px;border-radius:6px;text-align:center;border-bottom:2px solid #633806;">Hard</div>
+          <div style="flex:1;background:#EAF3DE;color:#3B6D11;font-size:10px;font-weight:500;padding:4px;border-radius:6px;text-align:center;border-bottom:2px solid #27500A;">Good</div>
+          <div style="flex:1;background:#E6F1FB;color:#185FA5;font-size:10px;font-weight:500;padding:4px;border-radius:6px;text-align:center;border-bottom:2px solid #0C447C;">Easy</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION 4: ARCHITECTURE -->
+  <div class="section-label">4. System architecture</div>
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:8px;align-items:center;">
+
+      <!-- Mobile -->
+      <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <i class="ti ti-device-mobile" style="font-size:14px;color:#3B6D11;" aria-hidden="true"></i>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Mobile App</div>
+        </div>
+        <div class="row-item"><div class="dot dot-green" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">React Native / Expo</div></div>
+        <div class="row-item"><div class="dot dot-green" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Zustand state</div></div>
+        <div class="row-item"><div class="dot dot-green" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">MMKV local cache</div></div>
+        <div class="row-item" style="border:none;"><div class="dot dot-green" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Offline support</div></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <i class="ti ti-arrows-exchange" style="font-size:14px;color:var(--color-text-tertiary);" aria-hidden="true"></i>
+        <div style="font-size:9px;color:var(--color-text-tertiary);">HTTPS</div>
+      </div>
+
+      <!-- Backend -->
+      <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <i class="ti ti-server" style="font-size:14px;color:#185FA5;" aria-hidden="true"></i>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Backend API</div>
+        </div>
+        <div class="row-item"><div class="dot dot-blue" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Node.js / Express</div></div>
+        <div class="row-item"><div class="dot dot-blue" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Clean Architecture</div></div>
+        <div class="row-item"><div class="dot dot-blue" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">SRS engine</div></div>
+        <div class="row-item" style="border:none;"><div class="dot dot-blue" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Railway / Render</div></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <i class="ti ti-arrows-exchange" style="font-size:14px;color:var(--color-text-tertiary);" aria-hidden="true"></i>
+        <div style="font-size:9px;color:var(--color-text-tertiary);">REST</div>
+      </div>
+
+      <!-- Database -->
+      <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <i class="ti ti-database" style="font-size:14px;color:#854F0B;" aria-hidden="true"></i>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Supabase</div>
+        </div>
+        <div class="row-item"><div class="dot dot-amber" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">PostgreSQL</div></div>
+        <div class="row-item"><div class="dot dot-amber" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Realtime sync</div></div>
+        <div class="row-item"><div class="dot dot-amber" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">File storage</div></div>
+        <div class="row-item" style="border:none;"><div class="dot dot-amber" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Auto backup</div></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <i class="ti ti-arrows-exchange" style="font-size:14px;color:var(--color-text-tertiary);" aria-hidden="true"></i>
+        <div style="font-size:9px;color:var(--color-text-tertiary);">SDK</div>
+      </div>
+
+      <!-- AI -->
+      <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <i class="ti ti-brain" style="font-size:14px;color:#993C1D;" aria-hidden="true"></i>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">AI Services</div>
+        </div>
+        <div class="row-item"><div class="dot dot-coral" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">OpenAI GPT</div></div>
+        <div class="row-item"><div class="dot dot-coral" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Whisper STT</div></div>
+        <div class="row-item"><div class="dot dot-coral" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">TTS API</div></div>
+        <div class="row-item" style="border:none;"><div class="dot dot-coral" style="margin-top:4px;flex-shrink:0;"></div><div class="row-item-text" style="font-size:11px;">Pronunciation score</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 5: API + GAMIFICATION -->
+  <div class="grid-2" style="margin-bottom:1.5rem;">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#E6F1FB;"><i class="ti ti-api" style="color:#185FA5;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Key API endpoints</div></div>
+      </div>
+      <div class="api-row"><span class="method-tag get">GET</span><span class="api-path">/vocabularies</span><span class="api-desc">List vocab</span></div>
+      <div class="api-row"><span class="method-tag post">POST</span><span class="api-path">/vocabularies</span><span class="api-desc">Create</span></div>
+      <div class="api-row"><span class="method-tag put">PUT</span><span class="api-path">/vocabularies/:id</span><span class="api-desc">Update</span></div>
+      <div class="api-row"><span class="method-tag delete">DEL</span><span class="api-path">/vocabularies/:id</span><span class="api-desc">Delete</span></div>
+      <div class="api-row"><span class="method-tag get">GET</span><span class="api-path">/learning/schedule</span><span class="api-desc">Today's plan</span></div>
+      <div class="api-row"><span class="method-tag post">POST</span><span class="api-path">/learning/review</span><span class="api-desc">Submit result</span></div>
+      <div class="api-row"><span class="method-tag post">POST</span><span class="api-path">/conversation/start</span><span class="api-desc">AI session</span></div>
+      <div class="api-row"><span class="method-tag post">POST</span><span class="api-path">/speech-to-text</span><span class="api-desc">STT</span></div>
+      <div class="api-row"><span class="method-tag post">POST</span><span class="api-path">/pronunciation-score</span><span class="api-desc">Eval</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#FAEEDA;"><i class="ti ti-trophy" style="color:#854F0B;font-size:15px;" aria-hidden="true"></i></div>
+        <div><div class="card-title">Gamification system</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div class="stat-card">
+          <div class="stat-num" style="color:#58CC02;">🔥 7</div>
+          <div class="stat-lbl">Day streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#FFC800;">⭐ 480</div>
+          <div class="stat-lbl">XP points</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">42</div>
+          <div class="stat-lbl">Words learned</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#1CB0F6;">B1</div>
+          <div class="stat-lbl">Current level</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;">Achievements</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="chip chip-amber">🔥 7-day streak</span>
+        <span class="chip chip-green">📚 100 words</span>
+        <span class="chip chip-blue">💬 First convo</span>
+        <span class="chip chip-gray" style="opacity:.5;">🎤 Speaking master</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION 6: PERF + UX PRINCIPLES -->
+  <div class="section-label">5. Performance & UX principles</div>
+  <div class="grid-3">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-bolt" style="font-size:18px;color:#BA7517;" aria-hidden="true"></i>
+        <div class="card-title">Performance</div>
+      </div>
+      <div class="row-item"><div class="dot dot-amber" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Startup &lt; 3s</div></div></div>
+      <div class="row-item"><div class="dot dot-amber" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">API &lt; 500ms</div></div></div>
+      <div class="row-item"><div class="dot dot-amber" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">60fps animation</div></div></div>
+      <div class="row-item" style="border:none;"><div class="dot dot-amber" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Offline learning</div></div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-heart" style="font-size:18px;color:#D85A30;" aria-hidden="true"></i>
+        <div class="card-title">UX principles</div>
+      </div>
+      <div class="row-item"><div class="dot dot-coral" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Context-first learning</div></div></div>
+      <div class="row-item"><div class="dot dot-coral" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Micro-feedback on actions</div></div></div>
+      <div class="row-item"><div class="dot dot-coral" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Minimal cognitive load</div></div></div>
+      <div class="row-item" style="border:none;"><div class="dot dot-coral" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Dark mode support</div></div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-shield-check" style="font-size:18px;color:#185FA5;" aria-hidden="true"></i>
+        <div class="card-title">Security & scale</div>
+      </div>
+      <div class="row-item"><div class="dot dot-blue" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">HTTPS everywhere</div></div></div>
+      <div class="row-item"><div class="dot dot-blue" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Device ID sync</div></div></div>
+      <div class="row-item"><div class="dot dot-blue" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">99.5% uptime SLA</div></div></div>
+      <div class="row-item" style="border:none;"><div class="dot dot-blue" style="margin-top:5px;flex-shrink:0;"></div><div><div class="row-item-text" style="font-size:12px;">Modular architecture</div></div></div>
+    </div>
+  </div>
+
+</div>

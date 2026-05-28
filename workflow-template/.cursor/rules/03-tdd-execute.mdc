@@ -1,0 +1,11 @@
+---
+description: TDD — test trước, logic sau
+globs: src/**/*
+alwaysApply: false
+---
+
+> **File:** `.cursor/rules/03-tdd-execute.mdc` · **Role:** TDD — test Entity/UseCase trước logic  
+> **Related:** `docs/03_quality_assurance/testing_strategy.md`
+
+# TDD Execute
+Sinh `*.spec.ts` cho Entity/UseCase trước, chờ xác nhận, rồi mới viết logic pass test.

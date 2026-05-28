@@ -1,0 +1,11 @@
+---
+description: Ép sinh file .feature trước khi phân tích yêu cầu
+globs:
+alwaysApply: false
+---
+
+> **File:** `.cursor/rules/01-bdd-spec.mdc` · **Role:** Rule AI — sinh `.feature` trước code  
+> **Related:** `docs/01_specification/features/`, `src/fn*/01_requirement.md`, `process/00_file_manifest.md`, `12-src-feature-docs.mdc`
+
+# BDD Spec First
+Khi bắt đầu phân tích yêu cầu, sinh file `.feature` (Gherkin) trong `docs/01_specification/features/` trước khi viết code.

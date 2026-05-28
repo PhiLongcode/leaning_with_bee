@@ -1,0 +1,54 @@
+---
+description: SSOT tài liệu FN — 5 file markdown cùng module trong src/fn**/
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/12-src-feature-docs.mdc` · **Role:** Vị trí SSOT spec/dev plan/issue/lesson theo chức năng  
+> **Related:** `06-dev-plan-workflow.mdc`, `11-lesson-learn-gate.mdc`, `process/00_requirement_business.md`  
+> **Do-not:** Tạo hoặc duy trì bản song song trong `process/features/` (đã bỏ)
+
+# Tài liệu chức năng — trong `src/`
+
+## 1. Quy ước (bắt buộc)
+
+Mỗi chức năng (FN) là **một thư mục module** dưới `src/`:
+
+```text
+src/fn##_ten_chuc_nang/
+  01_requirement.md
+  02_dev_plan_checklist.md
+  03_debate.md
+  04_issue_log.md
+  05_lesson_learn.md
+  domain/          # (khi implement)
+  usecases/
+  adapters/
+  ...
+```
+
+| File | Vai trò |
+|------|---------|
+| `01_requirement.md` | SSOT yêu cầu FN (AC, user story) |
+| `02_dev_plan_checklist.md` | Dev plan + gate (rule `06`) |
+| `03_debate.md` | ADR / tranh luận kỹ thuật |
+| `04_issue_log.md` | ISS → GISS |
+| `05_lesson_learn.md` | Lesson learn FN (gate `11`) |
+
+**SSOT tổng REQ:** `process/00_requirement_business.md` — không duplicate bảng REQ dài trong `src/`.
+
+**BDD Gherkin:** vẫn `docs/01_specification/features/*.feature` (đọc từ `01_requirement.md`).
+
+**Global:** `process/00_global_lesson_learn.md`, `process/00_global_issue_log.md`.
+
+## 2. Map REQ → `src/`
+
+Theo [`process/00_requirement_business.md`](../process/00_requirement_business.md) §2 (`fn01_` … `fn11_`).
+
+## 3. Cấm
+
+- Scaffold `process/features/fn*/` cho instance mới.
+- Ghi lesson/issue chỉ trong `docs/` hoặc `process/features/` khi đã có module `src/fn**/`.
+
+## 4. Test
+
+`tests/fn**/` hoặc `src/fn**/*.spec.ts` — đầu vào AC: `src/fn**/01_requirement.md` + `.feature`.

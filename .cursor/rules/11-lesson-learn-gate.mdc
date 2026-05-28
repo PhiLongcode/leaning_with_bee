@@ -1,0 +1,89 @@
+---
+description: Đề xuất cập nhật lesson learn sau lỗi/kinh nghiệm — AskQuestion trước khi ghi file
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/11-lesson-learn-gate.mdc` · **Role:** Gate ghi `05_lesson_learn.md` (+ roll-up global) sau khi rút kinh nghiệm  
+> **Related:** `src/fn*/05_lesson_learn.md`, `process/00_global_lesson_learn.md`, `process/templates/issue_loop_template.md`, `12-src-feature-docs.mdc`, `05-prompt-history.mdc`  
+> **Do-not:** Tự ghi lesson khi chưa có xác nhận user; không thay `04_issue_log` / GISS
+
+# Lesson learn — đề xuất tự động + xác nhận trước khi ghi
+
+## 1. Khi nào **phải** đề xuất cập nhật (nháp → hỏi user)
+
+AI **phải** chạy quy trình §2–§3 khi trong phiên xảy ra **ít nhất một** điều kiện sau:
+
+| # | Trigger | Ví dụ |
+|---|---------|--------|
+| T1 | **Sửa lỗi** có root cause rõ (bug, test fail, 422 API, CI…) | Playwright thiếu body JSON; pytest-asyncio skipped |
+| T2 | **Đóng issue** (ISS) trong `04_issue_log.md` / bug workflow — mục «Tránh lặp lại» có nội dung | Sau verify fix |
+| T3 | **Hoàn thành FN** (`02_dev_plan_checklist` → Done) và có insight quy trình/kỹ thuật | Spike memory vs postgres |
+| T4 | User nói: `rút kinh nghiệm`, `lesson learn`, `ghi bài học`, `cập nhật lesson` | Chỉ bỏ gate nếu user nói rõ **ghi luôn không hỏi** (§5) |
+
+**Không** đề xuất lesson cho: typo thuần; đổi tên file; copy template rỗng; chat chung chưa có kinh nghiệm tái sử dụng.
+
+## 2. Phân vai (không trùng)
+
+| Nội dung | File |
+|----------|------|
+| Symptom, RCA, fix, verify | `src/<fn>/04_issue_log.md` (ISS) → GISS [`00_global_issue_log.md`](../../process/00_global_issue_log.md) |
+| **Bài học tái sử dụng** (làm tốt / cải thiện / anti-pattern) | `src/<fn>/05_lesson_learn.md` |
+| Insight **≥2 FN** hoặc quy trình repo | Thêm dòng trong `05` cột **Đề xuất Global** + sau xác nhận → [`00_global_lesson_learn.md`](../../process/00_global_lesson_learn.md) |
+
+## 3. Quy trình (2 giai đoạn — giống PRM gate)
+
+### Giai đoạn 1 — Nháp (chưa sửa file lesson)
+
+Trình bày ngắn trong chat:
+
+1. **FN / REQ** đích (vd. `fn02_quan_ly_tu_vung_ca_nhan`, REQ-02) — suy từ path `src/fn**/`, ngữ cảnh phiên.
+2. **Bản nháp** 1–3 dòng cho từng cột (hoặc bullet):
+   - **Đã làm tốt**
+   - **Cần cải thiện**
+   - **Đề xuất Global** (nếu có)
+3. **File sẽ sửa** (nếu user chọn Có):  
+   - `src/<fn>/05_lesson_learn.md` (bắt buộc)  
+   - `process/00_global_lesson_learn.md` (chỉ khi có mục Global trong nháp)
+
+### Xác nhận — bắt buộc (trước khi ghi file)
+
+**Không** kết thúc task debug/implement chỉ bằng câu «nên ghi lesson». Phải **hỏi user** một trong hai cách:
+
+1. **Trắc nghiệm (ưu tiên):** **AskQuestion** — đúng **2 lựa chọn**:
+   - *«Có — cập nhật `05_lesson_learn.md` (+ global nếu đã nháp)»*
+   - *«Không — bỏ qua lần này»*
+2. **Fallback:** *«Trả lời **Yes** để cập nhật lesson learn, **No** để bỏ qua (hoặc `hủy lesson`).»*
+
+**Yes / Có (được ghi):** `yes`, `có`, `xác nhận`, `ok lesson`, `ghi lesson`, `confirm` — **chỉ** khi là trả lời cho **lời mời gate vừa rồi**.
+
+**No / Không:** `no`, `không`, `bỏ qua`, `skip lesson`, `hủy lesson`, im lặng, hoặc chọn *Không — bỏ qua*.
+
+### Giai đoạn 2 — Ghi file (chỉ sau Yes / Có)
+
+1. **Append hoặc cập nhật** bảng trong `src/<fn>/05_lesson_learn.md` (không xóa bài học cũ trừ khi user yêu cầu).
+2. Thêm dòng **Ngày** (YYYY-MM-DD) hoặc bullet có ngày nếu file chưa có cột ngày.
+3. Nếu nháp có **Đề xuất Global** → thêm 1 dòng vào bảng phù hợp trong `00_global_lesson_learn.md` (tag FN, ngày).
+4. Báo user đường dẫn file đã cập nhật.
+
+## 4. Đồng bộ với dev plan & issue
+
+- Sau khi ghi `05_lesson_learn.md` trong phiên có sửa `src/` / test → vẫn chạy **`06-dev-plan-workflow.mdc` §5** (tick checklist nếu áp dụng).
+- Khi đóng ISS: điền lesson trong `04_issue_log` **và** nếu có insight tái sử dụng → chạy **gate lesson** (§3), không tự coi ISS = đủ lesson.
+
+## 5. Ngoại lệ
+
+| Trường hợp | Hành động |
+|------------|-----------|
+| User: `ghi lesson luôn`, `cập nhật lesson không hỏi`, `bỏ qua gate lesson` | Ghi thẳng theo nháp (vẫn nêu nội dung đã ghi) |
+| User: `không ghi lesson`, `no lesson` | Không hỏi, không ghi |
+| Chỉ đọc / tư vấn, chưa fix lỗi | Không gate |
+
+## 6. Mẫu bảng instance (`05_lesson_learn.md`)
+
+```markdown
+| Đã làm tốt | Cần cải thiện | Đề xuất Global |
+|------------|---------------|----------------|
+| … | … | … |
+```
+
+Có thể thêm hàng mới theo thời gian; mỗi hàng ghi chú `(YYYY-MM-DD)` trong ô nếu cần trace.

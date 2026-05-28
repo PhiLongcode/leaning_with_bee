@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Học cùng Bee",
+    "slug": "hoc-cung-bee",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "hoccungbee",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hoccungbee.app"
+    },
+    "android": {
+      "package": "com.hoccungbee.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#EAF3DE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+  }
+}
