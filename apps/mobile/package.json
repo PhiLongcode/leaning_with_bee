@@ -26,12 +26,12 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "node scripts/use-env.js development && expo start",
-    "start:dev": "node scripts/use-env.js development && expo start",
+    "start": "node ../../scripts/db-sync.js --auto && node scripts/use-env.js development && expo start",
+    "start:dev": "node ../../scripts/db-sync.js --auto && node scripts/use-env.js development && expo start",
     "start:prod": "node scripts/use-env.js production && expo start",
-    "android": "node scripts/use-env.js development && expo start --android",
-    "ios": "node scripts/use-env.js development && expo start --ios",
-    "web": "node scripts/use-env.js development && expo start --web",
+    "android": "node ../../scripts/db-sync.js --auto && node scripts/use-env.js development && expo start --android",
+    "ios": "node ../../scripts/db-sync.js --auto && node scripts/use-env.js development && expo start --ios",
+    "web": "node ../../scripts/db-sync.js --auto && node scripts/use-env.js development && expo start --web",
     "typecheck": "tsc --noEmit",
     "build:web": "node scripts/use-env.js development && expo export --platform web",
     "build:web:prod": "node scripts/use-env.js production && expo export --platform web",

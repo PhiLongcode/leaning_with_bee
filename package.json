@@ -10,11 +10,16 @@
     "install:mobile": "npm install --prefix apps/mobile",
     "db:push": "npx supabase db push",
     "db:push:api": "node scripts/db-push-api.js",
+    "db:sync": "node scripts/compose-apply-all.js && node scripts/db-sync.js",
+    "db:sync:force": "node scripts/compose-apply-all.js && node scripts/db-sync.js --force",
+    "db:compose": "node scripts/compose-apply-all.js",
+    "vocab:gen": "node scripts/gen-daily-vocab-ts.js",
     "db:reset:local": "npx supabase db reset",
     "db:start": "npx supabase start",
     "db:stop": "npx supabase stop"
   },
   "devDependencies": {
+    "pg": "^8.21.0",
     "supabase": "^2.101.0"
   }
 }

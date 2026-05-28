@@ -10,6 +10,7 @@ import { Chip } from '../components/ui/Chip';
 import { FeatureRow } from '../components/ui/FeatureRow';
 import { QUICK_LINK_ICON } from '../components/ui/icons';
 import { SectionHeader } from '../components/ui/SectionHeader';
+import { LEARNING_DAYS } from '@hoc-cung-bee/features';
 import { FEATURES, QUICK_LINK_SCREENS } from '../navigation/screens';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
@@ -33,8 +34,13 @@ export function HomeScreen() {
   const { colors, brand, tokens, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const deviceId = useAppStore((s) => s.deviceId);
+  const streak = useAppStore((s) => s.streak);
+  const xp = useAppStore((s) => s.xp);
   const dbConnection = useAppStore((s) => s.dbConnection);
+  const lessonDay = useAppStore((s) => s.lessonDay);
+  const setLessonDay = useAppStore((s) => s.setLessonDay);
   const setScreen = useAppStore((s) => s.setScreen);
+  const activeDay = LEARNING_DAYS.find((d) => d.dayNumber === lessonDay) ?? LEARNING_DAYS[0];
 
   const gradientColors = isDark
     ? (['#2D4A1A', '#1C1F1A'] as const)
@@ -54,7 +60,8 @@ export function HomeScreen() {
           </Text>
         </View>
         <View style={styles.headerRight}>
-          <Chip label="0" icon="streak" tone="xp" />
+          <Chip label={String(streak)} icon="streak" tone="xp" />
+          <Chip label={`${xp} XP`} icon="xp" tone="info" />
           <Chip label={dbStatusShort(dbConnection.status)} tone={dbStatusTone(dbConnection.status)} />
           <Pressable
             onPress={() => setScreen('settings')}
@@ -66,7 +73,60 @@ export function HomeScreen() {
         </View>
       </View>
 
-      <Pressable onPress={() => setScreen('fn01_vocabulary')} style={styles.heroWrap}>
+      <SectionHeader title="Lộ trình 7 ngày" />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.dayRow}
+        style={styles.dayScroll}
+      >
+        {LEARNING_DAYS.map((d) => {
+          const active = d.dayNumber === lessonDay;
+          return (
+            <Pressable
+              key={d.dayNumber}
+              onPress={() => setLessonDay(d.dayNumber)}
+              style={[
+                styles.dayPill,
+                {
+                  backgroundColor: active ? colors.surface.success : colors.background.elevated,
+                  borderColor: active ? colors.surface.successText : colors.border.tertiary,
+                },
+                !isDark && !active && tokens.shadow.card,
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: '700',
+                  color: active ? colors.surface.successText : colors.text.tertiary,
+                }}
+              >
+                {d.title}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '600',
+                  color: active ? colors.text.primary : colors.text.secondary,
+                  marginTop: 2,
+                }}
+                numberOfLines={1}
+              >
+                {d.subtitle}
+              </Text>
+              <Text style={{ fontSize: 10, color: colors.text.tertiary, marginTop: 4 }}>
+                {d.wordCount} từ
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <Pressable
+        onPress={() => setScreen('fn01_vocabulary')}
+        style={styles.heroWrap}
+      >
         <LinearGradient
           colors={gradientColors}
           start={{ x: 0, y: 0 }}
@@ -79,9 +139,13 @@ export function HomeScreen() {
             </View>
             <BeeLogo size="md" />
           </View>
-          <Text style={styles.heroTitle}>10 từ vựng theo ngữ cảnh</Text>
+          <Text style={styles.heroTitle}>
+            {activeDay?.subtitle ?? 'Workplace English'}
+          </Text>
           <View style={styles.heroSubRow}>
-            <Text style={styles.heroSub}>Workplace English · Bắt đầu ngay</Text>
+            <Text style={styles.heroSub}>
+              {activeDay?.title ?? 'Ngày 1'} · 10 từ vựng ngữ cảnh →
+            </Text>
             <AppIcon name="chevronRight" size={12} color="rgba(255,255,255,0.9)" />
           </View>
         </LinearGradient>
@@ -138,7 +202,7 @@ export function HomeScreen() {
             icon="module"
             title={f.title}
             subtitle={f.req}
-            badge={f.screen === 'fn01_vocabulary' ? 'LIVE' : 'SOON'}
+            badge="LIVE"
             onPress={() => setScreen(f.screen)}
             last={i === FEATURES.length - 1}
           />
@@ -171,6 +235,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  dayScroll: { marginBottom: 12, marginHorizontal: -20 },
+  dayRow: { paddingHorizontal: 20, gap: 10, paddingBottom: 4 },
+  dayPill: {
+    width: 120,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
   },
   heroWrap: { marginBottom: 16, borderRadius: 20, overflow: 'hidden' },
   hero: { padding: 20, borderRadius: 20, minHeight: 140 },

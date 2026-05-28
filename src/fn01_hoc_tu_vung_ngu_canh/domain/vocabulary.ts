@@ -8,6 +8,9 @@ export type Vocabulary = {
   example: string;
   topic: string;
   difficultyLevel: number;
+  /** Ngày trong lộ trình 7 ngày (1–7) */
+  lessonDay?: number;
+  lessonOrder?: number;
 };
 
 /** REQ-01: mỗi từ bắt buộc có context + example + topic. */

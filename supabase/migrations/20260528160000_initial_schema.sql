@@ -110,31 +110,41 @@ as $$
 $$;
 
 -- Profiles: own row only
+drop policy if exists profiles_select_own on public.profiles;
 create policy profiles_select_own on public.profiles for select using (auth.uid() = id);
+drop policy if exists profiles_insert_own on public.profiles;
 create policy profiles_insert_own on public.profiles for insert with check (auth.uid() = id);
+drop policy if exists profiles_update_own on public.profiles;
 create policy profiles_update_own on public.profiles for update using (auth.uid() = id);
 
 -- Vocabulary: read all (catalog); insert/update via authenticated (MVP)
+drop policy if exists vocabulary_select_all on public.vocabulary;
 create policy vocabulary_select_all on public.vocabulary for select to authenticated using (true);
+drop policy if exists vocabulary_insert_auth on public.vocabulary;
 create policy vocabulary_insert_auth on public.vocabulary for insert to authenticated with check (true);
 
 -- User-scoped tables
+drop policy if exists user_vocabulary_device on public.user_vocabulary;
 create policy user_vocabulary_device on public.user_vocabulary for all to authenticated
   using (device_id = public.current_device_id())
   with check (device_id = public.current_device_id());
 
+drop policy if exists user_sentences_device on public.user_sentences;
 create policy user_sentences_device on public.user_sentences for all to authenticated
   using (device_id = public.current_device_id())
   with check (device_id = public.current_device_id());
 
+drop policy if exists learning_progress_device on public.learning_progress;
 create policy learning_progress_device on public.learning_progress for all to authenticated
   using (device_id = public.current_device_id())
   with check (device_id = public.current_device_id());
 
+drop policy if exists learning_collections_device on public.learning_collections;
 create policy learning_collections_device on public.learning_collections for all to authenticated
   using (device_id = public.current_device_id())
   with check (device_id = public.current_device_id());
 
+drop policy if exists collection_items_via_collection on public.collection_items;
 create policy collection_items_via_collection on public.collection_items for all to authenticated
   using (
     exists (
@@ -143,8 +153,10 @@ create policy collection_items_via_collection on public.collection_items for all
     )
   );
 
+drop policy if exists conversation_scenarios_read on public.conversation_scenarios;
 create policy conversation_scenarios_read on public.conversation_scenarios for select to authenticated using (true);
 
+drop policy if exists conversation_logs_device on public.conversation_logs;
 create policy conversation_logs_device on public.conversation_logs for all to authenticated
   using (device_id = public.current_device_id())
   with check (device_id = public.current_device_id());

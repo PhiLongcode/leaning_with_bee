@@ -5,6 +5,8 @@ import { isSupabaseConfigured } from './config/env';
 import { getOrCreateDeviceId } from './lib/deviceId';
 import { ensureProfile } from './lib/ensureProfile';
 import { refreshDatabaseStatus } from './lib/refreshDatabaseStatus';
+import { getDashboardStats } from '@hoc-cung-bee/features';
+import { getDashboardRepository } from './lib/featureRepos';
 import { supabase } from './lib/supabase';
 import { AppNavigator } from './navigation/AppNavigator';
 import { useAppStore } from './store/appStore';
@@ -12,6 +14,7 @@ import { ThemeProvider, useTheme } from './theme/ThemeContext';
 
 function AppContent() {
   const setDeviceId = useAppStore((s) => s.setDeviceId);
+  const applyGamification = useAppStore((s) => s.applyGamification);
   const { isDark, colors } = useTheme();
 
   useEffect(() => {
@@ -29,8 +32,10 @@ function AppContent() {
         }
       }
       await refreshDatabaseStatus();
+      const dash = await getDashboardStats(getDashboardRepository(), deviceId);
+      if (dash.ok) applyGamification({ streak: dash.value.streak, xp: dash.value.xp });
     })();
-  }, [setDeviceId]);
+  }, [setDeviceId, applyGamification]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.primary }}>

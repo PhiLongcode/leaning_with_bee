@@ -1,30 +1,39 @@
+import type { ComponentType } from 'react';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SplashScreen } from '../screens/SplashScreen';
-import { FeatureStubScreen } from '../features/FeatureStubScreen';
+import { UserVocabularyScreen } from '../features/fn02/UserVocabularyScreen';
+import { SentencesScreen } from '../features/fn03/SentencesScreen';
+import { CollectionScreen } from '../features/fn04/CollectionScreen';
+import { SpacedRepetitionScreen } from '../features/fn05/SpacedRepetitionScreen';
+import { ContextReviewScreen } from '../features/fn06/ContextReviewScreen';
+import { AiChatScreen } from '../features/fn07/AiChatScreen';
+import { SpeakingScreen } from '../features/fn08/SpeakingScreen';
+import { DashboardScreen } from '../features/fn10/DashboardScreen';
+import { NotificationsScreen } from '../features/fn11/NotificationsScreen';
 import { VocabularyLearningScreen } from '../features/fn01/VocabularyLearningScreen';
-import { FEATURES } from './screens';
 import { useAppStore } from '../store/appStore';
 import type { Screen } from './screens';
 
-function screenToMeta(screen: Screen) {
-  return FEATURES.find((f) => f.screen === screen);
-}
+const SCREEN_MAP: Partial<Record<Screen, ComponentType>> = {
+  splash: SplashScreen,
+  home: HomeScreen,
+  settings: SettingsScreen,
+  fn01_vocabulary: VocabularyLearningScreen,
+  fn02_vocab_manage: UserVocabularyScreen,
+  fn03_sentences: SentencesScreen,
+  fn04_collection: CollectionScreen,
+  fn05_spaced_repetition: SpacedRepetitionScreen,
+  fn06_context_review: ContextReviewScreen,
+  fn07_ai_chat: AiChatScreen,
+  fn08_speaking: SpeakingScreen,
+  fn09_pronunciation: SpeakingScreen,
+  fn10_dashboard: DashboardScreen,
+  fn11_notifications: NotificationsScreen,
+};
 
 export function AppNavigator() {
   const screen = useAppStore((s) => s.screen);
-
-  if (screen === 'splash') return <SplashScreen />;
-  if (screen === 'home') return <HomeScreen />;
-  if (screen === 'settings') return <SettingsScreen />;
-  if (screen === 'fn01_vocabulary') return <VocabularyLearningScreen />;
-
-  const meta = screenToMeta(screen);
-  if (meta) {
-    return (
-      <FeatureStubScreen title={meta.title} req={meta.req} description={meta.description} />
-    );
-  }
-
-  return <HomeScreen />;
+  const Component = SCREEN_MAP[screen] ?? HomeScreen;
+  return <Component />;
 }

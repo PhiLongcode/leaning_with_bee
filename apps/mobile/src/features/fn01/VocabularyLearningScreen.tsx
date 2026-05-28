@@ -1,18 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Speech from 'expo-speech';
-import { getVocabularyLesson, type Vocabulary } from '@hoc-cung-bee/features';
+import { getVocabularyLesson, LEARNING_DAYS, type Vocabulary } from '@hoc-cung-bee/features';
 import { FeatureShell } from '../../components/FeatureShell';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Card } from '../../components/ui/Card';
 import { Chip } from '../../components/ui/Chip';
+import { addVocabularyToMyList } from '@hoc-cung-bee/features';
+import { useDeviceId } from '../../hooks/useDeviceId';
+import { getUserVocabularyRepository } from '../../lib/featureRepos';
+import { awardXp } from '../../lib/gamification';
 import { getVocabularyRepository } from '../../lib/vocabularyRepo';
+import { useAppStore } from '../../store/appStore';
 import { useTheme } from '../../theme/ThemeContext';
 import { brand } from '../../theme/colors';
 
 export function VocabularyLearningScreen() {
   const { colors, brand: themeBrand, tokens } = useTheme();
+  const deviceId = useDeviceId();
+  const lessonDay = useAppStore((s) => s.lessonDay);
+  const dayMeta = LEARNING_DAYS.find((d) => d.dayNumber === lessonDay);
   const [items, setItems] = useState<Vocabulary[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -21,7 +29,7 @@ export function VocabularyLearningScreen() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const result = await getVocabularyLesson(getVocabularyRepository(), 10);
+      const result = await getVocabularyLesson(getVocabularyRepository(), lessonDay, 10);
       if (!result.ok) {
         setError(result.error);
         setItems([]);
@@ -31,7 +39,7 @@ export function VocabularyLearningScreen() {
       }
       setLoading(false);
     })();
-  }, []);
+  }, [lessonDay]);
 
   const current = items[index];
   const progress = items.length > 0 ? (index + 1) / items.length : 0;
@@ -44,7 +52,10 @@ export function VocabularyLearningScreen() {
 
   if (loading) {
     return (
-      <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
+      <FeatureShell
+        title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng ngữ cảnh'}
+        req="REQ-01"
+      >
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={themeBrand.primary} />
           <Text style={{ color: colors.text.secondary, marginTop: 12 }}>Đang tải bài học…</Text>
@@ -66,7 +77,10 @@ export function VocabularyLearningScreen() {
   }
 
   return (
-    <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
+    <FeatureShell
+      title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng ngữ cảnh'}
+      req={`REQ-01 · ${items.length} từ`}
+    >
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.progressWrap}>
           <View style={[styles.progressTrack, { backgroundColor: colors.border.tertiary }]}>
@@ -115,6 +129,13 @@ export function VocabularyLearningScreen() {
           <Text style={[tokens.typography.body, { color: colors.text.primary }]}>{current.example}</Text>
         </Card>
 
+        <PrimaryButton
+          label="Thêm vào sổ của tôi"
+          variant="secondary"
+          onPress={() => void addVocabularyToMyList(getUserVocabularyRepository(), deviceId, current.id)}
+          style={{ marginBottom: 12 }}
+        />
+
         <View style={styles.nav}>
           <PrimaryButton
             label="Trước"
@@ -125,7 +146,10 @@ export function VocabularyLearningScreen() {
           />
           <PrimaryButton
             label="Tiếp"
-            onPress={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
+            onPress={() => {
+              void awardXp(deviceId, 5);
+              setIndex((i) => Math.min(items.length - 1, i + 1));
+            }}
             disabled={index >= items.length - 1}
             style={styles.navBtn}
           />
