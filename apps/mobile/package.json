@@ -37,7 +37,10 @@
     "build:web:prod": "node scripts/use-env.js production && expo export --platform web",
     "version:bump": "node scripts/bump-version.js patch",
     "version:bump:minor": "node scripts/bump-version.js minor",
-    "version:bump:major": "node scripts/bump-version.js major"
+    "version:bump:major": "node scripts/bump-version.js major",
+    "build:apk": "node scripts/build-apk.js development",
+    "build:apk:prod": "node scripts/build-apk.js production",
+    "prebuild:android": "node scripts/use-env.js development && npx expo prebuild --platform android"
   },
   "private": true
 }

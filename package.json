@@ -8,6 +8,7 @@
     "mobile:typecheck": "npm run typecheck --prefix apps/mobile",
     "mobile:build:web": "npm run build:web --prefix apps/mobile",
     "install:mobile": "npm install --prefix apps/mobile",
+    "mobile:build:apk": "npm run build:apk --prefix apps/mobile",
     "db:push": "npx supabase db push",
     "db:push:api": "node scripts/db-push-api.js",
     "db:sync": "node scripts/compose-apply-all.js && node scripts/db-sync.js",
