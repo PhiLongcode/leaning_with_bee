@@ -22,4 +22,5 @@ apps/mobile/src/modules/
 .DS_Store
 Thumbs.db
 *.log
+tests/target/
 .supabase/.branches

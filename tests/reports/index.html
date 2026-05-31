@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>Học cùng Bee — Báo cáo test BDD</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; max-width: 52rem; line-height: 1.5; }
+    h1 { color: #1e8449; }
+    a { color: #1565c0; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+    code { background: #f4f4f4; padding: 0.15rem 0.35rem; border-radius: 4px; }
+    ul { padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <h1>Báo cáo test — Học cùng Bee</h1>
+  <p>Cập nhật: <strong>2026-05-31 09:25:17</strong></p>
+  <div class="card">
+    <h2>Cucumber (scenario chi tiết)</h2>
+    <p>Mở file HTML do Cucumber sinh sau mỗi lần chạy BDD:</p>
+    <p><a href="cucumber-report.html">cucumber-report.html</a> — domain 12 scenario (fn01, fn02, fn17)</p>
+    <p>Để gồm UI + perf: <code>npm run test:all</code> trong thư mục <code>tests/</code> (ghi đè file trên).</p>
+  </div>
+  <div class="card">
+    <h2>Serenity BDD dashboard (donut chart)</h2>
+    <p>Chưa có <code>reports/serenity/index.html</code> cho đến khi JSON được lưu vào <code>tests/target/site/serenity</code>.</p>
+    <p>Thử (cần Java): <code>npm run test:bdd:report</code> từ repo root.</p>
+    <p><em>Không</em> dùng file demo «Release: Iteration-1 / frequent flyer» — không thuộc dự án này.</p>
+  </div>
+  <div class="card">
+    <h2>Ma trận FN (SSOT)</h2>
+    <p><a href="../../process/00_global_test_report.md">process/00_global_test_report.md</a></p>
+  </div>
+  <div class="card">
+    <h2>Lệnh tái tạo (repo root)</h2>
+    <ul>
+      <li><code>npm run test:verify</code> — unit + BDD domain</li>
+      <li><code>npm run test:bdd:fn01:ui</code> — UI Playwright (3 scenario)</li>
+      <li><code>npm run test:bdd:report</code> — BDD + Serenity aggregate (nếu Java + JSON OK)</li>
+      <li><code>npm run test:report:full</code> — unit + BDD + refresh script</li>
+    </ul>
+  </div>
+</body>
+</html>

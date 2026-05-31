@@ -129,7 +129,7 @@ export function UserVocabularyScreen() {
               {items.map((item) => (
                 <VocabListItem
                   key={item.id}
-                  word={item.vocabulary?.word ?? item.vocabId}
+                  word={item.vocabulary?.word ?? '—'}
                   meaning={item.vocabulary?.meaning ?? ''}
                   partOfSpeech={item.vocabulary?.partOfSpeech}
                   onSave={() =>

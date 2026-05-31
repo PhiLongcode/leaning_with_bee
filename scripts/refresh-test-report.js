@@ -18,7 +18,7 @@ let failed = false;
 
 if (run('npm', ['run', 'test:unit']) !== 0) failed = true;
 
-if (run('npm', ['run', 'test'], path.join(ROOT, 'tests')) !== 0) failed = true;
+if (run('npm', ['run', 'test:domain:report'], path.join(ROOT, 'tests')) !== 0) failed = true;
 
 if (ARGS.includes('--ui')) {
   if (run('npm', ['run', 'test:bdd:fn01:ui']) !== 0) failed = true;
@@ -30,6 +30,7 @@ if (ARGS.includes('--perf')) {
 
 console.log('\n[refresh-test-report] Báo cáo:');
 console.log('  - process/00_global_test_report.md');
-console.log('  - tests/reports/cucumber-report.html\n');
+console.log('  - tests/reports/cucumber-report.html');
+console.log('  - tests/reports/serenity/index.html (Serenity BDD dashboard)\n');
 
 process.exit(failed ? 1 : 0);

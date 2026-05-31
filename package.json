@@ -34,6 +34,10 @@
     "test:verify:ui": "npm run test:bdd:fn01:ui",
     "test:report": "node scripts/refresh-test-report.js",
     "test:report:full": "node scripts/refresh-test-report.js --ui --perf",
+    "test:bdd:report": "npm run test:domain:report --prefix tests",
+    "test:bdd:living": "node tests/scripts/build-living-report.mjs",
+    "test:bdd:report:all": "npm run test:all:report --prefix tests",
+    "test:verify:report": "npm run test:verify && npm run test:bdd:report",
     "ai:deploy": "npx supabase functions deploy vocab-enrich && npx supabase functions deploy ai-conversation && npx supabase functions deploy speech-practice"
   },
   "devDependencies": {

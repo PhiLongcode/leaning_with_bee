@@ -30,6 +30,71 @@ function mapRow(row: Record<string, unknown>, vocabulary?: Vocabulary): UserVoca
   };
 }
 
+const VOCAB_SELECT =
+  'id, word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level, dialogue, explanation_native';
+
+function mapVocabularyRow(row: Record<string, unknown>): Vocabulary {
+  return {
+    id: String(row.id),
+    word: String(row.word),
+    meaning: String(row.meaning ?? ''),
+    pronunciation: row.pronunciation != null ? String(row.pronunciation) : null,
+    partOfSpeech: row.part_of_speech != null ? String(row.part_of_speech) : null,
+    context: String(row.context ?? ''),
+    example: String(row.example ?? ''),
+    topic: String(row.topic ?? ''),
+    difficultyLevel: Number(row.difficulty_level ?? 1),
+    dialogue: (row.dialogue as Vocabulary['dialogue']) ?? null,
+    explanationNative: (row.explanation_native ?? row.explanationNative) as Vocabulary['explanationNative'],
+  };
+}
+
+function vocabularyFromEmbed(row: Record<string, unknown>): Vocabulary | undefined {
+  const embedded = row.vocabulary;
+  if (embedded && typeof embedded === 'object' && !Array.isArray(embedded)) {
+    return mapVocabularyRow(embedded as Record<string, unknown>);
+  }
+  return undefined;
+}
+
+async function loadVocabularyByIds(
+  client: SupabaseLikeClient,
+  ids: string[],
+): Promise<Map<string, Vocabulary>> {
+  const map = new Map<string, Vocabulary>();
+  const uuidIds = [...new Set(ids.filter((id) => !vocabById(id)))];
+  if (!uuidIds.length) return map;
+
+  const { data, error } = await fromTable(client, 'vocabulary')
+    .select(VOCAB_SELECT)
+    .in('id', uuidIds)
+    .limit(uuidIds.length);
+
+  if (error || !data) return map;
+  for (const row of data as Record<string, unknown>[]) {
+    map.set(String(row.id), mapVocabularyRow(row));
+  }
+  return map;
+}
+
+function resolveVocabulary(
+  row: Record<string, unknown>,
+  byId: Map<string, Vocabulary>,
+): Vocabulary | undefined {
+  return vocabularyFromEmbed(row) ?? byId.get(String(row.vocab_id ?? row.vocabId)) ?? vocabById(String(row.vocab_id ?? row.vocabId));
+}
+
+async function mapUserVocabularyRows(
+  client: SupabaseLikeClient,
+  rows: Record<string, unknown>[],
+): Promise<UserVocabulary[]> {
+  const byId = await loadVocabularyByIds(
+    client,
+    rows.map((r) => String(r.vocab_id ?? r.vocabId)),
+  );
+  return rows.map((r) => mapRow(r, resolveVocabulary(r, byId)));
+}
+
 export function createMockUserVocabularyRepository(): UserVocabularyRepository {
   return {
     async list(deviceId) {
@@ -79,14 +144,23 @@ export function createSupabaseUserVocabularyRepository(
   const mock = createMockUserVocabularyRepository();
   return {
     async list(deviceId) {
-      const { data, error } = await fromTable(client, 'user_vocabulary')
-        .select('id, device_id, vocab_id, is_favorite, is_difficult')
+      const embedSelect = `id, device_id, vocab_id, is_favorite, is_difficult, vocabulary:vocab_id (${VOCAB_SELECT})`;
+      let result = await fromTable(client, 'user_vocabulary')
+        .select(embedSelect)
         .eq('device_id', deviceId)
         .limit(200);
-      if (error) return mock.list(deviceId);
-      const rows = (data ?? []) as Record<string, unknown>[];
+
+      if (result.error) {
+        result = await fromTable(client, 'user_vocabulary')
+          .select('id, device_id, vocab_id, is_favorite, is_difficult')
+          .eq('device_id', deviceId)
+          .limit(200);
+      }
+
+      if (result.error) return mock.list(deviceId);
+      const rows = (result.data ?? []) as Record<string, unknown>[];
       if (!rows.length) return mock.list(deviceId);
-      return ok(rows.map((r) => mapRow(r, vocabById(String(r.vocab_id)))));
+      return ok(await mapUserVocabularyRows(client, rows));
     },
     async add(deviceId, vocabId) {
       let resolvedId = vocabId;
@@ -108,7 +182,8 @@ export function createSupabaseUserVocabularyRepository(
         .select('id, device_id, vocab_id, is_favorite, is_difficult')
         .single();
       if (error) return mock.add(deviceId, vocabId);
-      return ok(mapRow(data!, vocabById(resolvedId)));
+      const [mapped] = await mapUserVocabularyRows(client, [data! as Record<string, unknown>]);
+      return ok(mapped!);
     },
     async setFavorite(id, value) {
       if (isInvalidUuid(id)) return mock.setFavorite(id, value);
@@ -118,7 +193,8 @@ export function createSupabaseUserVocabularyRepository(
         .select('id, device_id, vocab_id, is_favorite, is_difficult')
         .single();
       if (error) return mock.setFavorite(id, value);
-      return ok(mapRow(data!, vocabById(String(data!.vocab_id))));
+      const [mapped] = await mapUserVocabularyRows(client, [data as Record<string, unknown>]);
+      return ok(mapped!);
     },
     async setDifficult(id, value) {
       if (isInvalidUuid(id)) return mock.setDifficult(id, value);
@@ -128,7 +204,8 @@ export function createSupabaseUserVocabularyRepository(
         .select('id, device_id, vocab_id, is_favorite, is_difficult')
         .single();
       if (error) return mock.setDifficult(id, value);
-      return ok(mapRow(data!, vocabById(String(data!.vocab_id))));
+      const [mapped] = await mapUserVocabularyRows(client, [data as Record<string, unknown>]);
+      return ok(mapped!);
     },
     async remove(id) {
       if (isInvalidUuid(id)) return mock.remove(id);

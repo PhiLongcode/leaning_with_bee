@@ -4,7 +4,9 @@
 # 00_global_test_report — Báo cáo test đầy đủ theo FN
 
 > **Cập nhật lần chạy:** 2026-05-31 — ma trận §2 **Done** (unit + BDD + UI + API P0/P1)  
-> **Báo cáo Cucumber HTML:** [`tests/reports/cucumber-report.html`](../tests/reports/cucumber-report.html)  
+> **Trang mở báo cáo:** [`tests/reports/index.html`](../tests/reports/index.html)  
+> **Cucumber chi tiết:** [`tests/reports/cucumber-report.html`](../tests/reports/cucumber-report.html)  
+> **Serenity dashboard:** [`tests/reports/serenity/index.html`](../tests/reports/serenity/index.html) (sau `npm run test:bdd:report` + Java)  
 > **Integration:** [`tests/integration/README.md`](../tests/integration/README.md)
 
 ---
@@ -139,14 +141,16 @@ Env: `TEST_SUPABASE_*` hoặc `EXPO_PUBLIC_*` từ `apps/mobile/.env.development
 ## 6. Lệnh tái tạo
 
 ```bash
-npm run test:unit          # 49 tests
-npm run test:verify        # unit + BDD fn01, fn02, fn17
-npm run test:api             # Supabase (skip nếu thiếu env)
-npm run test:api:full        # verify + api
-npm run test:bdd:fn01:ui     # UI FN01 (build web + Playwright)
-npm run test:verify:ui       # gate UI
-npm run test:perf            # k6 fn17
+npm run test:unit          # 49 tests Vitest
+npm run test:verify        # unit + BDD domain 12 scenario
+npm run test:bdd:living    # chạy BDD + tạo tests/reports/index.html
+npm run test:bdd:report    # BDD + Serenity HTML (cần Java; JSON → target/site/serenity)
+npm run test:bdd:fn01:ui   # UI 3 scenario (Expo web)
+npm run test:api           # integration 15 (Supabase)
+npm run test:perf          # k6 fn17
 ```
+
+**Mở báo cáo:** file `tests/reports/index.html` trong trình duyệt (không phải demo Serenity «frequent flyer»).
 
 ---
 

@@ -25,7 +25,7 @@ export function VocabListItem({ word, meaning, partOfSpeech, onPress, onSave }: 
         <AppIcon name="vocabulary" size={16} color={brand.primary} />
       </View>
       <View style={styles.center}>
-        <Text style={[tokens.typography.heading3, { color: brand.primary }]}>{word}</Text>
+        <Text style={[tokens.typography.heading3, { color: colors.text.primary }]}>{word}</Text>
         <Text style={[tokens.typography.caption, { color: colors.text.secondary, marginTop: 2 }]}>
           {partOfSpeech ? `${partOfSpeech} · ` : ''}
           {meaning}
