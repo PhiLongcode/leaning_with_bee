@@ -18,6 +18,15 @@ export default (): ExpoConfig => ({
     ...appJson.expo.android,
     versionCode: versionInfo.androidVersionCode,
   },
+  plugins: [
+    [
+      'expo-notifications',
+      {
+        icon: './assets/icon.png',
+        color: '#5A8F29',
+      },
+    ],
+  ],
   extra: {
     appEnv,
     appVersion,

@@ -1,11 +1,27 @@
 import { DAILY_VOCABULARY_SEED } from '../../fn01_hoc_tu_vung_ngu_canh/data/dailyVocabularySeed';
+import type { Vocabulary } from '../../fn01_hoc_tu_vung_ngu_canh/domain/vocabulary';
 import { ok, type Result } from '../../shared/result';
 import type { ContextReviewQuestion } from '../domain/contextReview';
 
 export function buildContextReviewQuiz(limit = 5): Result<ContextReviewQuestion[]> {
-  const pool = DAILY_VOCABULARY_SEED.slice(0, limit);
+  return buildContextReviewQuizFromPool(DAILY_VOCABULARY_SEED.slice(0, limit), DAILY_VOCABULARY_SEED);
+}
+
+/** Quiz từ danh sách bài học vừa học (luồng FN-01 → FN-06). */
+export function buildContextReviewQuizFromLesson(
+  lessonWords: Vocabulary[],
+  limit = 5,
+): Result<ContextReviewQuestion[]> {
+  const pool = lessonWords.length > 0 ? lessonWords : DAILY_VOCABULARY_SEED.slice(0, limit);
+  return buildContextReviewQuizFromPool(pool.slice(0, limit), DAILY_VOCABULARY_SEED);
+}
+
+function buildContextReviewQuizFromPool(
+  pool: Vocabulary[],
+  distractorPool: Vocabulary[],
+): Result<ContextReviewQuestion[]> {
   const questions: ContextReviewQuestion[] = pool.map((v, i) => {
-    const distractors = DAILY_VOCABULARY_SEED.filter((x) => x.id !== v.id)
+    const distractors = distractorPool.filter((x) => x.id !== v.id)
       .slice(0, 3)
       .map((x) => x.meaning);
     const choices = shuffle([v.meaning, ...distractors]);

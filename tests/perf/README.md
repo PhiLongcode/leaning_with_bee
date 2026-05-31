@@ -21,6 +21,12 @@ npm run test:bdd:perf
 - k6 summary JSON: `tests/reports/k6/vocab-enrich-smoke-summary.json`
 - Cucumber HTML: `tests/reports/cucumber-report.html`
 
+## SLA dev (FN-17 smoke)
+
+- Gherkin: **p95 &lt; 30s**, error rate **&lt; 5%** khi Edge gọi LLM thật (Anthropic/OpenAI gateway).
+- Có thể override: `PERF_P95_MS`, `PERF_VUS` (mặc định 2), `PERF_DURATION` (mặc định 30s).
+- Root `.env`: `EXPO_PUBLIC_SUPABASE_*` được map sang `PERF_*`; k6 `setup()` lấy JWT qua anonymous signup (publishable key không đủ cho Bearer Edge).
+
 ## Map BDD → k6
 
 | Gherkin | k6 |

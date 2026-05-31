@@ -8,7 +8,7 @@ import {
 import { env, isSupabaseConfigured } from '../config/env';
 import { getBrandConfigRepository } from './featureRepos';
 
-const CACHE_KEY = '@cuder/app_brand_config_v1';
+const CACHE_KEY = '@cuder/app_brand_config_v2';
 
 export type BrandRuntime = AppBrandConfig & {
   resolvedLogoUrl: string | null;

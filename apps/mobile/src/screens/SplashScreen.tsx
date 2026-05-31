@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -9,17 +8,14 @@ import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
 
 export function SplashScreen() {
-  const { colors, tokens, isDark } = useTheme();
+  const { colors, tokens, pageBg, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const setScreen = useAppStore((s) => s.setScreen);
   const brand = useBrandRuntime();
-
-  const bgColors = isDark
-    ? ([colors.background.primary, '#1A2E14'] as const)
-    : ([colors.background.primary, '#E8F5D6'] as const);
+  const bg = isDark ? colors.background.primary : pageBg;
 
   return (
-    <LinearGradient colors={bgColors} style={styles.root}>
+    <View style={[styles.root, { backgroundColor: bg }]}>
       <View style={[styles.inner, { paddingTop: insets.top + 48, paddingBottom: insets.bottom + 32 }]}>
         <View style={[styles.mascotRing, { backgroundColor: colors.background.elevated }, tokens.shadow.card]}>
           <CuderLogo size="hero" />
@@ -31,18 +27,20 @@ export function SplashScreen() {
         {brand.brandSubtitle ? (
           <Text style={[styles.subtitle, { color: colors.text.tertiary }]}>{brand.brandSubtitle}</Text>
         ) : null}
-        <Text style={[styles.tagline, { color: colors.text.secondary }]}>{brand.brandTagline}</Text>
+        <Text style={[tokens.typography.body, styles.tagline, { color: colors.text.secondary }]}>
+          {brand.brandTagline}
+        </Text>
 
         <View style={styles.pills}>
           <View style={[styles.pill, { backgroundColor: colors.surface.success }]}>
             <AppIcon name="vocabulary" size={14} color={colors.surface.successText} />
-            <Text style={{ color: colors.surface.successText, fontSize: 12, fontWeight: '600' }}>
+            <Text style={[tokens.typography.captionBold, { color: colors.surface.successText }]}>
               Ngữ cảnh thực tế
             </Text>
           </View>
           <View style={[styles.pill, { backgroundColor: colors.surface.info }]}>
             <AppIcon name="streak" size={14} color={colors.surface.infoText} />
-            <Text style={{ color: colors.surface.infoText, fontSize: 12, fontWeight: '600' }}>
+            <Text style={[tokens.typography.captionBold, { color: colors.surface.infoText }]}>
               Streak & XP
             </Text>
           </View>
@@ -56,7 +54,7 @@ export function SplashScreen() {
           {brand.brandName} · Workplace English
         </Text>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -78,7 +76,7 @@ const styles = StyleSheet.create({
   },
   title: { textAlign: 'center', marginBottom: 8 },
   subtitle: { fontSize: 12, fontWeight: '600', letterSpacing: 1, textAlign: 'center', marginBottom: 4 },
-  tagline: { fontSize: 16, textAlign: 'center', lineHeight: 24, marginBottom: 28 },
+  tagline: { textAlign: 'center', marginBottom: 28 },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 40 },
   pill: {
     flexDirection: 'row',

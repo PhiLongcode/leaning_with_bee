@@ -46,7 +46,6 @@ let userVocab: UserVocabularyRepository | null = null;
 let sentences: SentenceRepository | null = null;
 let collections: CollectionRepository | null = null;
 let progress: LearningProgressRepository | null = null;
-let conversation: ConversationRepository | null = null;
 let dashboard: DashboardRepository | null = null;
 let notifications: NotificationRepository | null = null;
 let brandConfig: BrandConfigRepository | null = null;
@@ -88,14 +87,17 @@ export function getLearningProgressRepository(): LearningProgressRepository {
   return progress;
 }
 
-export function getConversationRepository(): ConversationRepository {
-  if (!conversation) {
-    conversation = pick(
-      createMockConversationRepository(),
-      createSupabaseConversationRepository,
-    );
+export function getConversationRepository(deviceId: string): ConversationRepository {
+  if (!isSupabaseConfigured) {
+    return createMockConversationRepository();
   }
-  return conversation;
+  return createSupabaseConversationRepository(client(), async (body) => {
+    const { data, error } = await supabase.functions.invoke('ai-conversation', {
+      body,
+      headers: { 'X-Device-Id': deviceId },
+    });
+    return { data, error: error ?? null };
+  });
 }
 
 export function getDashboardRepository(): DashboardRepository {

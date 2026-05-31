@@ -13,6 +13,9 @@ const defaults = (deviceId: string): NotificationSettings => ({
   enabled: true,
   reminderHour: 9,
   reminderMinute: 0,
+  windowStartHour: 8,
+  windowEndHour: 20,
+  intervalHours: 3,
 });
 
 const mockStore = new Map<string, NotificationSettings>();
@@ -39,7 +42,9 @@ export function createSupabaseNotificationRepository(
     async getSettings(deviceId) {
       if (remoteUnavailable) return mock.getSettings(deviceId);
       const { data, error } = await fromTable(client, 'notification_settings')
-        .select('device_id, enabled, reminder_hour, reminder_minute')
+        .select(
+          'device_id, enabled, reminder_hour, reminder_minute, window_start_hour, window_end_hour, interval_hours',
+        )
         .eq('device_id', deviceId)
         .maybeSingle();
       if (error && isMissingTableError(error)) {
@@ -53,6 +58,9 @@ export function createSupabaseNotificationRepository(
         enabled: Boolean(row.enabled),
         reminderHour: Number(row.reminder_hour),
         reminderMinute: Number(row.reminder_minute),
+        windowStartHour: Number(row.window_start_hour ?? 8),
+        windowEndHour: Number(row.window_end_hour ?? 20),
+        intervalHours: Number(row.interval_hours ?? 3),
       });
     },
     async saveSettings(settings) {
@@ -63,6 +71,9 @@ export function createSupabaseNotificationRepository(
           enabled: settings.enabled,
           reminder_hour: settings.reminderHour,
           reminder_minute: settings.reminderMinute,
+          window_start_hour: settings.windowStartHour,
+          window_end_hour: settings.windowEndHour,
+          interval_hours: settings.intervalHours,
         })
         .select('device_id')
         .single();

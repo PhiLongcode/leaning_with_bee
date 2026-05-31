@@ -4,12 +4,12 @@
   "type": "module",
   "scripts": {
     "test": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"not @ui and not @perf\"",
-    "test:ui": "start-server-and-test \"npm run web:serve --prefix ../apps/mobile\" http://localhost:8081 \"tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags @ui\"",
+    "test:ui": "node scripts/run-ui-tests.mjs",
     "test:all": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
     "test:fn01": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-01 and not @ui\"",
     "test:fn17": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-17 and not @perf\"",
     "test:fn02": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-02 and not @ui\"",
-    "test:fn01:ui": "start-server-and-test \"npm run web:serve --prefix ../apps/mobile\" http://localhost:8081 \"tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \\\"@FN-01 and @ui\\\"\"",
+    "test:fn01:ui": "node scripts/run-ui-tests.mjs --suite fn01",
     "test:perf": "k6 run --summary-export reports/k6/vocab-enrich-smoke-summary.json perf/k6/vocab-enrich-smoke.js",
     "test:perf:bdd": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags @perf",
     "postinstall": "playwright install chromium"

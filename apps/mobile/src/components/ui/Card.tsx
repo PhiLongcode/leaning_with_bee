@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { AppPressable } from './AppPressable';
 import { useTheme } from '../../theme/ThemeContext';
 
 type Props = {
@@ -10,13 +11,13 @@ type Props = {
 };
 
 export function Card({ children, onPress, style, variant = 'elevated' }: Props) {
-  const { colors, tokens, isDark } = useTheme();
+  const { colors, tokens, isDark, cardBg } = useTheme();
 
   const bg =
     variant === 'outline'
       ? 'transparent'
       : variant === 'elevated'
-        ? colors.background.elevated
+        ? cardBg
         : colors.background.secondary;
 
   const baseStyle = [
@@ -24,7 +25,7 @@ export function Card({ children, onPress, style, variant = 'elevated' }: Props) 
     {
       backgroundColor: bg,
       borderColor: colors.border.tertiary,
-      borderWidth: variant === 'outline' ? 1 : 0,
+      borderWidth: variant === 'outline' || isDark ? 1 : 0,
     },
     variant === 'elevated' && !isDark && tokens.shadow.card,
     style,
@@ -32,12 +33,9 @@ export function Card({ children, onPress, style, variant = 'elevated' }: Props) 
 
   if (onPress) {
     return (
-      <Pressable
-        onPress={onPress}
-        style={({ pressed }) => [baseStyle, pressed && styles.pressed]}
-      >
+      <AppPressable feedback="card" onPress={onPress} style={baseStyle}>
         {children}
-      </Pressable>
+      </AppPressable>
     );
   }
 
@@ -46,12 +44,8 @@ export function Card({ children, onPress, style, variant = 'elevated' }: Props) 
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     overflow: 'hidden',
-  },
-  pressed: {
-    opacity: 0.92,
-    transform: [{ scale: 0.99 }],
   },
 });

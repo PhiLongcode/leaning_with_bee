@@ -13,7 +13,8 @@
 
 | Mục | Quy định |
 |-----|----------|
-| **Tên app** | **Cuder Học Tiếng** |
+| **Tên app** | **Cuder học tiếng Anh** |
+| **Logo mascot** | [`brand/logo/AvataApp.png`](../../brand/logo/AvataApp.png) → bundle `apps/mobile/assets/brand/logo/` |
 | **Subtitle (EN)** | *Workplace English with Cuder* |
 | **Tagline (VI)** | *Học tiếng Anh mỗi ngày — cùng Cuder* |
 | **Mascot** | **Cuder** (gà học) — thân thiện; đồng bộ hệ rank Gà con → Thần IELTS |
@@ -42,6 +43,16 @@
 | **Light** | Có (default) | Nền sáng, đọc ban ngày |
 | **Dark** | Tuỳ chọn | Nền tối, giảm chói ban đêm |
 | **System** | Tuỳ chọn | Theo OS (implement sau) |
+
+### 2.1.1 Hai lớp «tối» (app-wide vs Gia sư AI)
+
+| Lớp | Token / file | Phạm vi | Phụ thuộc Cài đặt Tối? |
+|-----|----------------|---------|-------------------------|
+| **App theme** | `ThemeContext`: `pageBg`, `pageAltBg`, `cardBg`, `colors.*` | Trang chủ, Tài khoản, Đã lưu, Từ vựng, Part, Cài đặt, bài học | **Có** |
+| **Gia sư AI** | `darkAi.*` trong `colors.ts` | Tab **Gia sư AI** (`fn07`) | **Không** — luôn space tối |
+| **Bottom nav** | `navBg` = `#FFFFFF` | 5 tab chính | **Không** — luôn nền sáng (mockup §4.4.5) |
+
+Learner bật **Tối** → page scroll + card elevated + text/border đồng bộ; tab bar vẫn trắng; màn AI không đổi palette.
 
 ### 2.2 Semantic tokens
 
@@ -83,21 +94,28 @@
 | `dark.surface` | `#1A2421` | Suggestion card |
 | `dark.accent` | `#2ECC71` | Icon, border input, text card |
 
-### 2.3.1 Surface & background (Light)
+### 2.3.1 Surface & background (Light + Dark app-wide)
 
-| Token | Hex | Dùng cho |
-|-------|-----|----------|
+**Phân biệt semantic vs layout:**
+
+| Khái niệm | Token implement | Light | Dark (app-wide) |
+|-----------|-----------------|-------|-----------------|
+| **Page scroll** | `useTheme().pageBg` ← `surface.page` / `surfaceDark.page` | `#F8F9FA` | `#1A1A1A` |
+| **Page alt** | `pageAltBg` ← `surface.pageAlt` / `surfaceDark.pageAlt` | `#F0F4F8` | `#121212` |
+| **Card / elevated** | `cardBg` ← `surface.card` / `colors.background.elevated` | `#FFFFFF` | `#2A2A2A` |
+| **Bottom nav** | `navBg` | `#FFFFFF` | `#FFFFFF` (cố định) |
+
+`background.primary` (§2.2) là token **semantic** cho «nền chính» trong palette `light`/`dark`; **layout scroll** dùng `surface.page*` qua `pageBg` / `pageAltBg` — không import `surface` tĩnh trên màn có toggle theme.
+
+| Token | Hex (Light) | Dùng cho |
+|-------|-------------|----------|
 | `surface.page` | `#F8F9FA` | Home, Account scroll bg |
-| `surface.page.alt` | `#F0F4F8` | Part list, Settings bg |
-| `surface.page.cool` | `#F5F7F9` | Settings variant |
-| `surface.card` | `#FFFFFF` | Card, list item, bottom nav |
+| `surface.pageAlt` | `#F0F4F8` | Part list, Settings bg |
+| `surface.card` | `#FFFFFF` | Card elevated (Light) |
 | `surface.header` | `brand.primary` | Sticky header xanh |
 | `text.onPrimary` | `#FFFFFF` | Title trên header xanh |
-| `text.primary` | `#000000` | Tiêu đề card, tên user |
-| `text.secondary` | `#4A4A4A` | Definition, mô tả phụ |
-| `text.muted` | `#757575` | Status «Chưa làm», hint |
 | `text.inactive` | `#9E9E9E` | Bottom nav inactive |
-| `progress.track` | `#D5F5E3` | Thanh progress nền |
+| `progress.track` | `#D5F5E3` | Thanh progress nền (Light) |
 
 ### 2.7 Brand động & quyền (FN-15 — Admin only)
 
@@ -164,29 +182,14 @@ MVP: cấu hình qua Supabase Table Editor + Storage (không build UI admin).
 ### 2.5 Gợi ý implement (React Native)
 
 ```typescript
-// themes/colors.ts — ví dụ (mockup-aligned)
-export const brand = {
-  primary: '#27AE60',
-  primaryDark: '#1B8E3D',
-  primaryLight: '#E8F5E9',
-  primaryText: '#1A8D44',
-  blue: '#0085E5',
-  orange: '#FF9F43',
-  error: '#FF4B4B',
-  xp: '#FFC800',
-};
-export const surface = {
-  page: '#F8F9FA',
-  pageAlt: '#F0F4F8',
-  card: '#FFFFFF',
-};
-export const dark = {
-  background: '#0B0E14',
-  surface: '#1A2421',
-  accent: '#2ECC71',
-};
-export const light = { background: { primary: '#FFFFFF', secondary: '#F5F5F5' }, /* ... */ };
+// apps/mobile/src/theme/ThemeContext.tsx
+const { pageBg, pageAltBg, cardBg, navBg, colors, isDark } = useTheme();
+// ScrollView: backgroundColor: pageBg | pageAltBg
+// Card: backgroundColor: cardBg
+// BottomNav: backgroundColor: navBg (luôn sáng)
 ```
+
+Chi tiết checklist: **§4.11**.
 
 ---
 
@@ -194,27 +197,31 @@ export const light = { background: { primary: '#FFFFFF', secondary: '#F5F5F5' },
 
 ### 3.1 Typography
 
-**Font family (ưu tiên):**
+**Font family (SSOT — bundle Expo):**
 
-| Thứ tự | Font | Ghi chú |
-|--------|------|---------|
-| 1 | **Be Vietnam Pro** | Tiếng Việt + Latin; rounded, friendly — khuyến nghị bundle |
-| 2 | **Inter** | Fallback Latin; geometric |
-| 3 | System | SF Pro (iOS) / Roboto (Android) khi không bundle |
+| Vai trò | Font | File / weight | Dùng cho |
+|---------|------|---------------|----------|
+| **Tiêu đề (chính)** | **Be Vietnam Pro** | `BeVietnamPro_600SemiBold`, `BeVietnamPro_700Bold` | `display`, `heading1`–`heading3`, `button`, header màn, tên section |
+| **Nội dung phụ** | **Nunito** | `Nunito_400Regular`, `Nunito_500Medium`, `Nunito_600SemiBold` | `body`, `caption`, mô tả, nghĩa từ, `TextInput`, chat bubble |
+| **Monospace** | System `monospace` | — | Device ID, URL trong Cài đặt (developer) |
+
+> **Be Vietnam Pro** — tiêu đề, header, CTA (đọc tốt tiếng Việt). **Nunito** — nội dung dài, phụ đề, form (rounded, dễ đọc).
 
 **Style scale (mockup-aligned):**
 
-| Token | Size | Weight | Line-height | Dùng cho |
-|-------|------|--------|-------------|----------|
-| `display` | 22px | 700 | 1.25 | Tên user, tiêu đề profile |
-| `heading1` | 20px | 600 | 1.3 | Header màn («Cài đặt», «Đã lưu»), section «Luyện Nghe» |
-| `heading2` | 18px | 600 | 1.35 | Từ tiếng Anh trong list, nút «Học từ mới» |
-| `heading3` | 16px | 600 | 1.4 | Card title («Photographs 01», «Luyện Part 1») |
-| `body` | 14px | 400 | 1.6 | Definition, card text, chat bubble |
-| `body.medium` | 14px | 500 | 1.5 | Button trong practice card |
-| `caption` | 12px | 400 | 1.4 | Tag «2026 Format», bottom nav label |
-| `caption.bold` | 12px | 600 | 1.3 | Status «Chưa làm», filter chip |
-| `label` | 11px | 500 | 1.2 | Section label uppercase (letter-spacing 0.08em) |
+| Token | Size | Font | Dùng cho |
+|-------|------|------|----------|
+| `display` | 22px | Be Vietnam Pro Bold | Tên user, tiêu đề profile |
+| `heading1` | 20px | Be Vietnam Pro SemiBold | Header màn («Cài đặt», «Part 1») |
+| `heading2` | 18px | Be Vietnam Pro SemiBold | Từ EN nổi bật, «Học từ mới» |
+| `heading3` | 16px | Be Vietnam Pro SemiBold | Card title («Photographs 01») |
+| `body` | 14px | Nunito Regular | Definition, card text, đoạn mô tả |
+| `body.medium` | 14px | Nunito Medium | Nhấn mạnh nhẹ trong card |
+| `caption` | 12px | Nunito Regular | Tag, bottom nav (inactive) |
+| `caption.bold` | 12px | Nunito SemiBold | Status «Chưa làm», nav active |
+| `label` | 11px | Nunito Medium | Section label uppercase |
+| `textInput` | 15px | Nunito Regular | Ô nhập form, chat composer |
+| `button` | 15px | Be Vietnam Pro Bold | Chữ trên nút CTA |
 
 **Màu chữ theo ngữ cảnh:**
 
@@ -229,15 +236,12 @@ export const light = { background: { primary: '#FFFFFF', secondary: '#F5F5F5' },
 **Load font (Expo):**
 
 ```typescript
-// app/_layout.tsx — ví dụ
-import { useFonts, BeVietnamPro_400Regular, BeVietnamPro_600SemiBold, BeVietnamPro_700Bold } from '@expo-google-fonts/be-vietnam-pro';
+// apps/mobile/src/providers/FontProvider.tsx
+import { BeVietnamPro_600SemiBold, BeVietnamPro_700Bold } from '@expo-google-fonts/be-vietnam-pro';
+import { Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold } from '@expo-google-fonts/nunito';
 
-const [loaded] = useFonts({
-  BeVietnamPro_400Regular,
-  BeVietnamPro_600SemiBold,
-  BeVietnamPro_700Bold,
-});
-// fontFamily: 'BeVietnamPro_600SemiBold' cho heading; _400Regular cho body
+// apps/mobile/src/theme/fonts.ts — title* = Be Vietnam Pro; content* = Nunito
+// apps/mobile/src/theme/typographyStyles.ts — tokens.typography.*
 ```
 
 ### 3.2 Spacing scale
@@ -259,7 +263,7 @@ const [loaded] = useFonts({
 
 - **Card:** `border-radius: 20px`, shadow nhẹ `0 2px 8px rgba(0,0,0,0.06)` (soft UI)
 - **Header curve:** content sheet `border-top-left/right-radius: 24px` chồng lên header xanh
-- **Nút primary:** bo tròn lớn (pill), full-width hoặc inline; gradient xanh cho «Nâng Cấp»
+- **Nút primary:** bo tròn lớn (pill), full-width hoặc inline; `brand.primary` (không gradient)
 - **Bottom nav:** nền trắng, không shadow nặng; active = icon + label `brand.primary` + optional dot trên icon
 
 ---
@@ -270,19 +274,20 @@ const [loaded] = useFonts({
 
 | # | Màn hình | Route gợi ý | Tab | REQ / FN | Trạng thái mockup |
 |---|----------|---------------|-----|----------|-------------------|
-| 1 | **Splash** | `/` | — | — | Chưa có mockup |
+| 1 | **Splash** | `/` | — | — | ✅ §4.4.0 |
 | 2 | **Home — Trang chủ** | `/home` | Trang chủ | FN-10 | ✅ |
 | 3 | **Part Detail — Danh sách bài** | `/practice/:partId` | — | FN-06, FN-10 | ✅ Part 1 |
 | 4 | **Vocabulary — Chủ đề từ** | `/vocab/:topicId` | Từ vựng | FN-01, FN-02 | ✅ Hợp Đồng |
 | 5 | **Vocabulary Learning** | `/learn/vocab/:lessonId` | — | FN-01, FN-05 | Wireframe text |
 | 6 | **Saved — Đã lưu** | `/saved` | Đã lưu | FN-04 | ✅ empty state |
 | 7 | **AI Tutor — Gia sư AI** | `/tutor` | Gia sư AI | FN-07 | ✅ Emma chat |
-| 8 | **Account — Tài khoản** | `/account` | Tài khoản | FN-10 | ✅ profile + stats |
+| 8 | **Account — Tài khoản** | `/account` | Tài khoản | FN-10 | ✅ profile + `WeeklyStudyChart` |
 | 9 | **Settings — Cài đặt** | `/settings` | — | FN-11 | ✅ |
 | 10 | **Context Review** | `/learn/review` | — | FN-06 | Wireframe text |
 | 11 | **Speaking Practice** | `/learn/speaking` | — | FN-08, FN-09 | Wireframe text |
 | 12 | **Collection** | `/collections` | — | FN-04 | Map → Đã lưu |
 | 13 | **Progress Dashboard** | `/progress` | — | FN-10 | Gộp vào Account |
+
 
 **Out of scope MVP:** Login, Sign up — đồng bộ qua Device ID.
 
@@ -321,24 +326,37 @@ flowchart TB
 
 ---
 
+#### 4.4.0 Splash (`/`)
+
+**Mục đích:** Màn mở app — brand + CTA vào học (không tab bar).
+
+| Vùng | Thành phần | Style |
+|------|------------|-------|
+| **Nền** | `surface.page` / dark `background.primary` | Không gradient |
+| **Hero** | Mascot `AvataApp.png` trong vòng tròn card | `CuderLogo` size hero |
+| **Wordmark** | `brand.brandName` | `h1` / Be Vietnam Pro Bold |
+| **Phụ đề** | `brandTagline`, `brandSubtitle` (nếu có) | Nunito `body` / `caption` |
+| **Pills** | «Ngữ cảnh thực tế», «Streak & XP» | Chip success/info |
+| **CTA** | **BẮT ĐẦU HỌC** | `PrimaryButton` → `home` |
+| **Footer** | Tên app · Workplace English | `caption` tertiary |
+
+**Out of scope MVP:** Nút Nâng cấp / paywall trên Splash.
+
+---
+
 #### 4.4.1 Home — Trang chủ (`/home`)
 
-**Mục đích:** Hub luyện tập — chia Listening / Reading (hoặc Workplace topics tương đương).
+**Mục đích:** Hub học hàng ngày — bài học, SRS, Context Review (§2.1 `LEARNING_FLOW`).
 
 | Vùng | Thành phần | Style |
 |------|------------|-------|
 | **Top bar** | Logo **Cuder Học Tiếng** (wordmark xanh + mascot Cuder) | `brand.primary` text |
 | | Icons: premium diamond, bell, history clock | Phải header |
-| **Greeting row** | Avatar tròn + «Xin chào» + tên user (bold) | `display` tên |
-| | Nút **Nâng Cấp** | Gradient `#27AE60` → `#A8E6CF`, text trắng, `radius.lg` |
-| **Section** | «Luyện Nghe» / «Luyện Đọc» (hoặc topic workplace) | `heading1`, đen |
-| **Practice grid** | 2 cột; card trắng `radius.xl`, shadow nhẹ | |
-| | Title: «Luyện Part N» | `heading3` |
-| | Sub-button: nền `#E9F7EF`, text `#27AE60` + icon | «Mô Tả Hình Ảnh», «Đoạn Hội Thoại»… |
-| **FAB** | Pencil grey (feedback/notes) | Phải màn, semi-transparent |
+| **Greeting row** | Avatar + «Xin chào» + tên + 🔥 streak · ⭐ XP | `display` + `caption` |
+| **Lộ trình** | Bài học hôm nay, Việc hôm nay (SRS), Context Review | §2.1 LEARNING_FLOW |
 | **Bottom nav** | Tab Trang chủ **active** | |
 
-**Interaction:** Tap card Part → `/practice/:partId`. Tap Nâng Cấp → paywall modal.
+**Out of scope MVP:** Nâng cấp / paywall trên Home (xem Phase 2 premium).
 
 ---
 
@@ -348,8 +366,8 @@ flowchart TB
 
 | Vùng | Thành phần | Style |
 |------|------------|-------|
-| **Header** | Nền `#1B8E3D`, back arrow trắng, title «Part 1» center | `heading1`, `text.onPrimary` |
-| | Bo cong lớn phía dưới header → content | `radius.2xl` overlap |
+| **Header** | Nền **đặc** `#1B8E3D` (`brand.primaryDark`) — **không gradient**; back trắng; title trắng căn trái | `HeaderGreen` + `GreenScreenLayout` |
+| | Content sheet overlap header | `borderTopRadius` ~28px, `marginTop` âm |
 | **Background** | `#F0F4F8` | `surface.page.alt` |
 | **Lesson card** | Trắng, `radius.xl`, padding 16px | |
 | | Title: «Photographs 01» | `heading3` |
@@ -370,7 +388,7 @@ flowchart TB
 
 | Vùng | Thành phần | Style |
 |------|------------|-------|
-| **Header** | Nền `brand.primary`, back, icon chủ đề (ảnh trong vòng tròn), title | |
+| **Header** | Nền **đặc** `brand.primary` `#27AE60` (không gradient); back + title căn trái; cùng layout `HeaderGreen` | `headerColor="brand"` |
 | **Progress pill** | Nền trắng trong header | |
 | | «0/12 đã học» — checkmark xanh dương | `accent.blue` |
 | | «0 cần luyện tập» — moon xanh lá | `brand.primary` |
@@ -435,14 +453,12 @@ flowchart TB
 | **Profile** | Avatar tròn (illustration) | |
 | | Tên user `display` | «Nguyễn Phi Long» |
 | | Username + copy icon xanh | `caption` |
-| | **Nâng Cấp** button | bg `accent.orange` `#FF9F43`, crown icon trắng |
-| **Thống kê** | Dropdown «Thống kê: 7 ngày gần nhất» | |
+| **Thống kê** | Tiêu đề «Thống kê: 7 ngày gần nhất» | `heading1` |
 | **Điểm ước tính card** | Vòng tròn progress xanh + số giữa | |
 | | Nghe: headphone + «5 / 495» + progress bar | |
 | | Đọc: document + «5 / 495» + progress bar | Track `#D5F5E3` |
-| **Thời gian học gần đây** | Title + legend (Đã học = green, Mục tiêu = orange) | |
-| | Line chart 7 ngày (CN → Hôm nay) | Orange goal line @ 30 phút |
-| | CTA «Đặt mục tiêu thời gian» | Full-width green pill |
+| **Thời gian học gần đây** | Legend (Đã học = green, Mục tiêu = orange) | |
+| | **Biểu đồ cột 7 ngày** (CN → Nay) + đường mục tiêu 30 phút | `WeeklyStudyChart` — View-based, không chart lib |
 | **Tổng thể** | Legend Đúng/Sai/Chưa làm (green/red/grey) | |
 | | CTA «Xem lịch sử học» | Full-width green pill |
 | **Bottom nav** | Tab Tài khoản **active** + green dot | |
@@ -453,32 +469,23 @@ flowchart TB
 
 | Vùng | Thành phần | Style |
 |------|------------|-------|
-| **Header** | Xanh `#1A8D44`, back, «Cài đặt» center trắng | |
-| **Background** | `#F0F4F8` / `#F5F7F9` | |
-| **Section title** | «Tài khoản», «Giao diện», «Thông báo», «Luyện tập» | `heading1` đen, ngoài card |
-| **Card** | Trắng `radius.2xl`, items trong card | |
-| **Tài khoản** | Profile row: avatar + name + «Xem thông tin» grey | |
-| | «Nâng cấp» — ribbon icon xanh | |
-| | «Lịch sử mua hàng» — clock icon xanh | |
-| **Giao diện** | «Chế độ sáng / tối / hệ thống» | 3 nút segment — **learner only** |
-| | «Ngôn ngữ mẹ đẻ» → «Tiếng Việt» green | |
+| **Header** | `HeaderGreen` `titleAlign="center"`, `#1B8E3D` | `GreenScreenLayout` `sheetVariant="page"` |
+| **Background** | `pageAltBg` `#F0F4F8` + card trắng `radius.2xl` | Sheet overlap header |
+| **Section title** | «Tài khoản», «Giao diện», «Thông báo», «Luyện tập» | `heading1` ngoài card |
+| **Row** | `SettingsListRow` — icon xanh trái + title + value xanh / subtitle xám | `AppPressable` opacity |
+| **Tài khoản** | Avatar + «Nguyễn Phi Long» + «Xem thông tin» | → Account |
+| | *(Không có)* «Nâng cấp» / «Lịch sử mua hàng» | Phase 2 premium |
+| **Giao diện** | Hàng «Giao diện» → value «Chế độ sáng»; tap mở 3 chip Sáng/Tối/Hệ thống | |
+| | «Ngôn ngữ mẹ đẻ của bạn» → «Tiếng Việt» | |
 | | *(Không có)* «Màu thương hiệu» / logo | FN-15 — **admin only**, không trong Cài đặt learner |
-| **Âm thanh** | «Âm thanh học tập» toggle (SFX đúng/sai) | |
-| | «Âm thanh nhắc nhở» toggle (FN-11) | |
-| **Thông báo** | «Nhắc nhở luyện tập hằng ngày» + bell | Sub «Chưa thiết lập» green |
-| **Luyện tập** | «Cấu hình luyện tập» + dumbbell icon | |
+| **Thông báo** | `bell` + «Nhắc nhở…» + «Chưa thiết lập» xanh | → FN-11 |
+| **Luyện tập** | `dumbbell` + «Cấu hình luyện tập» | Tap mở: âm thanh học tập / nhắc nhở + preview SFX |
 
 **REQ map:** FN-11 notification + âm thanh; theme Light/Dark → §2.1. Brand/quyền → §2.7 (admin).
 
 ---
 
-#### 4.4.8 Màn bổ sung (wireframe text — chưa mockup)
-
-**Splash**
-
-- Center: mascot Cuder + wordmark **Cuder Học Tiếng**
-- Tagline: *Học tiếng Anh mỗi ngày — cùng Cuder*
-- Primary CTA: **BẮT ĐẦU HỌC** → Home
+#### 4.4.8 Màn bổ sung (wireframe text)
 
 **Vocabulary Learning**
 
@@ -496,6 +503,30 @@ flowchart TB
 - Câu mẫu + mic lớn xanh
 - Waveform + score panel (Pronunciation, Fluency, Accuracy)
 
+### 4.11 Implementation checklist (React Native)
+
+| Quy tắc | Chi tiết |
+|---------|----------|
+| **Theme hook** | Màn learner có toggle Sáng/Tối: `useTheme()` → `pageBg`, `pageAltBg`, `cardBg`, `colors.*` |
+| **Cấm** | `import { surface }` cho `backgroundColor` layout khi màn phụ thuộc theme |
+| **Card** | `components/ui/Card.tsx` — `cardBg`; border `colors.border.tertiary` khi dark; shadow chỉ Light |
+| **Green header** | `HeaderGreen` + `GreenScreenLayout` — màu đặc; **cấm** `LinearGradient` trên header menu |
+| **Bottom nav** | `navBg` + inactive `colors.text.inactive` — không theo `isDark` |
+| **Gia sư AI** | `darkAi.*` cố định trong `AiChatScreen` |
+| **SRS** | `SrsRatingRow` — Again/Hard/Good/Easy; chọn → **viền 2px** + disable 3 nút còn lại; `resetKey` khi sang từ mới |
+| **Nhấn nút** | `AppPressable` (`feedback`: button \| card \| chip \| tab \| icon \| opacity); Android `ripple` |
+| **Luồng học** | SSOT tab ↔ screen: [`src/LEARNING_FLOW.md`](../../src/LEARNING_FLOW.md) §1 |
+
+**File map:**
+
+```text
+apps/mobile/src/theme/{colors.ts, ThemeContext.tsx, tokens.ts, fonts.ts, typographyStyles.ts}
+apps/mobile/src/providers/FontProvider.tsx
+apps/mobile/src/theme/pressFeedback.ts
+apps/mobile/src/components/ui/{AppPressable, SettingsListRow, Card, BottomNav, HeaderGreen, GreenScreenLayout, HeaderPlain, SrsRatingRow, VocabListItem, WeeklyStudyChart}
+apps/mobile/src/navigation/tabs.ts
+```
+
 ---
 
 ## 5. Component library
@@ -505,9 +536,9 @@ flowchart TB
 | Variant | Background | Text | Border / shadow | Dùng cho |
 |---------|------------|------|---------------|----------|
 | **Primary** | `brand.primary` `#27AE60` | `#FFFFFF` | — | Thử lại, Đặt mục tiêu, Xem lịch sử |
+| **Press feedback** | `AppPressable` + `pressFeedback.ts` | — | opacity / scale / ripple Android | Mọi nút & card nhấn được |
 | **Primary Blue** | `accent.blue` `#0085E5` | `#FFFFFF` | — | Học từ mới |
-| **Upgrade** | `accent.orange` `#FF9F43` | `#FFFFFF` | crown icon | Nâng Cấp (Account) |
-| **Upgrade Gradient** | `#27AE60` → `#A8E6CF` | `#FFFFFF` | horizontal gradient | Nâng Cấp (Home) |
+| *(Phase 2)* **Upgrade** | `accent.orange` | `#FFFFFF` | — | Paywall — chưa trong MVP |
 | **Secondary** | `background.secondary` | `text.primary` | — | Bỏ qua, Huỷ |
 | **Correct** | `#EAF3DE` | `#3B6D11` | — | Đáp án đúng |
 | **Wrong** | `#FCEBEB` | `#A32D2D` | — | Đáp án sai |
@@ -733,6 +764,12 @@ Chi tiết file: [`brand/AUDIO_MANIFEST.md`](../../brand/AUDIO_MANIFEST.md) · B
 
 | Ngày | Thay đổi |
 |------|----------|
+| 2026-05-31 | Settings mockup: `SettingsListRow`, sections Tài khoản→Luyện tập, `sheetVariant="page"` |
+| 2026-05-31 | `AppPressable` + `pressFeedback` — hiệu ứng nhấn (scale/opacity/ripple) trên nút & card |
+| 2026-05-31 | Splash §4.4.0; Account `WeeklyStudyChart`; bỏ **Nâng cấp** khỏi MVP UI |
+| 2026-05-31 | Typography: **Be Vietnam Pro** (tiêu đề) + **Nunito** (nội dung); dual font `FontProvider` |
+| 2026-05-31 | Header menu đồng bộ: `HeaderGreen`/`GreenScreenLayout` nền đặc (không gradient); title căn trái; sheet overlap Part/Vocab/Settings |
+| 2026-05-31 | Dark mode: `pageBg`/`cardBg` đồng bộ; §2.1.1 hai lớp tối; §4.11 RN checklist; LEARNING_FLOW alignment (SRS row, Vocab CTA xanh, Settings section order) |
 | 2026-05-31 | FN-15 cấu hình brand (màu Settings; tên DB ẩn UI phase sau) |
 | 2026-05-31 | Rebrand **Cuder Học Tiếng**; §10 âm thanh + `brand/` |
 | 2026-05-31 | Bổ sung 9 màn mockup; palette; font Be Vietnam Pro; bottom nav 5 tab |

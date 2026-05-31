@@ -1,27 +1,35 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AppPressable } from '../../components/ui/AppPressable';
 import * as Speech from 'expo-speech';
-import { getVocabularyLesson, LEARNING_DAYS, type Vocabulary } from '@hoc-cung-bee/features';
+import {
+  getVocabularyLesson,
+  LEARNING_DAYS,
+  submitReview,
+  type ReviewRating,
+  type Vocabulary,
+} from '@hoc-cung-bee/features';
 import { FeatureShell } from '../../components/FeatureShell';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Card } from '../../components/ui/Card';
 import { Chip } from '../../components/ui/Chip';
+import { SrsRatingRow } from '../../components/ui/SrsRatingRow';
 import { DialogueBubbleList } from '../../components/vocab/DialogueBubbleList';
 import { ExplanationNativeCard } from '../../components/vocab/ExplanationNativeCard';
-import { addVocabularyToMyList } from '@hoc-cung-bee/features';
 import { useDeviceId } from '../../hooks/useDeviceId';
-import { getUserVocabularyRepository } from '../../lib/featureRepos';
-import { awardXp } from '../../lib/gamification';
+import { onVocabularyStepCompleted } from '../../lib/learningFlowActions';
+import { getLearningProgressRepository } from '../../lib/featureRepos';
 import { getVocabularyRepository } from '../../lib/vocabularyRepo';
 import { useAppStore } from '../../store/appStore';
 import { useTheme } from '../../theme/ThemeContext';
-import { brand } from '../../theme/colors';
 
 export function VocabularyLearningScreen() {
   const { colors, brand: themeBrand, tokens } = useTheme();
   const deviceId = useDeviceId();
   const lessonDay = useAppStore((s) => s.lessonDay);
+  const setScreen = useAppStore((s) => s.setScreen);
+  const setLastLessonWords = useAppStore((s) => s.setLastLessonWords);
   const dayMeta = LEARNING_DAYS.find((d) => d.dayNumber === lessonDay);
   const [items, setItems] = useState<Vocabulary[]>([]);
   const [index, setIndex] = useState(0);
@@ -38,6 +46,7 @@ export function VocabularyLearningScreen() {
       } else {
         setError(null);
         setItems(result.value);
+        setLastLessonWords(result.value);
       }
       setLoading(false);
     })();
@@ -52,11 +61,22 @@ export function VocabularyLearningScreen() {
     Speech.speak(current.word, { language: 'en-US' });
   }, [current]);
 
+  async function advanceWithRating(rating: ReviewRating) {
+    if (!current) return;
+    await onVocabularyStepCompleted(deviceId, current.id);
+    await submitReview(getLearningProgressRepository(), deviceId, current.id, rating);
+    if (index >= items.length - 1) {
+      setScreen('fn06_context_review');
+    } else {
+      setIndex((i) => i + 1);
+    }
+  }
+
   if (loading) {
     return (
       <FeatureShell
-        title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng ngữ cảnh'}
-        req="REQ-01"
+        title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng'}
+        variant="green"
       >
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={themeBrand.primary} />
@@ -68,7 +88,7 @@ export function VocabularyLearningScreen() {
 
   if (error || !current) {
     return (
-      <FeatureShell title="Học từ vựng ngữ cảnh" req="REQ-01">
+      <FeatureShell title="Học từ vựng" variant="green">
         <Card variant="outline">
           <Text style={{ color: colors.text.secondary, lineHeight: 22 }}>
             {error ?? 'Không có từ trong bài học.'}
@@ -80,8 +100,8 @@ export function VocabularyLearningScreen() {
 
   return (
     <FeatureShell
-      title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng ngữ cảnh'}
-      req={`REQ-01 · ${items.length} từ`}
+      title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng'}
+      variant="green"
     >
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} testID="vocab-learning-scroll">
         <View style={styles.progressWrap}>
@@ -104,21 +124,22 @@ export function VocabularyLearningScreen() {
           <Text testID="vocab-word" style={[tokens.typography.h1, styles.word, { color: colors.text.primary }]}>
             {current.word}
           </Text>
-          <Pressable
+          <AppPressable
             testID="vocab-pronunciation-btn"
+            feedback="icon"
             onPress={speak}
             style={[styles.audioBtn, { backgroundColor: colors.surface.success }]}
             accessibilityLabel="Nghe phát âm"
           >
             <AppIcon name="volume" size={20} color={colors.surface.successText} />
-          </Pressable>
+          </AppPressable>
         </View>
 
         {current.pronunciation ? (
           <Text style={[styles.pron, { color: colors.text.secondary }]}>{current.pronunciation}</Text>
         ) : null}
         {current.partOfSpeech ? (
-          <Text style={[styles.pos, { color: brand.xp }]}>{current.partOfSpeech}</Text>
+          <Text style={[styles.pos, { color: themeBrand.xp }]}>{current.partOfSpeech}</Text>
         ) : null}
         <Text style={[styles.meaning, { color: colors.text.primary }]}>{current.meaning}</Text>
 
@@ -148,30 +169,16 @@ export function VocabularyLearningScreen() {
         ) : null}
 
         <PrimaryButton
-          label="Thêm vào sổ của tôi"
+          label="Trước"
           variant="secondary"
-          onPress={() => void addVocabularyToMyList(getUserVocabularyRepository(), deviceId, current.id)}
-          style={{ marginBottom: 12 }}
+          onPress={() => setIndex((i) => Math.max(0, i - 1))}
+          disabled={index === 0}
+          style={{ marginTop: 8 }}
         />
-
-        <View style={styles.nav}>
-          <PrimaryButton
-            label="Trước"
-            variant="secondary"
-            onPress={() => setIndex((i) => Math.max(0, i - 1))}
-            disabled={index === 0}
-            style={styles.navBtn}
-          />
-          <PrimaryButton
-            label="Tiếp"
-            onPress={() => {
-              void awardXp(deviceId, 5);
-              setIndex((i) => Math.min(items.length - 1, i + 1));
-            }}
-            disabled={index >= items.length - 1}
-            style={styles.navBtn}
-          />
-        </View>
+        <Text style={[tokens.typography.caption, { color: colors.text.tertiary, marginTop: 12 }]}>
+          Bạn nhớ từ này ở mức nào?
+        </Text>
+        <SrsRatingRow resetKey={current.id} onRate={(r) => void advanceWithRating(r)} />
       </ScrollView>
     </FeatureShell>
   );

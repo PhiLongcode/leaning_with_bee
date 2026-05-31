@@ -58,15 +58,23 @@ function getDatabaseUrlCandidates() {
 
   const region = process.env.SUPABASE_DB_REGION || 'ap-southeast-1';
   const enc = encodeURIComponent(password);
-  const poolerHost = process.env.SUPABASE_DB_HOST || `aws-0-${region}.pooler.supabase.com`;
   const poolerPort = process.env.SUPABASE_DB_PORT || '6543';
   const poolerSessionPort = process.env.SUPABASE_DB_SESSION_PORT || '5432';
 
-  const urls = [
-    `postgresql://postgres.${ref}:${enc}@${poolerHost}:${poolerPort}/postgres`,
-    `postgresql://postgres.${ref}:${enc}@${poolerHost}:${poolerSessionPort}/postgres`,
-    `postgresql://postgres:${enc}@db.${ref}.supabase.co:5432/postgres`,
-  ];
+  const poolerHosts = [
+    process.env.SUPABASE_DB_HOST?.trim(),
+    `aws-1-${region}.pooler.supabase.com`,
+    `aws-0-${region}.pooler.supabase.com`,
+  ].filter(Boolean);
+
+  const urls = [];
+  for (const host of poolerHosts) {
+    urls.push(
+      `postgresql://postgres.${ref}:${enc}@${host}:${poolerPort}/postgres`,
+      `postgresql://postgres.${ref}:${enc}@${host}:${poolerSessionPort}/postgres`,
+    );
+  }
+  urls.push(`postgresql://postgres:${enc}@db.${ref}.supabase.co:5432/postgres`);
   return [...new Set(urls)];
 }
 
@@ -259,35 +267,48 @@ async function syncViaPostgres() {
   }
 }
 
+function isProjectLinked() {
+  const linkFile = path.join(ROOT, 'supabase', '.temp', 'project-ref');
+  if (!fs.existsSync(linkFile)) return false;
+  return fs.readFileSync(linkFile, 'utf8').trim() === getProjectRef();
+}
+
 function syncViaCli() {
   const token = getAccessToken();
-  if (!token) return { ok: false, reason: 'no_token' };
-
-  const linkFile = path.join(ROOT, 'supabase', '.temp', 'project-ref');
-  const linkedRef = fs.existsSync(linkFile)
-    ? fs.readFileSync(linkFile, 'utf8').trim()
-    : null;
   const ref = getProjectRef();
 
-  if (linkedRef !== ref) {
+  if (!isProjectLinked()) {
     log(`[db-sync] supabase link --project-ref ${ref}`);
+    const linkEnv = token ? { ...process.env, SUPABASE_ACCESS_TOKEN: token } : process.env;
     const link = spawnSync('npx', ['supabase', 'link', '--project-ref', ref], {
       cwd: ROOT,
       stdio: QUIET ? 'pipe' : 'inherit',
       shell: true,
-      env: { ...process.env, SUPABASE_ACCESS_TOKEN: token },
+      env: linkEnv,
     });
     if (link.status !== 0) return { ok: false, reason: 'link_failed' };
   }
+
+  const dbPassword = process.env.SUPABASE_DB_PASSWORD?.trim();
+  const pushEnv = {
+    ...process.env,
+    ...(token ? { SUPABASE_ACCESS_TOKEN: token } : {}),
+    ...(dbPassword ? { SUPABASE_DB_PASSWORD: dbPassword } : {}),
+  };
 
   log('[db-sync] supabase db push');
   const push = spawnSync('npx', ['supabase', 'db', 'push'], {
     cwd: ROOT,
     stdio: QUIET ? 'pipe' : 'inherit',
     shell: true,
-    env: { ...process.env, SUPABASE_ACCESS_TOKEN: token },
+    env: pushEnv,
   });
-  if (push.status !== 0) return { ok: false, reason: 'push_failed' };
+  if (push.status !== 0) {
+    return {
+      ok: false,
+      reason: dbPassword ? 'push_failed_auth' : 'push_failed_no_password',
+    };
+  }
   return { ok: true };
 }
 
@@ -305,6 +326,8 @@ async function main() {
 
   if (getAccessToken()) {
     attempts.push(['Management API', () => syncViaManagementApi()]);
+  }
+  if (isProjectLinked() || getAccessToken()) {
     attempts.push(['Supabase CLI', () => Promise.resolve(syncViaCli())]);
   }
   if (getDatabaseUrlCandidates().length) {
@@ -328,9 +351,9 @@ async function main() {
   }
 
   const hint =
-    'Mạng không kết nối được db.*.supabase.co (IPv6) hoặc pooler sai region/mật khẩu. ' +
-    'Dashboard → Project Settings → Database: copy Session pooler URL + region vào SUPABASE_DB_REGION / DATABASE_URL. ' +
-    'Hoặc SQL Editor → dán supabase/apply-all.sql → Run.';
+    'Lỗi 28P01 = mật khẩu DB sai (không phải anon key). Dashboard → Settings → Database → Reset database password → cập nhật SUPABASE_DB_PASSWORD trong .env. ' +
+    'Hoặc copy Session pooler URL vào DATABASE_URL. Không cần password: SQL Editor → dán supabase/apply-all.sql → Run. ' +
+    'Hoặc: npx supabase login rồi npm run db:push (Management API).';
   const msg = `Không đồng bộ được schema. ${lastError ? `(${lastError}) ` : ''}${hint}`;
   if (AUTO) {
     warn(`[db-sync] ${msg}`);

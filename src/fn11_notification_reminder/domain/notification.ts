@@ -3,4 +3,7 @@ export type NotificationSettings = {
   enabled: boolean;
   reminderHour: number;
   reminderMinute: number;
+  windowStartHour: number;
+  windowEndHour: number;
+  intervalHours: number;
 };

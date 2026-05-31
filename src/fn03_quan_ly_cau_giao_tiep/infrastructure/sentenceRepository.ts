@@ -74,7 +74,6 @@ export function createSupabaseSentenceRepository(client: SupabaseLikeClient): Se
         .limit(200);
       if (error) return mock.list(deviceId);
       const rows = (data ?? []) as Record<string, unknown>[];
-      if (!rows.length) return mock.list(deviceId);
       return ok(rows.map(mapRow));
     },
     async create(deviceId, input) {

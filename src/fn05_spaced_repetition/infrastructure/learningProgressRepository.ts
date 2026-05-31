@@ -9,6 +9,7 @@ export type ProgressWithVocab = LearningProgress & { vocabulary?: Vocabulary };
 
 export type LearningProgressRepository = {
   listDue(deviceId: string): Promise<Result<ProgressWithVocab[]>>;
+  ensureEnrolled(deviceId: string, vocabId: string): Promise<Result<LearningProgress>>;
   submitReview(
     deviceId: string,
     vocabId: string,
@@ -68,6 +69,21 @@ export function createMockLearningProgressRepository(): LearningProgressReposito
       }
       return ok(due.map(withVocab));
     },
+    async ensureEnrolled(deviceId, vocabId) {
+      const k = key(deviceId, vocabId);
+      if (mockStore.has(k)) return ok(mockStore.get(k)!);
+      const entry: LearningProgress = {
+        id: `lp-${vocabId}`,
+        deviceId,
+        vocabId,
+        repetitionLevel: 0,
+        nextReview: new Date().toISOString(),
+        accuracy: null,
+        reviewCount: 0,
+      };
+      mockStore.set(k, entry);
+      return ok(entry);
+    },
     async submitReview(deviceId, vocabId, rating) {
       const k = key(deviceId, vocabId);
       const prev = mockStore.get(k) ?? {
@@ -108,6 +124,27 @@ export function createSupabaseLearningProgressRepository(
       );
       if (!rows.length) return mock.listDue(deviceId);
       return ok(rows.map(withVocab));
+    },
+    async ensureEnrolled(deviceId, vocabId) {
+      const existing = await fromTable(client, 'learning_progress')
+        .select('id, device_id, vocab_id, repetition_level, next_review, accuracy, review_count')
+        .eq('device_id', deviceId)
+        .eq('vocab_id', vocabId)
+        .maybeSingle();
+      if (!existing.error && existing.data) return ok(mapRow(existing.data as Record<string, unknown>));
+      const scheduled = scheduleAfterReview('good', 0);
+      const { data, error } = await fromTable(client, 'learning_progress')
+        .upsert({
+          device_id: deviceId,
+          vocab_id: vocabId,
+          repetition_level: scheduled.repetitionLevel,
+          next_review: scheduled.nextReview ?? new Date().toISOString(),
+          review_count: 0,
+        })
+        .select('id, device_id, vocab_id, repetition_level, next_review, accuracy, review_count')
+        .single();
+      if (error) return mock.ensureEnrolled(deviceId, vocabId);
+      return ok(mapRow(data!));
     },
     async submitReview(deviceId, vocabId, rating) {
       const scheduled = scheduleAfterReview(rating, 0);

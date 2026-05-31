@@ -444,6 +444,18 @@ grant select, insert, update, delete on public.speech_sessions to authenticated;
 grant select, insert, update, delete on public.pronunciation_scores to authenticated;
 grant select, insert, update, delete on public.notification_settings to authenticated;
 
+-- === 20260529120000_notification_window_prefs.sql ===
+
+-- FN-11 phase 2: lưu khung giờ nhắc trên Supabase (song song AsyncStorage)
+
+alter table public.notification_settings
+  add column if not exists window_start_hour int not null default 8
+    check (window_start_hour between 0 and 23),
+  add column if not exists window_end_hour int not null default 20
+    check (window_end_hour between 0 and 23),
+  add column if not exists interval_hours int not null default 3
+    check (interval_hours between 1 and 12);
+
 -- === 20260529120000_vocabulary_lesson_days.sql ===
 
 -- Lộ trình 7 ngày — metadata + cột gắn từ vựng theo ngày
@@ -787,3 +799,54 @@ create policy brand_assets_admin_delete on storage.objects
   for delete
   to authenticated
   using (bucket_id = 'brand-assets' and public.is_app_admin());
+
+-- === 20260531160000_vocab_dialogue_native_lang.sql ===
+
+-- FN-17 — dialogue, explanation_native, native_language, AI enrich permission
+
+alter table public.profiles
+  add column if not exists native_language text not null default 'vi'
+  check (native_language in ('vi', 'en', 'zh', 'ja', 'ko'));
+
+alter table public.vocabulary
+  add column if not exists dialogue jsonb,
+  add column if not exists explanation_native jsonb;
+
+create table if not exists public.vocab_ai_generations (
+  id uuid primary key default gen_random_uuid(),
+  device_id text not null,
+  word text not null,
+  mode text not null check (mode in ('full', 'enrich')),
+  native_language text not null,
+  request jsonb,
+  response jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.vocab_ai_generations enable row level security;
+
+drop policy if exists vocab_ai_generations_select_own on public.vocab_ai_generations;
+create policy vocab_ai_generations_select_own on public.vocab_ai_generations
+  for select to authenticated
+  using (
+    device_id = (
+      select p.device_id from public.profiles p where p.id = auth.uid()
+    )
+  );
+
+drop policy if exists vocab_ai_generations_insert_own on public.vocab_ai_generations;
+create policy vocab_ai_generations_insert_own on public.vocab_ai_generations
+  for insert to authenticated
+  with check (
+    device_id = (
+      select p.device_id from public.profiles p where p.id = auth.uid()
+    )
+  );
+
+grant select, insert on public.vocab_ai_generations to authenticated;
+
+-- default permission flag for AI vocab enrich
+update public.app_system_config
+set permissions = permissions || jsonb_build_object('allow_ai_vocab_enrich', true)
+where id = 1
+  and not (permissions ? 'allow_ai_vocab_enrich');

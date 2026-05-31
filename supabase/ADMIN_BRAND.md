@@ -34,7 +34,7 @@ Hoặc set `logo_url` = URL HTTPS tuyệt đối nếu host ngoài Supabase.
 
 ```sql
 update public.app_brand_config
-set brand_name = 'Developer Cuder',
+set brand_name = 'Cuder học tiếng Anh',
     brand_primary_hex = '#27AE60',
     brand_primary_light_hex = '#E8F5E9',
     updated_at = now()

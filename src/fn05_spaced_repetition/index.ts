@@ -1,5 +1,10 @@
 export type { LearningProgress } from './domain/learningProgress';
-export { getDueReviews, submitReview } from './application/spacedRepetitionUseCases';
+export {
+  enrollVocabularyForReview,
+  getDueReviews,
+  getLearningSchedule,
+  submitReview,
+} from './application/spacedRepetitionUseCases';
 export {
   createMockLearningProgressRepository,
   createSupabaseLearningProgressRepository,

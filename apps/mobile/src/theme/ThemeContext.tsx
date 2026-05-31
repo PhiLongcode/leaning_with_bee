@@ -2,16 +2,40 @@ import React, { createContext, useContext, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { DEFAULT_APP_BRAND_CONFIG } from '@hoc-cung-bee/features';
 import { useBrandRuntime } from '../store/brandStore';
-import { brand as staticBrand, dark, light, type ThemeColors } from './colors';
+import {
+  brand as staticBrand,
+  dark,
+  darkAi,
+  light,
+  surface,
+  surfaceDark,
+  type ThemeColors,
+} from './colors';
 import { buildRuntimeBrand, type RuntimeBrandColors } from './brandColors';
-import { radius, shadow, spacing, typography } from './tokens';
+import { textInputStyle, typographyWithFonts } from './typographyStyles';
+import { radius, shadow, spacing } from './tokens';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 type ThemeContextValue = {
   colors: ThemeColors;
   brand: RuntimeBrandColors;
-  tokens: { spacing: typeof spacing; radius: typeof radius; typography: typeof typography; shadow: typeof shadow };
+  /** Scroll/page background — switches with theme */
+  pageBg: string;
+  /** Part list, Settings — switches with theme */
+  pageAltBg: string;
+  /** Cards, elevated surfaces */
+  cardBg: string;
+  /** Bottom nav — always light per UX §4.4.5 */
+  navBg: string;
+  darkAi: typeof darkAi;
+  tokens: {
+    spacing: typeof spacing;
+    radius: typeof radius;
+    typography: typeof typographyWithFonts;
+    shadow: typeof shadow;
+    textInput: typeof textInputStyle;
+  };
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
   isDark: boolean;
@@ -31,16 +55,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     [brandRuntime.brandPrimaryHex],
   );
 
+  const pageBg = isDark ? surfaceDark.page : surface.page;
+  const pageAltBg = isDark ? surfaceDark.pageAlt : surface.pageAlt;
+  const cardBg = colors.background.elevated;
+  const navBg = surface.card;
+
   const value = useMemo(
     () => ({
       colors,
       brand,
-      tokens: { spacing, radius, typography, shadow },
+      pageBg,
+      pageAltBg,
+      cardBg,
+      navBg,
+      darkAi,
+      tokens: { spacing, radius, typography: typographyWithFonts, shadow, textInput: textInputStyle },
       mode,
       setMode,
       isDark,
     }),
-    [brand, colors, mode, isDark],
+    [brand, cardBg, colors, isDark, mode, navBg, pageAltBg, pageBg],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

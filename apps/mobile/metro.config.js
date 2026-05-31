@@ -8,6 +8,14 @@ const config = getDefaultConfig(projectRoot);
 
 config.watchFolders = [workspaceRoot];
 
+// `dist/` is static export + `web:serve` — exclude from Metro watcher (EPERM when serve locks files)
+const distPath = path.resolve(projectRoot, 'dist');
+config.resolver = config.resolver ?? {};
+config.resolver.blockList = [
+  ...(Array.isArray(config.resolver.blockList) ? config.resolver.blockList : []),
+  new RegExp(`${distPath.replace(/[/\\]/g, '[/\\\\]')}[/\\\\].*`),
+];
+
 const emptyShim = path.resolve(projectRoot, 'shims/empty.js');
 const nodeBuiltins = new Set([
   'stream',

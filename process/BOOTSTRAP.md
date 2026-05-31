@@ -5,7 +5,7 @@ Sau khi copy khung, tạo đủ **meta** trong `process/` (lấy mẫu từ repo
 - [ ] `00_cursorrules.md` — thứ tự đọc AI (đường dẫn `docs/00_input_raw/…`)
 - [ ] `00_requirement_business.md` — SSOT BDD + bảng REQ (domain mới)
 - [ ] `00_system_requirement.md`
-- [ ] `00_global_lesson_learn.md`, `00_global_issue_log.md`
+- [ ] `00_global_lesson_learn.md`, `00_global_issue_log.md`, `00_global_task_list.md`
 - [ ] `00_file_manifest.md`, `00_directory_contract.md` (có thể copy từ repo gốc rồi sửa tên sản phẩm)
 - [ ] `00_process_compliance_checklist.md` (tuỳ team)
 - [ ] `templates/*.md` đầy đủ (kể cả `dev_plan_checklist_template.md`)

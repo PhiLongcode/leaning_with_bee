@@ -20,6 +20,20 @@ export function createSentence(
   return repo.create(deviceId, input);
 }
 
+export function updateSentence(
+  repo: SentenceRepository,
+  id: string,
+  input: Partial<Omit<UserSentence, 'id' | 'deviceId'>>,
+): Promise<Result<UserSentence>> {
+  if (input.sentence !== undefined && !input.sentence.trim()) {
+    return Promise.resolve({ ok: false, error: 'Câu không được trống.' });
+  }
+  if (input.translation !== undefined && !input.translation.trim()) {
+    return Promise.resolve({ ok: false, error: 'Bản dịch không được trống.' });
+  }
+  return repo.update(id, input);
+}
+
 export function deleteSentence(repo: SentenceRepository, id: string): Promise<Result<void>> {
   return repo.remove(id);
 }

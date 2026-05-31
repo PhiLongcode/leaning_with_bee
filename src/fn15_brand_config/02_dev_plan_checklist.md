@@ -38,6 +38,11 @@
 
 ---
 
+## Task — Unit (Vitest)
+
+- [x] `tests/fn15/brandConfig.spec.ts` — mock repo + defaults
+- [x] API integration: `tests/integration/p1-fns.api.spec.ts` (brand + system)
+
 ## Task 3 — Implementation
 
 - [x] `src/fn15_brand_config/` domain + repos

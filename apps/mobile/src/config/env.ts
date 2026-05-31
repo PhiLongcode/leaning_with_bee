@@ -28,7 +28,7 @@ export const env = {
   appEnv,
   isDev,
   isProd,
-  appName: process.env.EXPO_PUBLIC_APP_NAME ?? 'Cuder Học Tiếng',
+  appName: process.env.EXPO_PUBLIC_APP_NAME ?? 'Cuder học tiếng Anh',
   supabaseUrl,
   supabaseAnonKey,
   projectRef: projectRefFromUrl(supabaseUrl),

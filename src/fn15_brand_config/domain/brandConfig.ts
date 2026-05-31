@@ -10,9 +10,9 @@ export type AppBrandConfig = {
 };
 
 export const DEFAULT_APP_BRAND_CONFIG: AppBrandConfig = {
-  brandName: 'Developer Cuder',
-  brandTagline: 'APP HỌC TIẾNG ANH',
-  brandSubtitle: 'ENGLISH LEARNING',
+  brandName: 'Cuder học tiếng Anh',
+  brandTagline: 'Học tiếng Anh mỗi ngày — cùng Cuder',
+  brandSubtitle: 'Workplace English with Cuder',
   logoUrl: null,
   logoStoragePath: 'logo/AvataApp.png',
   brandPrimaryHex: '#27AE60',

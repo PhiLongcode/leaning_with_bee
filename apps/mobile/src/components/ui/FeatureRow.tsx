@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { AppPressable } from './AppPressable';
 import { useTheme } from '../../theme/ThemeContext';
 import { AppIcon } from './AppIcon';
 import type { AppIconName } from './icons';
@@ -17,13 +18,13 @@ export function FeatureRow({ icon, title, subtitle, badge, onPress, last, testID
   const { colors } = useTheme();
 
   return (
-    <Pressable
+    <AppPressable
       testID={testID}
+      feedback="opacity"
       onPress={onPress}
-      style={({ pressed }) => [
+      style={[
         styles.row,
         !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border.tertiary },
-        pressed && { opacity: 0.7 },
       ]}
     >
       <View style={[styles.iconWrap, { backgroundColor: colors.surface.info }]}>
@@ -45,7 +46,7 @@ export function FeatureRow({ icon, title, subtitle, badge, onPress, last, testID
         </View>
       ) : null}
       <AppIcon name="chevronRight" size={14} color={colors.text.tertiary} />
-    </Pressable>
+    </AppPressable>
   );
 }
 

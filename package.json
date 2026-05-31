@@ -9,12 +9,13 @@
     "mobile:build:web": "npm run build:web --prefix apps/mobile",
     "install:mobile": "npm install --prefix apps/mobile",
     "mobile:build:apk": "npm run build:apk --prefix apps/mobile",
-    "db:push": "npx supabase db push",
+    "db:push": "node scripts/db-sync.js",
     "db:push:api": "node scripts/db-push-api.js",
     "db:sync": "node scripts/compose-apply-all.js && node scripts/db-sync.js",
     "db:sync:force": "node scripts/compose-apply-all.js && node scripts/db-sync.js --force",
     "db:compose": "node scripts/compose-apply-all.js",
     "vocab:gen": "node scripts/gen-daily-vocab-ts.js",
+    "ai:secrets": "node scripts/sync-ai-secrets.js",
     "db:reset:local": "npx supabase db reset",
     "db:start": "npx supabase start",
     "test:bdd": "npm run test --prefix tests",
@@ -23,11 +24,24 @@
     "test:bdd:fn02": "npm run test:fn02 --prefix tests",
     "test:bdd:ui": "npm run mobile:build:web && npm run test:ui --prefix tests",
     "test:bdd:fn01:ui": "npm run mobile:build:web && npm run test:fn01:ui --prefix tests",
-    "test:perf": "npm run test:perf --prefix tests",
-    "test:bdd:perf": "npm run test:perf:bdd --prefix tests"
+    "test:perf": "node scripts/run-perf-smoke.js",
+    "test:bdd:perf": "npm run test:perf:bdd --prefix tests",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:api": "vitest run --config vitest.integration.config.ts",
+    "test:api:full": "npm run test:verify && npm run test:api",
+    "test:verify": "npm run test:unit && npm run test:bdd:fn01 && npm run test:bdd:fn02 && npm run test:bdd:fn17",
+    "test:verify:ui": "npm run test:bdd:fn01:ui",
+    "test:report": "node scripts/refresh-test-report.js",
+    "test:report:full": "node scripts/refresh-test-report.js --ui --perf",
+    "ai:deploy": "npx supabase functions deploy vocab-enrich && npx supabase functions deploy ai-conversation && npx supabase functions deploy speech-practice"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.49.8",
     "pg": "^8.21.0",
-    "supabase": "^2.101.0"
+    "supabase": "^2.101.0",
+    "tsx": "^4.20.3",
+    "vitest": "^3.2.4",
+    "ws": "^8.21.0"
   }
 }

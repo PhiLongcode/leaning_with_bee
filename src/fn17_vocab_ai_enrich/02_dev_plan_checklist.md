@@ -8,7 +8,7 @@
 |-------|-------|
 | FN | fn17_vocab_ai_enrich |
 | REQ | REQ-17 |
-| Trạng thái | In Progress |
+| Trạng thái | **Done (DoD)** |
 | Đồng bộ lần cuối | 2026-05-31 |
 
 ## Todo — gate
@@ -31,7 +31,8 @@
 - [x] Cài `tests/` package: `@cucumber/cucumber`, `@serenity-js/*`
 - [x] Feature: `tests/features/fn17/vocab_ai_enrich.feature`
 - [x] Step defs + Serenity actor: `tests/step-definitions/fn17/`
-- [x] Domain validate: `validateDialogue`, `validateEnrichRequest` — **12 scenarios pass**
+- [x] Domain validate: `validateDialogue`, `validateEnrichRequest` — **7 scenarios pass**
+- [x] Unit Vitest: `tests/fn17/vocabValidation.spec.ts`, `vocabEnrichUseCases.spec.ts`
 - [ ] CI hook `npm run test:bdd` (tuỳ pipeline)
 
 **Chạy:** `npm run test:bdd:fn17` (repo root)
@@ -62,7 +63,7 @@
 | AC | Chứng cứ | Pass |
 |----|----------|------|
 | Validate dialogue 2–5 câu | `npm run test:bdd:fn17` | [x] |
-| Preview + lưu từ | Manual / mock enrich test | [ ] |
-| Giải thích tiếng mẹ đẻ | Settings + explanation card | [ ] |
+| Preview + lưu từ | FN-02 UI + Edge deploy | [x] |
+| Giải thích tiếng mẹ đẻ | Settings + explanation card | [x] |
 
-**Xác nhận Done FN:** chưa
+**Xác nhận Done FN:** **có** (2026-05-31) — `npm run test:bdd:fn17` 7/7; [`00_global_test_report.md`](../../process/00_global_test_report.md).

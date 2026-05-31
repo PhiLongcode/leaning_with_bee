@@ -20,7 +20,8 @@
 
 ## 2. Map REQ ↔ Module `src/`
 
-> **SSOT tài liệu FN:** 5 file `01`…`05` nằm **cùng thư mục module** dưới `src/` (rule `12-src-feature-docs.mdc`). Không dùng `process/features/`.
+> **SSOT tài liệu FN:** 5 file `01`…`05` nằm **cùng thư mục module** dưới `src/` (rule `12-src-feature-docs.mdc`). Không dùng `process/features/`.  
+> **Task list & % hoàn thành:** [`00_global_task_list.md`](00_global_task_list.md) · **Test DoD:** [`00_global_test_report.md`](00_global_test_report.md)
 
 | REQ | STT | Feature ID | Thư mục `src/` |
 |-----|-----|------------|----------------|

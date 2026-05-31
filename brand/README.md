@@ -36,6 +36,14 @@ Sau khi thêm/thay file trong `brand/`:
 2. Copy `audio/` → `apps/mobile/assets/brand/audio/` **hoặc** chạy `python scripts/generate-brand-audio.py`
 3. Chạy app — playback qua `soundFeedback.ts` + `expo-av`
 
+## Logo mascot (mặc định app)
+
+| File | Vai trò |
+|------|---------|
+| `logo/AvataApp.png` | Mascot + emblem — hiển thị Splash, Home, Tài khoản, Gia sư AI |
+
+Sau khi sửa file nguồn: `Copy-Item brand/logo/AvataApp.png apps/mobile/assets/brand/logo/AvataApp.png`
+
 ## Thương hiệu
 
 | Mục | Giá trị |

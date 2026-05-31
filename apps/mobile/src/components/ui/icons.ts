@@ -5,6 +5,9 @@ type Fa6Name = ComponentProps<typeof FontAwesome6>['name'];
 
 /** Semantic names → Font Awesome 6 Solid (classic solid on fontawesome.com) */
 export const APP_ICONS = {
+  home: 'house',
+  bookmark: 'bookmark',
+  book: 'book-open',
   user: 'user',
   settings: 'gear',
   streak: 'fire',
@@ -29,6 +32,9 @@ export const APP_ICONS = {
   system: 'mobile-screen',
   database: 'database',
   play: 'circle-play',
+  history: 'clock-rotate-left',
+  bell: 'bell',
+  dumbbell: 'dumbbell',
 } as const satisfies Record<string, Fa6Name>;
 
 export type AppIconName = keyof typeof APP_ICONS;

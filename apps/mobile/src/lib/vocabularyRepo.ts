@@ -8,10 +8,16 @@ import { isSupabaseConfigured, supabase } from './supabase';
 
 let cached: VocabularyRepository | null = null;
 
+function isE2eWebSession(): boolean {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('e2e') === '1';
+}
+
 export function getVocabularyRepository(): VocabularyRepository {
   if (cached) return cached;
-  cached = isSupabaseConfigured
-    ? createSupabaseVocabularyRepository(supabase as unknown as SupabaseLikeClient)
-    : createMockVocabularyRepository();
+  cached =
+    isSupabaseConfigured && !isE2eWebSession()
+      ? createSupabaseVocabularyRepository(supabase as unknown as SupabaseLikeClient)
+      : createMockVocabularyRepository();
   return cached;
 }

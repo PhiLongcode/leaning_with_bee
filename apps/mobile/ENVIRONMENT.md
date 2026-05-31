@@ -24,6 +24,8 @@ Tăng build khi release:
 | `EXPO_PUBLIC_SUPABASE_URL` | URL project **dev** | URL project **prod** | Khuyến nghị **2 project Supabase** |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Anon/publishable **dev** | Anon/publishable **prod** | Không dùng `service_role` trên app |
 
+**AI (FN-07, enrich từ vựng):** chỉ cấu hình ở **root** `.env` + Supabase Edge secrets — xem [supabase/README.md](../../supabase/README.md) mục 6. **Không** thêm `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` vào file Expo.
+
 File mẫu:
 
 - [`.env.development.example`](.env.development.example)
@@ -38,6 +40,17 @@ cp .env.development.example .env.development
 cp .env.production.example .env.production
 # Sửa URL + anon key project PROD (khi có)
 ```
+
+## Lỗi `EPERM` trên `dist/index.html`
+
+Thường do **`npm run web:serve`** (UI test port **8081**) vẫn chạy và khóa thư mục `dist/`.
+
+```bash
+npm run web:serve:stop
+# hoặc Ctrl+C terminal đang serve, rồi chạy lại start / build:web
+```
+
+`npm start` tự gọi `prestart` → `free-dist-lock.js` (dừng serve trên 8081 nếu có).
 
 ## Chạy app
 

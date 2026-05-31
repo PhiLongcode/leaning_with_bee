@@ -8,21 +8,14 @@ import {
 } from '@hoc-cung-bee/features';
 import { FeatureShell } from '../../components/FeatureShell';
 import { Card } from '../../components/ui/Card';
-import { PrimaryButton } from '../../components/PrimaryButton';
+import { SrsRatingRow } from '../../components/ui/SrsRatingRow';
 import { useDeviceId } from '../../hooks/useDeviceId';
 import { getLearningProgressRepository } from '../../lib/featureRepos';
 import { awardXp } from '../../lib/gamification';
 import { useTheme } from '../../theme/ThemeContext';
 
-const RATINGS: { label: string; rating: ReviewRating }[] = [
-  { label: 'Again', rating: 'again' },
-  { label: 'Hard', rating: 'hard' },
-  { label: 'Good', rating: 'good' },
-  { label: 'Easy', rating: 'easy' },
-];
-
 export function SpacedRepetitionScreen() {
-  const { colors } = useTheme();
+  const { colors, brand, tokens } = useTheme();
   const deviceId = useDeviceId();
   const [queue, setQueue] = useState<ProgressWithVocab[]>([]);
   const [index, setIndex] = useState(0);
@@ -43,6 +36,7 @@ export function SpacedRepetitionScreen() {
   }, [load]);
 
   const current = queue[index];
+  const progress = queue.length > 0 ? (index + 1) / queue.length : 0;
 
   async function rate(rating: ReviewRating) {
     if (!current) return;
@@ -53,38 +47,50 @@ export function SpacedRepetitionScreen() {
   }
 
   return (
-    <FeatureShell title="Spaced Repetition" req="REQ-05">
-      <ScrollView contentContainerStyle={styles.scroll}>
-        {loading ? <ActivityIndicator /> : null}
+    <FeatureShell title="Ôn tập" variant="green">
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {loading ? <ActivityIndicator color={brand.primary} /> : null}
         {current ? (
           <Card>
-            <Text style={{ color: colors.text.tertiary, fontSize: 12 }}>
-              {index + 1} / {queue.length}
-            </Text>
-            <Text style={[styles.word, { color: colors.text.primary }]}>
+            <View style={styles.progressWrap}>
+              <View style={[styles.progressTrack, { backgroundColor: colors.border.tertiary }]}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { backgroundColor: brand.primary, width: `${progress * 100}%` },
+                  ]}
+                />
+              </View>
+              <Text style={[tokens.typography.caption, { color: colors.text.tertiary, marginTop: 6 }]}>
+                {index + 1} / {queue.length}
+              </Text>
+            </View>
+            <Text style={[tokens.typography.h1, { color: colors.text.primary, marginTop: 8 }]}>
               {current.vocabulary?.word ?? current.vocabId}
             </Text>
-            <Text style={{ color: colors.text.secondary, marginTop: 8 }}>
+            <Text style={[tokens.typography.body, { color: colors.text.secondary, marginTop: 8 }]}>
               {current.vocabulary?.meaning}
             </Text>
-            <Text style={{ color: colors.text.secondary, marginTop: 12, fontStyle: 'italic' }}>
-              {current.vocabulary?.context}
+            {current.vocabulary?.context ? (
+              <Text
+                style={[
+                  tokens.typography.body,
+                  { color: colors.text.secondary, marginTop: 12, fontStyle: 'italic' },
+                ]}
+              >
+                {current.vocabulary.context}
+              </Text>
+            ) : null}
+            <Text style={[tokens.typography.caption, { color: colors.text.tertiary, marginTop: 16 }]}>
+              Bạn nhớ từ này ở mức nào?
             </Text>
-            <View style={styles.ratings}>
-              {RATINGS.map((r) => (
-                <PrimaryButton
-                  key={r.rating}
-                  label={r.label}
-                  variant="secondary"
-                  onPress={() => void rate(r.rating)}
-                  style={styles.rateBtn}
-                />
-              ))}
-            </View>
+            <SrsRatingRow resetKey={current.vocabId} onRate={(r) => void rate(r)} />
           </Card>
-        ) : (
-          <Text style={{ color: colors.text.tertiary, textAlign: 'center' }}>Không có từ đến hạn ôn.</Text>
-        )}
+        ) : !loading ? (
+          <Text style={{ color: colors.text.tertiary, textAlign: 'center', marginTop: 24 }}>
+            Không có từ đến hạn ôn.
+          </Text>
+        ) : null}
       </ScrollView>
     </FeatureShell>
   );
@@ -92,7 +98,7 @@ export function SpacedRepetitionScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: 32 },
-  word: { fontSize: 28, fontWeight: '700', marginTop: 8 },
-  ratings: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 },
-  rateBtn: { minWidth: '45%' },
+  progressWrap: { marginBottom: 4 },
+  progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden' },
+  progressFill: { height: '100%', borderRadius: 3 },
 });

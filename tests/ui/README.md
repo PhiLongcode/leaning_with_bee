@@ -28,6 +28,8 @@ cd tests && set HEADED=true && npm run test:ui
 
 Domain tests (`not @ui`): `npm run test:bdd`
 
+Config Cucumber UI: `cucumber.fn01-ui.js` / `cucumber.ui.js` — runner `scripts/run-ui-tests.mjs --suite fn01` (tránh `--tags` trên Windows).
+
 ## Deep link E2E (web)
 
 `/?e2e=1&screen=fn01_vocabulary` — xem `apps/mobile/src/lib/e2eBootstrap.web.ts`

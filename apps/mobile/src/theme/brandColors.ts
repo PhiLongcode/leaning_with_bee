@@ -24,10 +24,15 @@ export function darkenHex(hex: string, amount = 0.12): string {
 
 export type RuntimeBrandColors = {
   primary: string;
+  primaryDark: string;
+  primaryLight: string;
+  primaryText: string;
   primaryPressed: string;
-  accent: string;
+  blue: string;
+  orange: string;
   error: string;
   xp: string;
+  mintButton: string;
 };
 
 export function buildRuntimeBrand(primaryHex: string): RuntimeBrandColors {
@@ -35,5 +40,7 @@ export function buildRuntimeBrand(primaryHex: string): RuntimeBrandColors {
     ...staticBrand,
     primary: primaryHex,
     primaryPressed: darkenHex(primaryHex),
+    primaryDark: darkenHex(primaryHex, 0.18),
+    primaryText: darkenHex(primaryHex, 0.08),
   };
 }

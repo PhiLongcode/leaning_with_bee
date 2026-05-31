@@ -1,2 +1,6 @@
 export type { ContextReviewQuestion } from './domain/contextReview';
-export { buildContextReviewQuiz, gradeContextReviewAnswer } from './application/contextReviewUseCases';
+export {
+  buildContextReviewQuiz,
+  buildContextReviewQuizFromLesson,
+  gradeContextReviewAnswer,
+} from './application/contextReviewUseCases';

@@ -9,7 +9,7 @@
 | Field | Value |
 |-------|-------|
 | FN | fn01_hoc_tu_vung_ngu_canh — REQ-01 |
-| Trạng thái | In Progress |
+| Trạng thái | **Done (DoD)** |
 | Đồng bộ lần cuối | 2026-05-31 |
 
 ## Todo — gate
@@ -28,7 +28,9 @@
 
 - [x] Scenarios: dialogue hợp lệ, highlight từ, strict dialogue
 - [x] `isValidVocabularyWithDialogue`, `highlightWordInLine`
-- [x] `npm run test:bdd:fn01` (tags `@FN-01`) — domain 12 scenarios pass
+- [x] `npm run test:bdd:fn01` (tags `@FN-01`) — domain 3/3 pass
+- [x] Unit Vitest: `tests/fn01/vocabularyDomain.spec.ts`, `getVocabularyLesson.spec.ts`
+- [x] API integration: `tests/integration/fn01-vocabulary.api.spec.ts`, P0 loop
 - [x] UI `@ui`: `tests/features/fn01/vocab_learning_ui.feature` — Serenity + Playwright (3 scenarios)
 
 ---
@@ -49,4 +51,4 @@
 | Giải thích tiếng mẹ đẻ | ExplanationNativeCard | [x] |
 | Validate 2–5 câu | Cucumber fn01/fn17 | [x] |
 
-**Xác nhận Done FN:** chưa (chờ backfill full seed)
+**Xác nhận Done FN:** **có** (2026-05-31) — `npm run test:bdd:fn01` 3/3 pass; báo cáo [`process/00_global_test_report.md`](../../process/00_global_test_report.md). G4 schema remote: INF-01.

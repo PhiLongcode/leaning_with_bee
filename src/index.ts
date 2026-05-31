@@ -12,3 +12,8 @@ export * from './fn11_notification_reminder';
 export * from './fn15_brand_config';
 export * from './fn17_vocab_ai_enrich';
 export type { SupabaseLikeClient } from './shared/supabaseClient';
+export {
+  completeVocabularyStudyStep,
+  recordContextQuizResult,
+  LEARNING_FLOW_STEPS,
+} from './shared/learningFlow';

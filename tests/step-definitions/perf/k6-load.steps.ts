@@ -15,14 +15,14 @@ Given('ngưỡng p95 latency {int} ms', (ms: number) => {
 
 Given('PERF_SUPABASE_URL đã cấu hình', async () => {
   if (!isPerfEnvConfigured()) {
-    return 'pending';
+    return 'skipped' as const;
   }
 });
 
 When('k6 chạy script {string}', async (script: string) => {
   lastRun = runK6Script(script);
   if (lastRun.skipped) {
-    return 'pending';
+    return 'skipped' as const;
   }
   await actor().attemptsTo(
     Ensure.that(lastRun.exitCode, equals(0)),
@@ -31,7 +31,7 @@ When('k6 chạy script {string}', async (script: string) => {
 
 Then('k6 thỏa ngưỡng latency và error rate', async () => {
   if (!lastRun || lastRun.skipped) {
-    return 'pending';
+    return 'skipped' as const;
   }
   if (lastRun.p95Ms != null) {
     await actor().attemptsTo(

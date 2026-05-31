@@ -94,7 +94,6 @@ export function createSupabaseCollectionRepository(client: SupabaseLikeClient): 
         .limit(100);
       if (error) return mock.listCollections(deviceId);
       const rows = (data ?? []) as Record<string, unknown>[];
-      if (!rows.length) return mock.listCollections(deviceId);
       return ok(rows.map(mapCollection));
     },
     async createCollection(deviceId, title, description = null) {

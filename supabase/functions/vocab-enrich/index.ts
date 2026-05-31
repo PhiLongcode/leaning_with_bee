@@ -91,13 +91,23 @@ async function generateWithLlm(
   roles: string[],
   nativeLanguage: string,
 ): Promise<Record<string, unknown>> {
-  const apiKey = Deno.env.get('OPENAI_API_KEY');
+  const apiKey = Deno.env.get('OPENAI_API_KEY') ?? Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey) {
     return mockEnrich(word, mode, body, topic, roles, nativeLanguage);
   }
 
-  const baseUrl = (Deno.env.get('OPENAI_BASE_URL') ?? 'https://api.openai.com/v1').replace(/\/$/, '');
-  const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4o-mini';
+  const rawBase =
+    Deno.env.get('OPENAI_BASE_URL') ??
+    Deno.env.get('ANTHROPIC_BASE_URL') ??
+    'https://api.openai.com/v1';
+  const baseUrl = rawBase.replace(/\/$/, '').endsWith('/v1')
+    ? rawBase.replace(/\/$/, '')
+    : `${rawBase.replace(/\/$/, '')}/v1`;
+  const model =
+    Deno.env.get('OPENAI_MODEL') ??
+    Deno.env.get('AI_DEFAULT_MODEL') ??
+    Deno.env.get('ANTHROPIC_DEFAULT_SONNET_MODEL') ??
+    'gpt-4o-mini';
 
   const systemPrompt = `You generate workplace English vocabulary lessons for software teams.
 Return ONLY valid JSON with keys: word, meaning, pronunciation, partOfSpeech, context, example, topic, difficultyLevel, dialogue, explanationNative.

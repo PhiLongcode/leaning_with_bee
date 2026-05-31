@@ -88,6 +88,25 @@ npx supabase db query --linked "select count(*) from public.vocabulary;"
 
 Kỳ vọng ≥ 5 từ sau seed.
 
-## 6. MCP (Cursor)
+## 6. AI secrets (Edge `vocab-enrich`)
+
+Biến trong **root** [`.env`](../.env) (gitignore) — **không** đặt trong `apps/mobile/.env` với `EXPO_PUBLIC_`.
+
+| Biến Edge | Fallback từ `.env` |
+|-----------|-------------------|
+| `OPENAI_API_KEY` | `ANTHROPIC_API_KEY` |
+| `OPENAI_BASE_URL` | `ANTHROPIC_BASE_URL` (tự thêm `/v1` nếu thiếu) |
+| `OPENAI_MODEL` | `AI_DEFAULT_MODEL` hoặc `ANTHROPIC_DEFAULT_SONNET_MODEL` |
+
+```bash
+# Sau khi điền .env
+npm run ai:secrets
+npm run ai:deploy
+# vocab-enrich | ai-conversation | speech-practice
+```
+
+Nếu gateway không hỗ trợ `POST /v1/chat/completions`, function vẫn fallback mock.
+
+## 7. MCP (Cursor)
 
 File mẫu [`.mcp.json.example`](../.mcp.json.example) — bật Supabase MCP và OAuth theo [skill Supabase](.agents/skills/supabase/SKILL.md).

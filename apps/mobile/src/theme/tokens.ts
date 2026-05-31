@@ -1,11 +1,12 @@
+/** SSOT scale: docs/02_system_design/sys_design_ux_ui.md §3 — fontFamily: typographyStyles.ts */
+
 export const spacing = {
   xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
+  xl: 24,
+  xxl: 32,
 } as const;
 
 export const radius = {
@@ -13,17 +14,25 @@ export const radius = {
   md: 12,
   lg: 16,
   xl: 20,
-  pill: 999,
+  xxl: 24,
+  pill: 9999,
 } as const;
 
 export const typography = {
-  h1: { fontSize: 28, fontWeight: '700' as const, letterSpacing: -0.5 },
-  h2: { fontSize: 20, fontWeight: '600' as const, letterSpacing: -0.3 },
-  h3: { fontSize: 16, fontWeight: '600' as const },
-  body: { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
-  caption: { fontSize: 12, fontWeight: '500' as const, lineHeight: 16 },
-  label: { fontSize: 11, fontWeight: '600' as const, letterSpacing: 0.8, textTransform: 'uppercase' as const },
+  display: { fontSize: 22, fontWeight: '700' as const, lineHeight: 28 },
+  heading1: { fontSize: 20, fontWeight: '600' as const, lineHeight: 26 },
+  heading2: { fontSize: 18, fontWeight: '600' as const, lineHeight: 24 },
+  heading3: { fontSize: 16, fontWeight: '600' as const, lineHeight: 22 },
+  body: { fontSize: 14, fontWeight: '400' as const, lineHeight: 22 },
+  bodyMedium: { fontSize: 14, fontWeight: '500' as const, lineHeight: 21 },
+  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 17 },
+  captionBold: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16 },
+  label: { fontSize: 11, fontWeight: '500' as const, letterSpacing: 0.88, textTransform: 'uppercase' as const },
   button: { fontSize: 15, fontWeight: '700' as const, letterSpacing: 0.3 },
+  /** @deprecated use heading1 */
+  h1: { fontSize: 22, fontWeight: '700' as const, lineHeight: 28 },
+  h2: { fontSize: 20, fontWeight: '600' as const, lineHeight: 26 },
+  h3: { fontSize: 16, fontWeight: '600' as const, lineHeight: 22 },
 } as const;
 
 export const shadow = {

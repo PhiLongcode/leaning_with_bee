@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { androidRipple, pressButton } from '../theme/pressFeedback';
 import { useTheme } from '../theme/ThemeContext';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'blue' | 'secondary' | 'ghost';
 
 type Props = {
   title?: string;
@@ -28,48 +29,50 @@ export function PrimaryButton({
   const text = label ?? title ?? '';
 
   const isPrimary = variant === 'primary';
+  const isBlue = variant === 'blue';
   const isGhost = variant === 'ghost';
+  const hasDepth = isPrimary || isBlue;
 
   return (
     <Pressable
       testID={testID}
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        styles.wrap,
-        style,
-        pressed && !disabled && styles.pressed,
-        disabled && styles.disabled,
-      ]}
+      android_ripple={androidRipple('rgba(255,255,255,0.22)')}
+      style={({ pressed }) => [styles.wrap, style, pressButton(pressed, disabled)]}
     >
-      <View
-        style={[
-          styles.btn,
-          compact && styles.btnCompact,
-          isPrimary && {
-            backgroundColor: brand.primary,
-            borderBottomColor: brand.primaryPressed,
-            borderBottomWidth: 3,
-          },
-          variant === 'secondary' && {
-            backgroundColor: colors.background.secondary,
-            borderWidth: 1,
-            borderColor: colors.border.tertiary,
-            borderBottomWidth: 1,
-          },
-          isGhost && { backgroundColor: 'transparent', borderBottomWidth: 0 },
-        ]}
-      >
-        <Text
+      {({ pressed }) => (
+        <View
           style={[
-            tokens.typography.button,
-            isPrimary && styles.textPrimary,
-            !isPrimary && { color: colors.text.primary },
+            styles.btn,
+            compact && styles.btnCompact,
+            hasDepth && {
+              backgroundColor: isBlue ? brand.blue : brand.primary,
+              borderBottomColor: isBlue ? '#006BB8' : brand.primaryPressed,
+              borderBottomWidth: pressed && !disabled ? 1 : 3,
+            },
+            variant === 'secondary' && {
+              backgroundColor: colors.background.secondary,
+              borderWidth: 1,
+              borderColor: colors.border.tertiary,
+              borderBottomWidth: 1,
+            },
+            isGhost && { backgroundColor: 'transparent', borderBottomWidth: 0 },
+            pressed && !disabled && variant === 'secondary' && { backgroundColor: colors.background.secondary },
           ]}
         >
-          {text}
-        </Text>
-      </View>
+          <Text
+            style={[
+              tokens.typography.button,
+              isPrimary && styles.textPrimary,
+              isBlue && styles.textPrimary,
+              !isPrimary && !isBlue && { color: colors.text.primary },
+            ]}
+          >
+            {text}
+          </Text>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -85,7 +88,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   btnCompact: { minHeight: 44, paddingVertical: 12 },
-  pressed: { opacity: 0.92, transform: [{ translateY: 1 }] },
-  disabled: { opacity: 0.45 },
   textPrimary: { color: '#FFFFFF' },
 });

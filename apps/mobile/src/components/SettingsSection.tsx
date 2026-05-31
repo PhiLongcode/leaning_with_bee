@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { AppPressable } from './ui/AppPressable';
+import { FONT_FAMILY } from '../theme/fonts';
 import { useTheme } from '../theme/ThemeContext';
 
 type Props = {
@@ -8,15 +10,19 @@ type Props = {
 };
 
 export function SettingsSection({ title, children }: Props) {
-  const { colors, tokens, isDark } = useTheme();
+  const { colors, tokens, isDark, cardBg } = useTheme();
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.title, { color: colors.text.tertiary }, tokens.typography.label]}>{title}</Text>
+      {title ? (
+        <Text style={[styles.sectionTitle, tokens.typography.heading1, { color: colors.text.primary }]}>
+          {title}
+        </Text>
+      ) : null}
       <View
         style={[
           styles.card,
           {
-            backgroundColor: colors.background.elevated,
+            backgroundColor: cardBg,
             borderColor: colors.border.tertiary,
           },
           !isDark && tokens.shadow.card,
@@ -37,12 +43,15 @@ type RowProps = {
 };
 
 export function SettingsRow({ label, value, mono, last, onPress }: RowProps) {
-  const { colors } = useTheme();
+  const { colors, tokens } = useTheme();
   const content = (
     <>
-      <Text style={[styles.label, { color: colors.text.secondary }]}>{label}</Text>
+      <Text style={[tokens.typography.caption, styles.label, { color: colors.text.secondary }]}>{label}</Text>
       <Text
-        style={[styles.value, { color: colors.text.primary }, mono && styles.mono]}
+        style={[
+          mono ? styles.mono : tokens.typography.bodyMedium,
+          { color: colors.text.primary },
+        ]}
         selectable
       >
         {value}
@@ -57,9 +66,9 @@ export function SettingsRow({ label, value, mono, last, onPress }: RowProps) {
       ]}
     >
       {onPress ? (
-        <Pressable onPress={onPress} accessibilityRole="button">
+        <AppPressable feedback="opacity" onPress={onPress} accessibilityRole="button">
           {content}
-        </Pressable>
+        </AppPressable>
       ) : (
         content
       )}
@@ -69,15 +78,14 @@ export function SettingsRow({ label, value, mono, last, onPress }: RowProps) {
 
 const styles = StyleSheet.create({
   wrap: { marginBottom: 20 },
-  title: { marginBottom: 8 },
+  sectionTitle: { marginBottom: 8, marginTop: 4 },
   card: {
-    borderRadius: 16,
+    borderRadius: 24,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 16,
     overflow: 'hidden',
   },
   row: { paddingVertical: 12 },
-  label: { fontSize: 12, marginBottom: 4, fontWeight: '500' },
-  value: { fontSize: 15, fontWeight: '600' },
-  mono: { fontFamily: 'monospace', fontSize: 13, fontWeight: '500' },
+  label: { marginBottom: 4 },
+  mono: { fontFamily: FONT_FAMILY.mono, fontSize: 13, lineHeight: 18 },
 });

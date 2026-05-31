@@ -11,10 +11,11 @@ import { Card } from '../../components/ui/Card';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useDeviceId } from '../../hooks/useDeviceId';
 import { awardXp } from '../../lib/gamification';
+import { scoreSpeechPractice } from '../../lib/speechPracticeApi';
 import { useTheme } from '../../theme/ThemeContext';
 
 export function SpeakingScreen() {
-  const { colors } = useTheme();
+  const { colors, tokens } = useTheme();
   const deviceId = useDeviceId();
   const [prompt] = useState(SPEECH_PROMPTS[0]!);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -27,8 +28,17 @@ export function SpeakingScreen() {
     if (result.ok) setSessionId(result.value.id);
   }
 
-  function check() {
-    if (!sessionId) return;
+  async function check() {
+    if (!sessionId || !transcript.trim()) return;
+
+    const remote = await scoreSpeechPractice(deviceId, prompt, transcript);
+    if (remote) {
+      setMatchScore(remote.matchScore);
+      setPronunciation(`${remote.score}/100 — ${remote.feedback}${remote.persisted ? ' (đã lưu DB)' : ''}`);
+      void awardXp(deviceId, Math.round(remote.score / 10));
+      return;
+    }
+
     const stt = submitSpeechTranscript(sessionId, transcript);
     if (!stt.ok) return;
     setMatchScore(stt.value.matchScore);
@@ -40,7 +50,7 @@ export function SpeakingScreen() {
   }
 
   return (
-    <FeatureShell title="Speaking Practice" req="REQ-08 / REQ-09">
+    <FeatureShell title="Luyện nói" variant="green">
       <ScrollView contentContainerStyle={styles.scroll}>
         <Card>
           <Text style={{ color: colors.text.tertiary, fontSize: 11, fontWeight: '700' }}>CÂU MẪU</Text>
@@ -58,9 +68,13 @@ export function SpeakingScreen() {
               onChangeText={setTranscript}
               placeholder="I will deploy the hotfix..."
               placeholderTextColor={colors.text.tertiary}
-              style={[styles.input, { color: colors.text.primary, borderColor: colors.border.tertiary }]}
+              style={[
+                tokens.textInput,
+                styles.input,
+                { color: colors.text.primary, borderColor: colors.border.tertiary },
+              ]}
             />
-            <PrimaryButton label="Chấm điểm" onPress={check} style={{ marginTop: 8 }} />
+            <PrimaryButton label="Chấm điểm" onPress={() => void check()} style={{ marginTop: 8 }} />
             {matchScore != null ? (
               <Text style={{ color: colors.surface.successText, marginTop: 12, fontWeight: '600' }}>
                 Khớp mẫu: {matchScore}%
@@ -78,5 +92,5 @@ export function SpeakingScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingBottom: 32 },
-  input: { borderWidth: 1, borderRadius: 12, padding: 12, minHeight: 80, fontSize: 14, textAlignVertical: 'top' },
+  input: { borderWidth: 1, borderRadius: 12, padding: 12, minHeight: 80, textAlignVertical: 'top' },
 });
