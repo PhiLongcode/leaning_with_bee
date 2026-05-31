@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "Học cùng Bee",
-    "slug": "hoc-cung-bee",
+    "name": "Cuder Học Tiếng",
+    "slug": "cuder-hoc-tieng",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "scheme": "hoccungbee",
+    "scheme": "cuderhoctieng",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hoccungbee.app"
+      "bundleIdentifier": "com.cuder.hoctieng"
     },
     "android": {
-      "package": "com.hoccungbee.app",
+      "package": "com.cuder.hoctieng",
       "adaptiveIcon": {
         "backgroundColor": "#EAF3DE",
         "foregroundImage": "./assets/android-icon-foreground.png",

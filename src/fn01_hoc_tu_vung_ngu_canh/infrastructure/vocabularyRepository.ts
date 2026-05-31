@@ -23,6 +23,8 @@ type VocabularyRow = {
   difficulty_level: number;
   lesson_day?: number | null;
   lesson_order?: number | null;
+  dialogue?: Vocabulary['dialogue'];
+  explanation_native?: Vocabulary['explanationNative'];
 };
 
 function mapRow(row: VocabularyRow): Vocabulary {
@@ -36,6 +38,8 @@ function mapRow(row: VocabularyRow): Vocabulary {
     example: row.example,
     topic: row.topic,
     difficultyLevel: row.difficulty_level,
+    dialogue: row.dialogue ?? null,
+    explanationNative: row.explanation_native ?? null,
     lessonDay: row.lesson_day ?? undefined,
     lessonOrder: row.lesson_order ?? undefined,
   };
@@ -46,7 +50,7 @@ function sortByLessonOrder(items: Vocabulary[]): Vocabulary[] {
 }
 
 const VOCAB_BASE_SELECT =
-  'id, word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level';
+  'id, word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level, dialogue, explanation_native';
 
 async function listBySeedWords(
   client: SupabaseLikeClient,
@@ -123,7 +127,7 @@ export function createSupabaseVocabularyRepository(client: SupabaseLikeClient): 
     async listLessonItems(lessonDay, limit = 10) {
       const { data, error } = await fromTable(client, 'vocabulary')
         .select(
-          'id, word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level, lesson_day, lesson_order',
+          'id, word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level, lesson_day, lesson_order, dialogue, explanation_native',
         )
         .eq('lesson_day', lessonDay)
         .order('lesson_order', { ascending: true })

@@ -1,9 +1,9 @@
-<!-- @file: process/templates/feature_template.md | @role: TPL — tạo bộ 5 file trong features/fnxx/ (01, 02_dev_plan_checklist, 03–05) | @related: process/00_file_manifest.md, README.md -->
+<!-- @file: process/templates/feature_template.md | @role: TPL — tạo bộ 5 file trong src/fnxx/ (01, 02_dev_plan_checklist, 03–05) | @related: 12-src-feature-docs.mdc -->
 
 # Template — Phát triển Feature (Function)
 
 > **Trước khi dùng template này:** REQ phải có trong [`00_requirement_business.md`](../00_requirement_business.md) (bảng STT | Tên | Biểu mẫu | Quy định | Ghi chú) — đó là **file requirement nghiệp vụ tổng (BDD)** sau `requirement_base.md`.  
-> Luồng: `requirement_base.md` → **`00_requirement_business.md`** (tổng) → **`01_requirement.md`** (từng FN) → **`02_dev_plan_checklist.md`** (dev plan). Chi tiết quy trình: [`requirement_business_template.md`](requirement_business_template.md).
+> Luồng SIFI: `requirement_base` → R1 → **`01_requirement.md`** (Task 1) → **Example Mapping** (Task 2) → **`.feature`** (Task 3) → unit TDD (Task 4) → automate (Task 5).
 
 ---
 
@@ -19,6 +19,35 @@
 | Function ID | FN-XXX |
 | Tên | |
 | Trạng thái | Draft / In Progress / Done |
+
+### Kim tự tháp (Spec-driven — bắt buộc)
+
+| Tầng | Bước SIFI | Nội dung |
+|------|-----------|----------|
+| **Goal** | 1 Speculate | Mục tiêu kinh doanh — *tại sao* |
+| **Actor** | 1 Speculate | Ai tương tác |
+| **Capability** | 1 Speculate | Khả năng hệ thống (REQ-XX) |
+| **Feature** | 1 Speculate | FN-XXX — nhóm chức năng |
+| **User Story** | 1 Speculate | As a [actor], I want … so that [goal] |
+| **Examples** | 2 Illustrate | Example Mapping → `03_debate.md` |
+| **Scenario** | 3 Formulate | Given–When–Then → `.feature` |
+
+### Backlog item (bước 1 Speculate)
+
+| Field | Value |
+|-------|-------|
+| Tiêu đề | |
+| Mô tả ngắn | |
+| Ưu tiên | Must / Should / Could |
+| REQ / FN | REQ-XX / FN-XXX |
+
+### Ubiquitous Language (DDD)
+
+| Thuật ngữ | Ý nghĩa | Domain type |
+|-----------|---------|-------------|
+| | | |
+
+> Dùng **đúng** thuật ngữ này trong Gherkin, step defs và `src/fnxx/domain/`.
 
 ### Tóm tắt (copy từ bảng nghiệp vụ)
 
@@ -41,7 +70,9 @@
 
 ### Liên kết
 
-- `.feature`: `docs/01_specification/features/<name>.feature`
+- `.feature` (R3): `docs/01_specification/features/<name>.feature`
+- Automation (R4): `tests/features/fnxx/`
+- Traceability: [`process/templates/bdd_traceability_template.md`](../templates/bdd_traceability_template.md)
 - API: `docs/02_system_design/api_specs/`
 
 ---
@@ -57,7 +88,16 @@
 
 ## 03_debate.md
 
-> Ghi lại tranh luận / quyết định kỹ thuật (ADR ngắn).
+> **Bước 2 Illustrate:** Example Mapping (Three Amigos) + ADR kỹ thuật.  
+> Template: [`example_mapping_template.md`](example_mapping_template.md)
+
+### Example Mapping
+
+| Rule | Example (happy) | Example (edge/negative) | Question |
+|------|-----------------|-------------------------|----------|
+| | | | |
+
+### ADR / tranh luận
 
 | # | Câu hỏi | Phương án A | Phương án B | Quyết định | Lý do |
 |---|---------|-------------|-------------|------------|-------|

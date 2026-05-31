@@ -10,13 +10,15 @@ type Props = {
   badge?: string;
   onPress: () => void;
   last?: boolean;
+  testID?: string;
 };
 
-export function FeatureRow({ icon, title, subtitle, badge, onPress, last }: Props) {
+export function FeatureRow({ icon, title, subtitle, badge, onPress, last, testID }: Props) {
   const { colors } = useTheme();
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,

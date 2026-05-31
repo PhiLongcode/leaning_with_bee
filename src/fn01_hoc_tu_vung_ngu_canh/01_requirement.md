@@ -13,28 +13,49 @@
 | Tên | Học từ vựng theo ngữ cảnh |
 | Trạng thái | Draft |
 
+## Kim tự tháp (Spec-driven)
+
+| Tầng | Nội dung |
+|------|----------|
+| **Goal** | Người học hiểu và dùng từ vựng tiếng Anh IT trong ngữ cảnh công việc thực tế — không học từ đơn lẻ. |
+| **Actor** | Người học (learner) |
+| **Capability** | Hệ thống hiển thị từ kèm context, example, topic và hội thoại workplace 2–5 câu. |
+| **Feature** | FN-01 — Học từ vựng theo ngữ cảnh |
+| **User Story** | (xem § User story bên dưới) |
+| **Scenario** | [`hoc_tu_vung_ngu_canh.feature`](../../docs/01_specification/features/hoc_tu_vung_ngu_canh.feature), [`tests/features/fn01/`](../../tests/features/fn01/) |
+
+## Ubiquitous Language (DDD)
+
+| Thuật ngữ | Ý nghĩa | Domain type |
+|-----------|---------|-------------|
+| vocabulary | Một mục từ trong bài học | `Vocabulary` |
+| dialogue | Hội thoại workplace 2–5 câu, ≥2 speaker | `VocabularyDialogue` |
+| explanationNative | Giải thích một khối bằng ngôn ngữ mẹ đẻ | `ExplanationNative` |
+| context / example / topic | Ngữ cảnh, ví dụ, chủ đề bắt buộc mỗi từ | fields trên `Vocabulary` |
+
 ## Tóm tắt (copy từ bảng nghiệp vụ)
 
 | Biểu mẫu | Quy định | Ghi chú |
 |----------|----------|---------|
-| Màn **Vocabulary Learning**; entity `vocabulary` (word, meaning, pronunciation, part_of_speech, context, example, topic, difficulty_level) | Mỗi từ **bắt buộc** có context + example + topic; **không** hiển thị học từ đơn lẻ không ngữ cảnh; hỗ trợ audio phát âm | Nền tảng cho FN-05, FN-06 |
+| Màn **Vocabulary Learning**; entity `vocabulary` (+ `dialogue` jsonb) | Mỗi từ **bắt buộc** context + example + topic + **hội thoại 2–5 câu** (≥2 vai: BA, Tester, PM, DEV, Customer, DevOps, Network…); từ mục tiêu trong dialogue; **không** học từ đơn lẻ; audio phát âm | Nền tảng FN-05, FN-06; import FN-16 |
 
 ## User story
 
-- Là **người học**, tôi muốn **xem từ trong ngữ cảnh công việc** để **hiểu cách dùng thực tế**.
+- Là **người học**, tôi muốn **xem từ kèm đoạn hội thoại công việc ngắn** để **hiểu cách dùng thực tế trong team phát triển phần mềm**.
 
 ## Acceptance criteria
 
-1. Given từ "deploy" có context, example và topic Software Development — When tôi mở bài học từ đó — Then tôi thấy nghĩa, phát âm, loại từ, ví dụ và ngữ cảnh.
-2. Given màn học từ — When hiển thị nội dung — Then không có màn chỉ hiển thị từ đơn lẻ không context.
-3. Given từ có pronunciation — When tôi bấm nghe phát âm — Then audio phát đúng từ đó.
+1. Given từ "deploy" có context, example, topic và dialogue 3 câu (PM ↔ DEV) — When mở bài học — Then thấy nghĩa, phát âm, hội thoại dạng chat và từ "deploy" trong dialogue.
+2. Given dialogue — Then có **2–5 câu**, **≥2 speaker**, ngữ cảnh workplace IT.
+3. Given màn học — Then **không** chỉ hiển thị từ đơn lẻ không context/dialogue.
+4. Given pronunciation — When bấm nghe — Then audio phát đúng.
 
 ## Out of scope
 
-- Catalog từ hệ thống (seed/admin); spaced repetition (FN-05); context review quiz (FN-06).
+- Import file (FN-16); spaced repetition (FN-05); context review quiz (FN-06).
 
 ## Liên kết
 
 - `.feature`: [`docs/01_specification/features/hoc_tu_vung_ngu_canh.feature`](../../docs/01_specification/features/hoc_tu_vung_ngu_canh.feature)
-- API / design: `docs/02_system_design/` (khi bootstrap contract)
+- Import format: `requirement_base.md` § FN-16
 - SSOT tổng: [`00_requirement_business.md`](../../process/00_requirement_business.md)

@@ -15,6 +15,8 @@
 | 6 | Windows: đổi tên chỉ hoa/thường fail | Đổi qua tên tạm (`_rename_tmp`) rồi tên đích |
 | 7 | Copy cả domain F&B vào dự án mới | Pack chỉ khung; xóa/rút `00_requirement_business`, FN mẫu sau bootstrap |
 | 8 | Sync pack im lặng, pack lệch rule gốc | Rule `07`: tự check cuối task + **AskQuestion** trước khi đồng bộ |
+| 9 | Code trước scenario / spec không truy xuất requirement | Rule `13` SIFI 7 bước: Speculate → Illustrate → Formulate → unit TDD → Automate; gate Task 1–3 trước Task 4 |
+| 10 | `# language: vi` + keywords Gherkin tiếng Anh → parse error Cucumber | Keywords `Feature/Given/When/Then` tiếng Anh; step text tiếng Việt OK |
 
 ## Cải tiến đã đưa vào pack
 
@@ -27,6 +29,9 @@
 | Rule 07 (này) | Playbook + changelog + gate đồng bộ pack |
 | Rule 07 v1.1.1 | `alwaysApply` + tự check L1–L7 + AskQuestion Có/Không trước sync |
 | `src_module_structure.md` | `src/fn##_*/` feature-first + Clean bên trong; cấm `src/domain/` phẳng |
+| Pack 1.2.0 | Rule `13-spec-driven-bdd-ddd`: pyramid Goal→Scenario, SSOT requirement, Cucumber/Serenity Task 2.5, DDD UL |
+| Pack 1.3.0 | Rule `14-performance-bdd`: k6 + Gherkin @perf, perf trong bước 3/5/6/7 SIFI |
+| Pack 1.4.0 | **SIFI 7 bước** tuần tự; dev plan Task 1–7; `example_mapping_template`; unit TDD (bước 4) trước automate (bước 5) |
 
 ## Khi thêm dòng mới
 

@@ -1,10 +1,10 @@
-<!-- @file: process/templates/dev_plan_checklist_template.md | @role: TPL — sinh `features/fnxx/02_dev_plan_checklist.md` (instance gọn) | @related: .cursor/rules/06-dev-plan-workflow.mdc -->
+<!-- @file: process/templates/dev_plan_checklist_template.md | @role: TPL — SIFI Task 1–7 | @related: 06-dev-plan-workflow.mdc, 13-spec-driven-bdd-ddd.mdc -->
 
-# Template — `02_dev_plan_checklist.md` (instance)
+# Template — `02_dev_plan_checklist.md` (SIFI 7 bước)
 
-> **Luồng & luật (3)(4)(5)(6), thứ tự bước:** xem [`.cursor/rules/06-dev-plan-workflow.mdc`](../../.cursor/rules/06-dev-plan-workflow.mdc) — **không** nhồi quy trình dài vào file này.  
-> **File này chỉ chứa:** metadata, **todo gate**, các **Task** với checklist + step-by-step + **Input / Output / Next step**.  
-> **Debate dài:** [`03_debate.md`](../features/fn01_phan_loai_khach/03_debate.md).
+> **SSOT quy trình:** [`.cursor/rules/13-spec-driven-bdd-ddd.mdc`](../../.cursor/rules/13-spec-driven-bdd-ddd.mdc)  
+> **Map Task ↔ bước:** [`.cursor/rules/06-dev-plan-workflow.mdc`](../../.cursor/rules/06-dev-plan-workflow.mdc)  
+> Instance chỉ gồm: metadata, gate, Task 1–7 (checklist + Input/Output/Next), DoD.
 
 ---
 
@@ -14,127 +14,122 @@
 |-------|-------|
 | FN | fnxx — … |
 | REQ | REQ-XX |
-| `01_requirement` | _(link)_ |
 | Trạng thái | Draft / In Progress / Done |
-| Đồng bộ lần cuối | _(YYYY-MM-DD — bắt buộc cập nhật khi tick; rule `06` §5)_ |
+| Đồng bộ lần cuối | YYYY-MM-DD |
 
 ---
 
-## Todo — gate trước khi code
+## Todo — gate trước Task 4 (Design/unit)
 
-**Quy tắc:** Chỉ bắt đầu **Task — Implementation** khi tất cả **Bắt buộc** đã `[x]`.
+**Quy tắc:** Task **4–5** chỉ khi Task **1–3** xong.
 
-### Bắt buộc
+- [ ] Task 1 Speculate — Goal, Actor, Capability trong `01_requirement.md`
+- [ ] Task 2 Illustrate — Example Mapping + Three Amigos (`03_debate.md`)
+- [ ] Task 3 Formulate — R3 `.feature` + tags (`@smoke` / `@regression` / `@ui` / `@api`)
+- [ ] Rà `docs/02_system_design/` — update hoặc **no contract change — ngày …**
 
-- [ ] `01_requirement.md` chốt AC (in-scope rõ).
-- [ ] Đã đọc `00_requirement_business.md` (đúng REQ), `00_global_lesson_learn.md`, `00_global_issue_log.md`.
-- [ ] `docs/01_specification/features/*.feature` có scenario cho AC chính (hoặc defer có lý do trong `03_debate.md`).
-- [ ] Rà `docs/02_system_design/` — cập nhật hoặc ghi **no contract change — ngày …**.
-- [ ] (Khi có `src/`) Biết module/layer sẽ sửa.
-- [ ] Branch/issue gắn REQ.
-
-### Tuỳ chọn
-
-- [ ] Task Lõi→Vỏ: [`docs/04_delivery_tasks/task_template.md`](../../docs/04_delivery_tasks/task_template.md).
-- [ ] Spike xong → kết luận trong `03_debate.md`.
-
-**Được phép code:** _tên / ngày_
+**Được phép Design/unit (Task 4):** _tên / ngày_
 
 ---
 
-## Task 1 — Chuẩn bị SSOT & tránh lặp
+## Task 1 — Speculate
 
-**Checklist**
+- [ ] Business goal (1–3 câu)
+- [ ] Actors / persona
+- [ ] Capability + FN-XX; backlog item (tiêu đề, ưu tiên)
+- [ ] `01_requirement.md` + R1 dedup (`10-requirement-dedup.mdc`)
 
-- [ ] Đã đọc đủ nguồn Input bên dưới.
-- [ ] Ghi chú rủi ro / GISS liên quan (nếu có).
-
-**Step-by-step**
-
-1. Mở `01_requirement` + dòng REQ trong `00_requirement_business`.
-2. Rà `00_global_lesson_learn`, `00_global_issue_log` (keyword / module FN).
-3. (Có `src/`) Ghi package hoặc layer dự kiến chạm.
-
-| | |
-|--|--|
-| **Input** | `01_requirement.md`, `00_requirement_business.md` (REQ-XX), `00_global_lesson_learn.md`, `00_global_issue_log.md` |
-| **Output** | Đã rà global; không mâu thuẫn AC; (tuỳ chọn) link issue/note 1 dòng |
-| **Next step** | Task 2 — BDD & contract |
+| **Input** | R0/R1, `00_global_*` |
+| **Output** | `01_requirement.md` § Goal/Actor/Capability |
+| **Next step** | Task 2 — Illustrate |
 
 ---
 
-## Task 2 — BDD & contract
+## Task 2 — Illustrate
 
-**Checklist**
+- [ ] Workshop Three Amigos (BA · Dev · Test)
+- [ ] Example Mapping: rules, examples (happy/edge/negative), questions
+- [ ] Questions blocker → resolved hoặc defer `03_debate.md`
 
-- [ ] File `.feature` cập nhật.
-- [ ] Contract/design đã rà hoặc ghi no-change.
+Template: [`example_mapping_template.md`](example_mapping_template.md)
 
-**Step-by-step**
-
-1. Sinh/sửa `docs/01_specification/features/<tên>.feature` (`01-bdd-spec.mdc`).
-2. Rà và cập nhật `docs/02_system_design/` nếu đổi API/DB.
-3. Review nhanh với peer/BA.
-
-| | |
-|--|--|
-| **Input** | `01_requirement.md`, scenario tham chiếu, `docs/02_system_design/*` |
-| **Output** | `.feature` path: `…`; contract updated hoặc **no contract change — ngày** |
-| **Next step** | Task 3 — Implementation *(chỉ khi Todo gate xong)* |
+| **Input** | Task 1 output |
+| **Output** | Example mapping trong `03_debate.md` |
+| **Next step** | Task 3 — Formulate |
 
 ---
 
-## Task 3 — Implementation
+## Task 3 — Formulate
 
-**Checklist**
+- [ ] Gherkin R3: `docs/01_specification/features/*.feature`
+- [ ] Tags: `@REQ-XX` `@FN-XX` + `@smoke` | `@regression` | `@ui` | `@api` | `@perf`
+- [ ] AC đo lường được; UL = domain terms
 
-- [ ] Domain / Application / Infra / UI theo Clean Architecture.
-- [ ] PR nhỏ, link REQ + `.feature`.
-
-**Step-by-step**
-
-1. Entity, use case, ports (`02-clean-solid.mdc`).
-2. Adapter, UI/API.
-3. Test trước logic nơi áp dụng (`03-tdd-execute.mdc`).
-4. (FN lớn) Chia task theo `docs/04_delivery_tasks/task_template.md`.
-
-| | |
-|--|--|
-| **Input** | `01_requirement`, `.feature`, design đã chốt; branch |
-| **Output** | PR/link commit; test pass locally/CI |
-| **Next step** | Task 4 — QA & E2E |
+| **Input** | Example mapping, `01_requirement.md` |
+| **Output** | `.feature` R3 |
+| **Next step** | Task 4 — Design + unit TDD |
 
 ---
 
-## Task 4 — QA & E2E
+## Task 4 — Design + unit TDD
 
-**Checklist**
+- [ ] Domain / use case / ports (`02-clean-solid.mdc`)
+- [ ] `*.spec.ts` — Red → Green → Refactor
+- [ ] Unit suite xanh locally
 
-- [ ] Unit/integration theo chiến lược team.
-- [ ] E2E map `.feature` (`04-ta-verify.mdc`, `data-testid`).
-
-**Step-by-step**
-
-1. Chạy test theo `docs/03_quality_assurance/`.
-2. E2E cho luồng chính; bổ sung nếu AC risk cao.
-
-| | |
-|--|--|
-| **Input** | `.feature`, build ổn định, môi trường test |
-| **Output** | Kết quả test (lệnh / link CI); danh sách AC đã cover |
-| **Next step** | `DONE` — cập nhật ma trận bên dưới |
+| **Input** | R3 scenarios, design |
+| **Output** | `src/fn##/` domain + unit pass |
+| **Next step** | Task 5 — Automate |
 
 ---
 
-## Ma trận DoD (verify cuối FN)
+## Task 5 — Automate acceptance & integration
 
-| AC / rủi ro (trích `01_requirement`) | Chứng cứ (test / PR / demo) | Pass |
-|---------------------------------------|------------------------------|------|
-| | | [ ] |
+- [ ] Mirror R3 → `tests/features/fn##/`
+- [ ] Step defs → domain; `@ui`: Screenplay (`tests/ui/`)
+- [ ] `@perf`: k6 nếu có SLA (`14-performance-bdd.mdc`)
+- [ ] `npm run test:bdd` / `test:bdd:ui` pass
+
+Traceability: [`bdd_traceability_template.md`](bdd_traceability_template.md)
+
+| **Input** | R3, unit xanh (Task 4) |
+| **Output** | Acceptance pass; `tests/reports/` |
+| **Next step** | Task 6 — CI |
+
+---
+
+## Task 6 — CI pipeline & quality gates
+
+- [ ] Pipeline: unit → lint/typecheck → integration → acceptance → publish report
+- [ ] Fail fast: unit fail → dừng pipeline
+- [ ] Artifact: `cucumber-report.html`, k6 summary
+
+| **Input** | Task 5 green |
+| **Output** | CI green + living docs |
+| **Next step** | Task 7 — Release & monitor |
+
+---
+
+## Task 7 — Release, monitor & feedback
+
+- [ ] Deploy staging/prod (theo policy)
+- [ ] Monitor NFR (error rate, perf)
+- [ ] Feedback → backlog; quay Task 2 nếu AC sai
+
+| **Input** | Release runbook |
+| **Output** | Metrics; `04_issue_log` / `05_lesson_learn` |
+| **Next step** | `DONE` hoặc quay Illustrate |
+
+---
+
+## Ma trận DoD
+
+| AC (trích `01_requirement`) | Chứng cứ (unit / acceptance / CI) | Pass |
+|-----------------------------|-------------------------------------|------|
 | | | [ ] |
 
 **Xác nhận Done FN:** _… / ngày_
 
 ---
 
-> **Đồng bộ:** Mỗi phiên sửa `src/fn##_*/`, `tests/fn##_*/`, `.feature` → tick `02_dev_plan_checklist.md` trước khi kết thúc ([`06-dev-plan-workflow.mdc`](../../.cursor/rules/06-dev-plan-workflow.mdc) §5).
+> **Đồng bộ:** Mỗi phiên sửa code/test → tick Task tương ứng (`06` §5).

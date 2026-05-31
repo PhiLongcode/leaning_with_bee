@@ -2,8 +2,8 @@
 
 # Lesson learn
 
-> **Gate ghi file:** [`.cursor/rules/11-lesson-learn-gate.mdc`](../../.cursor/rules/11-lesson-learn-gate.mdc) — nháp → xác nhận Có/Không → mới sửa.
+> **Gate ghi file:** [`.cursor/rules/11-lesson-learn-gate.mdc`](../../.cursor/rules/11-lesson-learn-gate.mdc)
 
 | Đã làm tốt | Cần cải thiện | Đề xuất Global |
 |------------|---------------|----------------|
-| | | _(sau xác nhận Có → `00_global_lesson_learn.md`)_ |
+| (2026-05-29) `userVocabularyRepository`: lookup `vocabulary` theo `word` từ seed → UUID thật; mock chỉ khi không resolve hoặc id không phải UUID (ISS-001). | E2E sau khi fn01 schema đủ: thêm/xóa favorite dùng UUID DB, không còn `uv-*`. | GISS-003: adapter Supabase không gửi mock id lên cột `uuid`. |

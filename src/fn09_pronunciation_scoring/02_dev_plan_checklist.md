@@ -77,7 +77,21 @@
 |--|--|
 | **Input** | `01_requirement.md`, Gherkin REQ-09, `docs/02_system_design/*` |
 | **Output** | `.feature`: `docs/01_specification/features/pronunciation_scoring.feature`; contract updated hoặc **no contract change — 2026-05-28** |
-| **Next step** | Task 3 — Implementation *(chỉ khi Todo gate xong)* |
+| **Next step** | Task 2.5 — TDD (Cucumber + Serenity) **trước** Task 3 |
+
+---
+
+## Task 2.5 — TDD (Cucumber.js + Serenity/JS) — **trước** Implementation
+
+**Quy tắc:** Viết `tests/features/fn09/*.feature` + step defs **trước** Task 3.
+
+**Checklist**
+
+- [ ] Mirror `docs/01_specification/features/pronunciation_scoring.feature` → `tests/features/fn09/`
+- [ ] Step defs + Serenity actor: `tests/step-definitions/fn09/`
+- [ ] Domain/use case assertions pass
+- [ ] `npm run test:bdd` với tag `@FN-09`
+- [ ] CI hook `npm run test:bdd` (tuỳ pipeline)
 
 ---
 

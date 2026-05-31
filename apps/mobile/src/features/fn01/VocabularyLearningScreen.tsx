@@ -7,6 +7,8 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Card } from '../../components/ui/Card';
 import { Chip } from '../../components/ui/Chip';
+import { DialogueBubbleList } from '../../components/vocab/DialogueBubbleList';
+import { ExplanationNativeCard } from '../../components/vocab/ExplanationNativeCard';
 import { addVocabularyToMyList } from '@hoc-cung-bee/features';
 import { useDeviceId } from '../../hooks/useDeviceId';
 import { getUserVocabularyRepository } from '../../lib/featureRepos';
@@ -81,7 +83,7 @@ export function VocabularyLearningScreen() {
       title={dayMeta ? `${dayMeta.title} — ${dayMeta.subtitle}` : 'Học từ vựng ngữ cảnh'}
       req={`REQ-01 · ${items.length} từ`}
     >
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} testID="vocab-learning-scroll">
         <View style={styles.progressWrap}>
           <View style={[styles.progressTrack, { backgroundColor: colors.border.tertiary }]}>
             <View
@@ -99,10 +101,11 @@ export function VocabularyLearningScreen() {
         <Chip label={current.topic} tone="info" style={styles.topicChip} />
 
         <View style={styles.wordRow}>
-          <Text style={[tokens.typography.h1, styles.word, { color: colors.text.primary }]}>
+          <Text testID="vocab-word" style={[tokens.typography.h1, styles.word, { color: colors.text.primary }]}>
             {current.word}
           </Text>
           <Pressable
+            testID="vocab-pronunciation-btn"
             onPress={speak}
             style={[styles.audioBtn, { backgroundColor: colors.surface.success }]}
             accessibilityLabel="Nghe phát âm"
@@ -119,15 +122,30 @@ export function VocabularyLearningScreen() {
         ) : null}
         <Text style={[styles.meaning, { color: colors.text.primary }]}>{current.meaning}</Text>
 
-        <Card style={styles.block}>
+        <Card style={styles.block} testID="vocab-context-block">
           <Text style={[styles.blockLabel, { color: colors.surface.successText }]}>Ngữ cảnh</Text>
-          <Text style={[tokens.typography.body, { color: colors.text.primary }]}>{current.context}</Text>
+          <Text testID="vocab-context" style={[tokens.typography.body, { color: colors.text.primary }]}>{current.context}</Text>
         </Card>
 
-        <Card style={styles.block}>
+        <Card style={styles.block} testID="vocab-example-block">
           <Text style={[styles.blockLabel, { color: colors.surface.infoText }]}>Ví dụ</Text>
-          <Text style={[tokens.typography.body, { color: colors.text.primary }]}>{current.example}</Text>
+          <Text testID="vocab-example" style={[tokens.typography.body, { color: colors.text.primary }]}>{current.example}</Text>
         </Card>
+
+        {current.dialogue?.lines?.length ? (
+          <Card style={styles.block}>
+            <Text style={[styles.blockLabel, { color: colors.surface.infoText }]}>Hội thoại</Text>
+            <DialogueBubbleList dialogue={current.dialogue} highlightWord={current.word} />
+          </Card>
+        ) : (
+          <Card variant="outline" style={styles.block}>
+            <Text style={{ color: colors.text.tertiary, fontSize: 13 }}>Chưa có hội thoại</Text>
+          </Card>
+        )}
+
+        {current.explanationNative ? (
+          <ExplanationNativeCard explanation={current.explanationNative} />
+        ) : null}
 
         <PrimaryButton
           label="Thêm vào sổ của tôi"

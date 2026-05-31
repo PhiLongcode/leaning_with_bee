@@ -1,54 +1,40 @@
 ---
-description: Kiểm thử chỉ trong src/ — mức test & phương pháp theo CodeStar (functional/non-functional)
-globs: src/**/*
+description: Chiến lược test theo SIFI 7 bước + CI gate
+globs: src/**/*,tests/**/*
 alwaysApply: false
 ---
 
-> **File:** `.cursor/rules/08-src-testing.mdc` · **Role:** SSOT rule AI — **chỉ** kiểm thử mã trong `src/`  
-> **Related:** `docs/03_quality_assurance/testing_strategy.md`, `03-tdd-execute.mdc`, `04-ta-verify.mdc`, `docs/01_specification/features/*.feature`  
-> **Tham chiếu:** [Kiểm thử phần mềm — CodeStar](https://codestar.vn/kiem-thu-phan-mem-la-gi/)  
-> **Do-not:** Test cấu trúc `process/`, `docs/` markdown bằng script repo; không test ngoài `src/` + `e2e/` (Playwright)
+> **File:** `.cursor/rules/08-src-testing.mdc` · **Role:** Phân loại test + thứ tự CI  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `docs/03_quality_assurance/testing_strategy.md`
 
-# Kiểm thử `src/` (theo phương pháp CodeStar)
+# Kiểm thử theo SIFI
 
-## 1. Phạm vi
+## Phân loại
 
-| Được test | Không thuộc rule này |
-|-----------|----------------------|
-| `src/**` (domain, usecases, adapters, API/UI code) | `process/`, `docs/` (quy trình, BDD file — chỉ **đọc** làm đầu vào) |
-| `e2e/**` hoặc `tests/e2e/**` (Playwright — Acceptance) | Script validate cây thư mục repo |
+| Bước SIFI | Loại test | Vị trí |
+|-----------|-----------|--------|
+| 4 Design | **Unit** | `src/fn##/**/*.spec.ts` |
+| 5 Automate | **Acceptance BDD** | `tests/features/`, step defs |
+| 5 Automate | **UI** `@ui` | Serenity + Playwright |
+| 5 Automate | **Integration** | `tests/integration/` |
+| 5 Automate | **Perf** `@perf` | k6 `tests/perf/k6/` |
 
-**Đầu vào bắt buộc trước khi viết test:** `process/features/fnxx/01_requirement.md` + `docs/01_specification/features/*.feature` (AC Gherkin).
+## CI pipeline (bước 6) — thứ tự
 
----
+1. **Unit** — fail → dừng pipeline  
+2. **Static analysis** — lint, typecheck  
+3. **Integration**  
+4. **Acceptance** — `npm run test:bdd`, `test:bdd:ui`, `test:bdd:perf` (nếu env)  
+5. **Publish** — `tests/reports/cucumber-report.html`, k6 summary  
 
-## 2. Phân loại kiểm thử (map CodeStar → repo)
+## Đầu vào test
 
-### 2.1 Kiểm thử chức năng (Functional)
+SSOT: `01_requirement.md` → Example Mapping → `.feature` → unit → automate.
 
-| Mức | Kỹ thuật | Vị trí |
-|-----|----------|--------|
-| **Unit** | White box | `src/**/*.spec.ts` |
-| **Integration** | Gray box | `tests/integration/` |
-| **System** | Black box | `tests/system/` |
-| **Acceptance** | Black box | Playwright `e2e/` (`04-ta-verify.mdc`) |
+## Coverage
 
-### 2.2 Non-functional
+Domain/use case ≥ 80% (mục tiêu).
 
-Stability, load, usability, compatibility — theo REQ; regression sau bug.
+## Non-functional (bước 7)
 
-### 2.3 Structural
-
-Coverage domain/usecases **≥ 80%**.
-
----
-
-## 3. Quy trình 6 bước CodeStar
-
-Phân tích → Kế hoạch (`02_dev_plan_checklist`) → Thiết kế test case → Môi trường → Thực thi (Unit→E2E) → Kết thúc + regression.
-
----
-
-## 4–6. TDD, lệnh `npm test`, đầu ra
-
-Xem bản đầy đủ trên repo mẫu hoặc `docs/03_quality_assurance/testing_strategy.md` sau bootstrap.
+Monitor + `@perf`; feedback → Illustrate.

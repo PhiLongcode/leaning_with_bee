@@ -1,0 +1,31 @@
+---
+description: Bước 5/6/7 — Performance như executable spec (@perf) + monitor NFR
+globs: tests/perf/**/*,tests/features/perf/**/*
+alwaysApply: false
+---
+
+> **File:** `.cursor/rules/14-performance-bdd.mdc` · **Role:** Perf trong SIFI — Formulate SLA → Automate k6 → CI → Monitor  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `docs/03_quality_assurance/performance_testing.md`
+
+# Performance BDD (k6)
+
+## Vị trí SIFI
+
+| Bước | Việc |
+|------|------|
+| 3 Formulate | Scenario `@perf` + SLA trong Gherkin |
+| 5 Automate | Script k6 + step defs assert p95 |
+| 6 CI | `test:bdd:perf` trong pipeline (env staging) |
+| 7 Release | Monitor NFR; feedback → Illustrate |
+
+## Framework
+
+**k6** (mặc định). JMeter / Gatling / Locust — tùy chọn; cùng Gherkin SLA.
+
+## Tag
+
+`@perf` — loại khỏi `test:bdd` mặc định.
+
+## Cấm
+
+Load prod không được phép; scenario không truy xuất requirement/SLA.

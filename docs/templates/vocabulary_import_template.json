@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "word": "deploy",
+      "meaning": "triển khai (phần mềm)",
+      "pronunciation": "/dɪˈplɔɪ/",
+      "partOfSpeech": "verb",
+      "topic": "Release & Deploy",
+      "difficultyLevel": 2,
+      "context": "We will deploy the hotfix after QA signs off.",
+      "example": "The team deploys every Friday during the release window.",
+      "dialogue": {
+        "scenario": "Release planning before client demo",
+        "workplaceRole": "PM, DEV",
+        "lines": [
+          { "speaker": "PM", "text": "Can we deploy the hotfix before the client demo at 3 PM?" },
+          { "speaker": "DEV", "text": "Yes, QA signed off — we'll deploy to staging first, then production." },
+          { "speaker": "PM", "text": "Great. Ping me once the deploy finishes so I can notify the customer." }
+        ]
+      }
+    },
+    {
+      "word": "requirement",
+      "meaning": "yêu cầu (nghiệp vụ)",
+      "pronunciation": "/rɪˈkwaɪərmənt/",
+      "partOfSpeech": "noun",
+      "topic": "Requirements (BA)",
+      "difficultyLevel": 2,
+      "context": "The BA clarified the requirement with the customer yesterday.",
+      "example": "Each user story must trace back to an approved requirement.",
+      "dialogue": {
+        "scenario": "BA workshop with customer",
+        "workplaceRole": "BA, Customer",
+        "lines": [
+          { "speaker": "BA", "text": "Could you confirm this requirement for the reporting module?" },
+          { "speaker": "Customer", "text": "Yes — we need export to Excel; that's a must-have requirement." },
+          { "speaker": "BA", "text": "I'll document the requirement and share it with the dev team." }
+        ]
+      }
+    }
+  ]
+}

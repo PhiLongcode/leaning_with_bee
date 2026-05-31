@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { useEffect } from 'react';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SplashScreen } from '../screens/SplashScreen';
@@ -13,6 +14,8 @@ import { DashboardScreen } from '../features/fn10/DashboardScreen';
 import { NotificationsScreen } from '../features/fn11/NotificationsScreen';
 import { VocabularyLearningScreen } from '../features/fn01/VocabularyLearningScreen';
 import { useAppStore } from '../store/appStore';
+import { useAppPermissions } from '../store/permissionsStore';
+import { isScreenAllowed } from '../lib/featurePermissions';
 import type { Screen } from './screens';
 
 const SCREEN_MAP: Partial<Record<Screen, ComponentType>> = {
@@ -34,6 +37,16 @@ const SCREEN_MAP: Partial<Record<Screen, ComponentType>> = {
 
 export function AppNavigator() {
   const screen = useAppStore((s) => s.screen);
-  const Component = SCREEN_MAP[screen] ?? HomeScreen;
+  const setScreen = useAppStore((s) => s.setScreen);
+  const permissions = useAppPermissions();
+
+  useEffect(() => {
+    if (!isScreenAllowed(screen, permissions)) {
+      setScreen('home');
+    }
+  }, [screen, permissions, setScreen]);
+
+  const resolved: Screen = isScreenAllowed(screen, permissions) ? screen : 'home';
+  const Component = SCREEN_MAP[resolved] ?? HomeScreen;
   return <Component />;
 }

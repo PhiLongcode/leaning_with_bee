@@ -1,0 +1,31 @@
+{
+  "name": "@hoc-cung-bee/tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"not @ui and not @perf\"",
+    "test:ui": "start-server-and-test \"npm run web:serve --prefix ../apps/mobile\" http://localhost:8081 \"tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags @ui\"",
+    "test:all": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "test:fn01": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-01 and not @ui\"",
+    "test:fn17": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-17 and not @perf\"",
+    "test:fn02": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \"@FN-02 and not @ui\"",
+    "test:fn01:ui": "start-server-and-test \"npm run web:serve --prefix ../apps/mobile\" http://localhost:8081 \"tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags \\\"@FN-01 and @ui\\\"\"",
+    "test:perf": "k6 run --summary-export reports/k6/vocab-enrich-smoke-summary.json perf/k6/vocab-enrich-smoke.js",
+    "test:perf:bdd": "tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags @perf",
+    "postinstall": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
+    "@serenity-js/assertions": "^3.29.2",
+    "@serenity-js/core": "^3.29.2",
+    "@serenity-js/cucumber": "^3.29.2",
+    "@serenity-js/console-reporter": "^3.29.2",
+    "@serenity-js/playwright": "^3.29.2",
+    "@serenity-js/web": "^3.29.2",
+    "@types/node": "^22.10.0",
+    "playwright": "^1.49.0",
+    "start-server-and-test": "^2.0.8",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

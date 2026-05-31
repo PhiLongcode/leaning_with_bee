@@ -1,90 +1,50 @@
 ---
-description: Luồng dev plan + bắt buộc đồng bộ tick checklist khi đổi FN (src/tests/feature)
-globs: src/fn**/02_dev_plan_checklist.md,src/fn**/01_requirement.md,src/fn**/**,tests/fn**/**
+description: Luồng dev plan SIFI 7 bước + đồng bộ tick checklist khi đổi FN
+globs: src/fn**/02_dev_plan_checklist.md,src/fn**/01_requirement.md,src/fn**/**,tests/**/*
 alwaysApply: false
 ---
 
-> **File:** `.cursor/rules/06-dev-plan-workflow.mdc` · **Role:** AI làm việc **theo luật** khi chạm dev plan  
-> **Related:** `process/templates/dev_plan_checklist_template.md`, `01-bdd-spec.mdc`, `02-clean-solid.mdc`, `03-tdd-execute.mdc`, `04-ta-verify.mdc`, `docs/04_delivery_tasks/task_template.md`  
-> **Do-not:** Nhồi toàn bộ quy trình dài vào `02_dev_plan_checklist.md` — file instance chỉ **checklist + task (Input/Output/Next)**
+> **File:** `.cursor/rules/06-dev-plan-workflow.mdc` · **Role:** Map `02_dev_plan_checklist.md` ↔ quy trình SIFI 7 bước  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `process/templates/dev_plan_checklist_template.md`  
+> **Do-not:** Nhồi full quy trình vào instance — chỉ checkbox + Input/Output/Next
 
-# Dev plan — luồng tự làm việc (quy trình)
+# Dev plan — map Task 1–7 (SIFI)
 
-Khi user hoặc ngữ cảnh mở / sửa `src/<FN>/02_dev_plan_checklist.md`, AI **bắt buộc** tuân thứ tự sau (trừ khi user chỉ định rõ bước khác):
+SSOT quy trình: **`13-spec-driven-bdd-ddd.mdc`**. Mỗi Task trong instance = một bước.
 
-## 1. Vị trí nội dung
+| Task instance | Bước SIFI |
+|---------------|-----------|
+| Task 1 | **1 Speculate** — Goal, Actor, Capability, backlog |
+| Task 2 | **2 Illustrate** — Example Mapping, Three Amigos |
+| Task 3 | **3 Formulate** — Gherkin R3, tags, AC |
+| Task 4 | **4 Design + unit TDD** — domain, `*.spec.ts` |
+| Task 5 | **5 Automate** — step defs, `@ui`/`@api`, integration |
+| Task 6 | **6 CI** — pipeline gates, living docs |
+| Task 7 | **7 Release & monitor** — deploy, NFR, feedback → Illustrate |
+
+## Thứ tự bắt buộc
+
+1. **Todo gate** — Speculate + Illustrate + Formulate xong trước **Design/unit** (Task 4).
+2. **Task 4** unit xanh trước **Task 5** acceptance automation (trừ spike `03_debate.md`).
+3. **Task 5** pass trước tick **Task 6** CI.
+4. **Task 7** sau deploy/monitor thực tế (có thể defer với FN chưa release).
+
+## Vị trí nội dung
 
 | Nội dung | Nơi ghi |
 |----------|---------|
-| Luồng thứ tự, ý nghĩa từng phase, (3)–(6), khi nào debate, khi nào DoD | **Rule này** + `01`…`04` `.mdc` |
-| Checkbox gate, task cụ thể FN, Input/Output/Next | **`02_dev_plan_checklist.md`** (instance) |
-| Debate dài, ADR | **`03_debate.md`** — trong dev plan chỉ **Next step** hoặc 1 dòng tóm tắt quyết định |
+| Quy trình 7 bước chi tiết | `13-spec-driven-bdd-ddd.mdc` |
+| Checkbox, Input/Output/Next | `02_dev_plan_checklist.md` |
+| Example Mapping, ADR | `03_debate.md` |
 
-## 2. Thứ tự bắt buộc
+## Đồng bộ checklist (§5 — trước khi kết thúc phiên)
 
-1. **Todo gate — trước khi code**  
-   - Tick đủ mục **Bắt buộc** trong file instance.  
-   - **Không** đề xuất viết logic `src/` hoặc PR implementation khi gate chưa xong (trừ spike đã ghi trong `03_debate.md`).
+Khi sửa `src/fn##/`, `tests/`, `.feature`:
 
-2. **Task 1 — Chuẩn bị SSOT**  
-   - **(3) Mục đích:** đồng bộ REQ + global lesson/issue — *áp dụng theo rule này, không nhắc lại dài trong file*.  
-   - **(4) Cách làm:** đọc `00_requirement_business`, `01_requirement`, `00_global_lesson_learn`, `00_global_issue_log`; nếu có `src/` xác định module.  
-   - **(5) Review & debate:** so **A vs B** (vd. đọc global đầy đủ vs chỉ `01`) — *có cách tốt hơn B không*; quyết định ngắn hoặc link `03_debate.md`.  
-   - **(6) DoD:** note “đã rà”; không mâu thuẫn AC.
+1. Tick Task 1–7 **đã xong** (bằng chứng: path, lệnh pass, CI link).
+2. Cập nhật Trạng thái + **Đồng bộ lần cuối**.
+3. AC đổi → sync `01_requirement.md` + quay **Task 2 Illustrate** nếu cần.
 
-3. **Task 2 — BDD & contract**  
-   - Tuân `01-bdd-spec.mdc`; cập nhật `docs/01_specification/features/*.feature` và rà `docs/02_system_design/`.  
-   - Debate về tách/ghép `.feature` → tóm tắt trong instance hoặc `03_debate.md`.
+**Cấm:** code/test xong mà checklist vẫn Draft / gate chưa tick.
 
-4. **Task 3 — Implementation**  
-   - **Chỉ sau gate**. Tuân `02-clean-solid.mdc`; test trước logic entity/use case `03-tdd-execute.mdc` khi chỉnh `src/`.  
-   - Task nhỏ: `docs/04_delivery_tasks/task_template.md`.  
-   - Debate kỹ thuật sâu → `03_debate.md`.
-
-5. **Task 4 — QA / E2E**  
-   - Map `.feature` ↔ Playwright `04-ta-verify.mdc`; bằng chứng DoD (link CI, lệnh, screenshot nếu team quy định).
-
-## 3. Định dạng file instance (AI khi chỉnh sửa)
-
-Mỗi **Task** trong `02_dev_plan_checklist.md` gồm:
-
-- **Checklist** `[ ]` ngắn gọn cho task đó (nếu cần).
-- **Step-by-step:** các bước thực hiện **cụ thể** của FN (số thứ tự).
-- Bảng hoặc khối cố định:
-
-```markdown
-| **Input** | *(file, REQ, tiền điện kiện)* |
-| **Output** | *(artefact, quyết định, link PR, kết quả verify)* |
-| **Next step** | *(tên Task kế tiếp hoặc `DONE`)* |
-```
-
-- Không copy nguyên khối hướng dẫn meta (3)–(6) dài từ rule vào file — chỉ điền **dữ liệu instance**.
-
-## 4. Ngôn ngữ
-
-- Ưu tiên tiếng Việt cho checklist/instance trong `process/`; rule có thể song ngữ ngắn như các `.mdc` khác.
-
-## 5. Đồng bộ checklist (bắt buộc — trước khi kết thúc phiên)
-
-Khi trong phiên có **bất kỳ** thay đổi hoàn thành (hoặc spike có kết quả) thuộc một FN:
-
-| Artefact | Ví dụ path |
-|----------|------------|
-| Code | `src/fn##_*/`, `apps/api/` mount router FN |
-| Test | `tests/fn##_*/` |
-| BDD | `docs/01_specification/features/*.feature` |
-| Spec FN | `src/fn##_*/01_requirement.md`, `03_debate.md` |
-
-AI **phải** cập nhật `src/<FN>/02_dev_plan_checklist.md` **trong cùng phiên**, **trước** câu trả lời cuối:
-
-1. **Tick `[x]`** mục gate / Task / DoD **đã thật sự xong** — có bằng chứng (file path, lệnh test pass, link PR).
-2. **Không tick** mục chưa xong; ghi **1 dòng** lý do hoặc blocker (vd. `pytest-asyncio` chưa cài → use case skipped).
-3. Cập nhật **Trạng thái** metadata: `Draft` → `In Progress` → `Done` (chỉ `Done` khi gate + Task 1–4 + ma trận DoD pass).
-4. Điền **Output** / **Next step** của Task đang active; thêm dòng **Đồng bộ lần cuối:** `YYYY-MM-DD` ở đầu file instance.
-5. Nếu đổi AC hoặc trạng thái feature → đồng bộ `01_requirement.md` (trạng thái, không duplicate AC dài).
-
-**Cấm:** scaffold/code/test xong mà checklist vẫn toàn `[ ]` / `Draft` / «Được phép code» mà gate chưa tick tương ứng.
-
-**Ngoại lệ:** user nói rõ `bỏ qua sync checklist` trong prompt phiên đó.
-
-**User yêu cầu đồng bộ:** chạy §5 ngay — đối chiếu repo, tick trung thực, không đánh dấu giả.
+**Ngoại lệ:** user `bỏ qua sync checklist`.

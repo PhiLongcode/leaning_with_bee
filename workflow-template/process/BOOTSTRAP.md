@@ -8,7 +8,8 @@ Sau khi copy khung, tạo đủ **meta** trong `process/` (lấy mẫu từ repo
 - [ ] `00_global_lesson_learn.md`, `00_global_issue_log.md`
 - [ ] `00_file_manifest.md`, `00_directory_contract.md` (có thể copy từ repo gốc rồi sửa tên sản phẩm)
 - [ ] `00_process_compliance_checklist.md` (tuỳ team)
-- [ ] `templates/*.md` đầy đủ (kể cả `dev_plan_checklist_template.md`)
+- [ ] `templates/*.md` đầy đủ (kể cả `dev_plan_checklist_template.md`, `bdd_traceability_template.md`)
+- [ ] `tests/` — Cucumber.js + Serenity/JS (`cucumber.js`, `features/`, `step-definitions/`) — xem rule `13-spec-driven-bdd-ddd.mdc`
 - [ ] `features/fn01_*/` đầu tiên: `01_requirement.md`, `02_dev_plan_checklist.md`, `03`–`05`
 - [ ] `prompt_history/00_index.md` + `README.md`
 - [ ] `docs/02_system_design/src_module_structure.md`, `solid_guidelines.md`, `extensibility_integration.md` (copy từ repo mẫu; **không** scaffold `src/` sẵn)

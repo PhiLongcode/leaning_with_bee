@@ -1,11 +1,37 @@
 ---
-description: Ép sinh file .feature trước khi phân tích yêu cầu
-globs:
+description: Bước 3 Formulate — Gherkin executable spec từ Example Mapping (trước unit TDD)
+globs: docs/01_specification/features/**,src/fn**/01_requirement.md,src/fn**/03_debate.md
 alwaysApply: false
 ---
 
-> **File:** `.cursor/rules/01-bdd-spec.mdc` · **Role:** Rule AI — sinh `.feature` trước code  
-> **Related:** `docs/01_specification/features/`, `src/fn*/01_requirement.md`, `process/00_file_manifest.md`, `12-src-feature-docs.mdc`
+> **File:** `.cursor/rules/01-bdd-spec.mdc` · **Role:** Bước **3 Formulate** trong SIFI  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `process/templates/example_mapping_template.md`  
+> **Do-not:** Formulate khi Example Mapping còn question blocker; không sinh scenario ngoài examples đã Illustrate
 
-# BDD Spec First
-Khi bắt đầu phân tích yêu cầu, sinh file `.feature` (Gherkin) trong `docs/01_specification/features/` trước khi viết code.
+# Formulate — executable specifications
+
+## Điều kiện vào bước
+
+- Bước **1 Speculate** xong (`01_requirement.md` § Goal, Actor, Capability).
+- Bước **2 Illustrate** xong — Example Mapping + Three Amigos sign-off.
+
+## Việc phải làm
+
+1. Chuyển **examples** (happy / edge / negative) → scenarios Given–When–Then.
+2. AC **đo lường được**; thuật ngữ = Ubiquitous Language (DDD).
+3. Ghi R3: `docs/01_specification/features/<tên>.feature`.
+4. **Tags bắt buộc:** `@REQ-XX` `@FN-XX`; thêm `@smoke` | `@regression` | `@ui` | `@api` | `@perf` tuỳ scenario.
+
+## Keywords Gherkin
+
+- Tiếng Anh (`Feature`, `Scenario`, `Given`, `When`, `Then`); step text tiếng Việt OK.
+- **Không** `# language: vi` nếu keywords vẫn tiếng Anh.
+
+## Đầu ra
+
+- File `.feature` sẵn sàng automation (bước 5).
+- **Chưa** yêu cầu step defs pass — đó là bước **5 Automate**, sau bước **4 unit TDD**.
+
+## SSOT
+
+Chỉ từ `01_requirement.md` + Example Mapping — không từ code/UI có sẵn.

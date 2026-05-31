@@ -2,8 +2,8 @@
 
 # Lesson learn
 
-> **Gate ghi file:** [`.cursor/rules/11-lesson-learn-gate.mdc`](../../.cursor/rules/11-lesson-learn-gate.mdc) — nháp → xác nhận Có/Không → mới sửa.
+> **Gate ghi file:** [`.cursor/rules/11-lesson-learn-gate.mdc`](../../.cursor/rules/11-lesson-learn-gate.mdc)
 
 | Đã làm tốt | Cần cải thiện | Đề xuất Global |
 |------------|---------------|----------------|
-| | | _(sau xác nhận Có → `00_global_lesson_learn.md`)_ |
+| (2026-05-29) `dashboardRepository`: `isMissingTableError` + `remoteUnavailable` — hết spam POST khi `learner_stats` 404 (ISS-001). | Sau migrate: bật lại ghi remote và verify streak/xp persist. | GISS-001: feature phụ thuộc migration `fn08_10_11` phải degrade rõ, không retry vô hạn. |

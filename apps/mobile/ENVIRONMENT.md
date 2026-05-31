@@ -1,4 +1,4 @@
-# Môi trường Dev / Prod — Học cùng Bee Mobile
+# Môi trường Dev / Prod — Cuder Học Tiếng Mobile
 
 ## Phiên bản app
 
@@ -20,7 +20,7 @@ Tăng build khi release:
 | Biến | Dev | Prod | Mô tả |
 |------|-----|------|--------|
 | `EXPO_PUBLIC_APP_ENV` | `development` | `production` | Badge trên Home + logic môi trường |
-| `EXPO_PUBLIC_APP_NAME` | `Học cùng Bee (Dev)` | `Học cùng Bee` | Tên hiển thị (app.config) |
+| `EXPO_PUBLIC_APP_NAME` | `Cuder Học Tiếng (Dev)` | `Cuder Học Tiếng` | Tên hiển thị (app.config) |
 | `EXPO_PUBLIC_SUPABASE_URL` | URL project **dev** | URL project **prod** | Khuyến nghị **2 project Supabase** |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Anon/publishable **dev** | Anon/publishable **prod** | Không dùng `service_role` trên app |
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 
 type Props = {
@@ -33,17 +33,13 @@ type RowProps = {
   value: string;
   mono?: boolean;
   last?: boolean;
+  onPress?: () => void;
 };
 
-export function SettingsRow({ label, value, mono, last }: RowProps) {
+export function SettingsRow({ label, value, mono, last, onPress }: RowProps) {
   const { colors } = useTheme();
-  return (
-    <View
-      style={[
-        styles.row,
-        !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border.tertiary },
-      ]}
-    >
+  const content = (
+    <>
       <Text style={[styles.label, { color: colors.text.secondary }]}>{label}</Text>
       <Text
         style={[styles.value, { color: colors.text.primary }, mono && styles.mono]}
@@ -51,6 +47,22 @@ export function SettingsRow({ label, value, mono, last }: RowProps) {
       >
         {value}
       </Text>
+    </>
+  );
+  return (
+    <View
+      style={[
+        styles.row,
+        !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border.tertiary },
+      ]}
+    >
+      {onPress ? (
+        <Pressable onPress={onPress} accessibilityRole="button">
+          {content}
+        </Pressable>
+      ) : (
+        content
+      )}
     </View>
   );
 }

@@ -9,4 +9,6 @@ export * from './fn08_speech_to_text';
 export * from './fn09_pronunciation_scoring';
 export * from './fn10_dashboard_hoc_tap';
 export * from './fn11_notification_reminder';
+export * from './fn15_brand_config';
+export * from './fn17_vocab_ai_enrich';
 export type { SupabaseLikeClient } from './shared/supabaseClient';

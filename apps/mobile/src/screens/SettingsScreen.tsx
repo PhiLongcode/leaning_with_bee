@@ -1,15 +1,31 @@
-import { useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  NATIVE_LANGUAGE_LABELS,
+  SUPPORTED_NATIVE_LANGUAGES,
+} from '@hoc-cung-bee/features';
 import { DatabaseStatusCard } from '../components/DatabaseStatusCard';
 import { FeatureShell } from '../components/FeatureShell';
 import { SettingsRow, SettingsSection } from '../components/SettingsSection';
 import { appEnv, env, isSupabaseConfigured, maskSecret } from '../config/env';
 import { androidVersionCode, appVersion, appVersionLabel, iosBuildNumber } from '../config/version';
 import { refreshDatabaseStatus } from '../lib/refreshDatabaseStatus';
+import {
+  getSoundSettings,
+  playAnswerCorrect,
+  playAnswerWrong,
+  playReminder,
+  setSoundSettings,
+} from '../services/soundFeedback';
 import { useAppStore } from '../store/appStore';
 import { AppIcon } from '../components/ui/AppIcon';
 import type { AppIconName } from '../components/ui/icons';
 import { useTheme, type ThemeMode } from '../theme/ThemeContext';
+import {
+  getNativeLanguageLabel,
+  useLocaleStore,
+  useNativeLanguage,
+} from '../store/localeStore';
 
 const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: AppIconName }[] = [
   { mode: 'light', label: 'Sáng', icon: 'sun' },
@@ -18,14 +34,29 @@ const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: AppIconName }[] = [
 ];
 
 export function SettingsScreen() {
-  const { colors, mode, setMode } = useTheme();
+  const { colors, mode, setMode, brand: brandColors } = useTheme();
   const deviceId = useAppStore((s) => s.deviceId);
   const dbConnection = useAppStore((s) => s.dbConnection);
   const dbChecking = useAppStore((s) => s.dbChecking);
+  const [studySfxEnabled, setStudySfxEnabled] = useState(getSoundSettings().studySfxEnabled);
+  const [reminderSfxEnabled, setReminderSfxEnabled] = useState(getSoundSettings().reminderSfxEnabled);
+  const nativeLanguage = useNativeLanguage();
+  const setNativeLanguage = useLocaleStore((s) => s.setNativeLanguage);
+  const [langPickerOpen, setLangPickerOpen] = useState(false);
 
   useEffect(() => {
     void refreshDatabaseStatus();
   }, []);
+
+  const updateStudySfx = (enabled: boolean) => {
+    setStudySfxEnabled(enabled);
+    setSoundSettings({ studySfxEnabled: enabled });
+  };
+
+  const updateReminderSfx = (enabled: boolean) => {
+    setReminderSfxEnabled(enabled);
+    setSoundSettings({ reminderSfxEnabled: enabled });
+  };
 
   return (
     <FeatureShell title="Cài đặt">
@@ -71,6 +102,73 @@ export function SettingsScreen() {
                 </Pressable>
               );
             })}
+          </View>
+          <SettingsRow
+            label="Ngôn ngữ mẹ đẻ"
+            value={getNativeLanguageLabel(nativeLanguage)}
+            onPress={() => setLangPickerOpen(true)}
+          />
+        </SettingsSection>
+
+        {langPickerOpen ? (
+          <SettingsSection title="Chọn ngôn ngữ mẹ đẻ">
+            {SUPPORTED_NATIVE_LANGUAGES.map((code, i) => (
+              <SettingsRow
+                key={code}
+                label={NATIVE_LANGUAGE_LABELS[code]}
+                value={nativeLanguage === code ? '✓' : ''}
+                onPress={() => {
+                  void setNativeLanguage(code);
+                  setLangPickerOpen(false);
+                }}
+                last={i === SUPPORTED_NATIVE_LANGUAGES.length - 1}
+              />
+            ))}
+          </SettingsSection>
+        ) : null}
+
+        <SettingsSection title="Âm thanh">
+          <View style={[styles.soundRow, { borderBottomColor: colors.border.tertiary }]}>
+            <View style={styles.soundLabelWrap}>
+              <Text style={[styles.soundLabel, { color: colors.text.primary }]}>Âm thanh học tập</Text>
+              <Text style={[styles.soundHint, { color: colors.text.secondary }]}>Đúng / sai khi chọn đáp án</Text>
+            </View>
+            <Switch
+              value={studySfxEnabled}
+              onValueChange={updateStudySfx}
+              trackColor={{ false: colors.border.primary, true: brandColors.primary }}
+            />
+          </View>
+          <View style={[styles.soundRow, { borderBottomColor: colors.border.tertiary }]}>
+            <View style={styles.soundLabelWrap}>
+              <Text style={[styles.soundLabel, { color: colors.text.primary }]}>Âm thanh nhắc nhở</Text>
+              <Text style={[styles.soundHint, { color: colors.text.secondary }]}>Khi mở thông báo nhắc học</Text>
+            </View>
+            <Switch
+              value={reminderSfxEnabled}
+              onValueChange={updateReminderSfx}
+              trackColor={{ false: colors.border.primary, true: brandColors.primary }}
+            />
+          </View>
+          <View style={styles.previewRow}>
+            <Pressable
+              style={[styles.previewBtn, { backgroundColor: colors.surface.success }]}
+              onPress={() => void playAnswerCorrect()}
+            >
+              <Text style={{ color: colors.surface.successText, fontWeight: '600', fontSize: 13 }}>Nghe đúng</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.previewBtn, { backgroundColor: '#FCEBEB' }]}
+              onPress={() => void playAnswerWrong()}
+            >
+              <Text style={{ color: brandColors.error, fontWeight: '600', fontSize: 13 }}>Nghe sai</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.previewBtn, { backgroundColor: colors.surface.info }]}
+              onPress={() => void playReminder('default')}
+            >
+              <Text style={{ color: colors.surface.infoText, fontWeight: '600', fontSize: 13 }}>Nghe nhắc</Text>
+            </Pressable>
           </View>
         </SettingsSection>
 
@@ -136,6 +234,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
+  },
+  soundRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  soundLabelWrap: { flex: 1, paddingRight: 12 },
+  soundLabel: { fontSize: 15, fontWeight: '600' },
+  soundHint: { fontSize: 12, marginTop: 2 },
+  previewRow: { flexDirection: 'row', gap: 8, paddingVertical: 12 },
+  previewBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
   },
   noteBlock: { paddingVertical: 12 },
   note: { fontSize: 13, lineHeight: 20, marginBottom: 8 },

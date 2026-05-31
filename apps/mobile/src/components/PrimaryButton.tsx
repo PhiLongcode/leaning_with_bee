@@ -11,6 +11,7 @@ type Props = {
   variant?: Variant;
   style?: ViewStyle;
   compact?: boolean;
+  testID?: string;
 };
 
 export function PrimaryButton({
@@ -21,6 +22,7 @@ export function PrimaryButton({
   variant = 'primary',
   style,
   compact,
+  testID,
 }: Props) {
   const { brand, colors, tokens } = useTheme();
   const text = label ?? title ?? '';
@@ -30,6 +32,7 @@ export function PrimaryButton({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [

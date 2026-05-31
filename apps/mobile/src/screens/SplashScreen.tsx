@@ -2,7 +2,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { BeeLogo } from '../components/brand/BeeLogo';
+import { CuderLogo } from '../components/brand/CuderLogo';
+import { useBrandRuntime } from '../store/brandStore';
 import { AppIcon } from '../components/ui/AppIcon';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeContext';
@@ -11,6 +12,7 @@ export function SplashScreen() {
   const { colors, tokens, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const setScreen = useAppStore((s) => s.setScreen);
+  const brand = useBrandRuntime();
 
   const bgColors = isDark
     ? ([colors.background.primary, '#1A2E14'] as const)
@@ -20,15 +22,16 @@ export function SplashScreen() {
     <LinearGradient colors={bgColors} style={styles.root}>
       <View style={[styles.inner, { paddingTop: insets.top + 48, paddingBottom: insets.bottom + 32 }]}>
         <View style={[styles.mascotRing, { backgroundColor: colors.background.elevated }, tokens.shadow.card]}>
-          <BeeLogo size="hero" />
+          <CuderLogo size="hero" />
         </View>
 
         <Text style={[tokens.typography.h1, styles.title, { color: colors.text.primary }]}>
-          Học cùng Bee
+          {brand.brandName}
         </Text>
-        <Text style={[styles.tagline, { color: colors.text.secondary }]}>
-          Học tiếng Anh công việc —{'\n'}cùng Bee mỗi ngày
-        </Text>
+        {brand.brandSubtitle ? (
+          <Text style={[styles.subtitle, { color: colors.text.tertiary }]}>{brand.brandSubtitle}</Text>
+        ) : null}
+        <Text style={[styles.tagline, { color: colors.text.secondary }]}>{brand.brandTagline}</Text>
 
         <View style={styles.pills}>
           <View style={[styles.pill, { backgroundColor: colors.surface.success }]}>
@@ -46,10 +49,12 @@ export function SplashScreen() {
         </View>
 
         <View style={styles.cta}>
-          <PrimaryButton title="BẮT ĐẦU HỌC" onPress={() => setScreen('home')} />
+          <PrimaryButton title="BẮT ĐẦU HỌC" testID="splash-start-btn" onPress={() => setScreen('home')} />
         </View>
 
-        <Text style={[styles.footer, { color: colors.text.tertiary }]}>Học cùng Bee · Workplace English</Text>
+        <Text style={[styles.footer, { color: colors.text.tertiary }]}>
+          {brand.brandName} · Workplace English
+        </Text>
       </View>
     </LinearGradient>
   );
@@ -71,7 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 24,
   },
-  title: { textAlign: 'center', marginBottom: 12 },
+  title: { textAlign: 'center', marginBottom: 8 },
+  subtitle: { fontSize: 12, fontWeight: '600', letterSpacing: 1, textAlign: 'center', marginBottom: 4 },
   tagline: { fontSize: 16, textAlign: 'center', lineHeight: 24, marginBottom: 28 },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 40 },
   pill: {

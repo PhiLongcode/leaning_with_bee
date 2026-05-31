@@ -1,11 +1,39 @@
 ---
-description: TDD — test trước, logic sau
-globs: src/**/*
+description: Bước 4 Design + unit TDD — trước automate acceptance (bước 5)
+globs: src/**/*,tests/**/*
 alwaysApply: false
 ---
 
-> **File:** `.cursor/rules/03-tdd-execute.mdc` · **Role:** TDD — test Entity/UseCase trước logic  
-> **Related:** `docs/03_quality_assurance/testing_strategy.md`
+> **File:** `.cursor/rules/03-tdd-execute.mdc` · **Role:** Bước **4 Design + unit TDD** (SIFI)  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `02-clean-solid.mdc`, `08-src-testing.mdc`
 
-# TDD Execute
-Sinh `*.spec.ts` cho Entity/UseCase trước, chờ xác nhận, rồi mới viết logic pass test.
+# Design units + unit tests (TDD)
+
+## Vị trí trong SIFI
+
+| Bước | Việc |
+|------|------|
+| 3 Formulate | Gherkin R3 — spec text |
+| **4 Design + unit TDD** | Domain/use case + `*.spec.ts` |
+| 5 Automate | Step defs + acceptance chạy Gherkin |
+
+## Thứ tự (bắt buộc)
+
+1. Thiết kế entity, use case, ports từ scenarios Formulate (`02-clean-solid.mdc`).
+2. Viết `src/fn##/**/*.spec.ts` — **Red**.
+3. Implement domain/application tối thiểu — **Green**.
+4. Refactor; giữ unit xanh.
+5. **Sau đó** mới bước 5: mirror `tests/features/`, step defs, wire domain.
+
+## Cucumber / Serenity (bước 5)
+
+Acceptance (`npm run test:bdd`) **không** thay unit TDD. Step defs gọi code đã có từ bước 4.
+
+## Cấm
+
+- Adapter/UI trước unit domain (trừ spike `03_debate.md` hoặc user `bỏ qua TDD`).
+- Wire step defs trước unit core pass (trừ spike).
+
+## Dev plan
+
+Tick **Task 4** khi unit pass; **Task 5** khi acceptance pass.

@@ -3,7 +3,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isSupabaseConfigured } from '../config/env';
 import { appVersionLabel } from '../config/version';
-import { BeeLogo } from '../components/brand/BeeLogo';
+import { CuderLogo } from '../components/brand/CuderLogo';
+import { useBrandRuntime } from '../store/brandStore';
 import { AppIcon } from '../components/ui/AppIcon';
 import { Card } from '../components/ui/Card';
 import { Chip } from '../components/ui/Chip';
@@ -12,7 +13,9 @@ import { QUICK_LINK_ICON } from '../components/ui/icons';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { LEARNING_DAYS } from '@hoc-cung-bee/features';
 import { FEATURES, QUICK_LINK_SCREENS } from '../navigation/screens';
+import { isScreenAllowed } from '../lib/featurePermissions';
 import { useAppStore } from '../store/appStore';
+import { useAppPermissions } from '../store/permissionsStore';
 import { useTheme } from '../theme/ThemeContext';
 
 const QUICK_LINKS = Object.keys(QUICK_LINK_SCREENS) as (keyof typeof QUICK_LINK_SCREENS)[];
@@ -32,6 +35,7 @@ function dbStatusShort(status: string): string {
 
 export function HomeScreen() {
   const { colors, brand, tokens, isDark } = useTheme();
+  const permissions = useAppPermissions();
   const insets = useSafeAreaInsets();
   const deviceId = useAppStore((s) => s.deviceId);
   const streak = useAppStore((s) => s.streak);
@@ -44,7 +48,12 @@ export function HomeScreen() {
 
   const gradientColors = isDark
     ? (['#2D4A1A', '#1C1F1A'] as const)
-    : (['#7ED321', '#58CC02'] as const);
+    : ([brand.primary, brand.primaryPressed] as const);
+
+  const quickLinks = QUICK_LINKS.filter((label) =>
+    isScreenAllowed(QUICK_LINK_SCREENS[label], permissions),
+  );
+  const visibleFeatures = FEATURES.filter((f) => isScreenAllowed(f.screen, permissions));
 
   return (
     <ScrollView
@@ -56,7 +65,7 @@ export function HomeScreen() {
         <View style={styles.headerLeft}>
           <Text style={[tokens.typography.h2, { color: colors.text.primary }]}>Chào bạn!</Text>
           <Text style={[styles.subGreeting, { color: colors.text.secondary }]}>
-            Sẵn sàng học cùng Bee hôm nay?
+            Sẵn sàng học cùng Cuder hôm nay?
           </Text>
         </View>
         <View style={styles.headerRight}>
@@ -124,6 +133,7 @@ export function HomeScreen() {
       </ScrollView>
 
       <Pressable
+        testID="home-start-lesson"
         onPress={() => setScreen('fn01_vocabulary')}
         style={styles.heroWrap}
       >
@@ -137,7 +147,7 @@ export function HomeScreen() {
             <View style={styles.heroBadge}>
               <Text style={styles.heroBadgeText}>THỬ THÁCH HÔM NAY</Text>
             </View>
-            <BeeLogo size="md" />
+            <CuderLogo size="md" />
           </View>
           <Text style={styles.heroTitle}>
             {activeDay?.subtitle ?? 'Workplace English'}
@@ -183,28 +193,29 @@ export function HomeScreen() {
 
       <SectionHeader title="Truy cập nhanh" />
       <Card variant="default" style={styles.listCard}>
-        {QUICK_LINKS.map((label, i) => (
+        {quickLinks.map((label, i) => (
           <FeatureRow
             key={label}
             icon={QUICK_LINK_ICON[label] ?? 'sparkle'}
             title={label}
             onPress={() => setScreen(QUICK_LINK_SCREENS[label])}
-            last={i === QUICK_LINKS.length - 1}
+            last={i === quickLinks.length - 1}
           />
         ))}
       </Card>
 
       <SectionHeader title="Tất cả module" />
       <Card variant="default" style={styles.listCard}>
-        {FEATURES.map((f, i) => (
+        {visibleFeatures.map((f, i) => (
           <FeatureRow
             key={f.screen}
             icon="module"
             title={f.title}
             subtitle={f.req}
             badge="LIVE"
+            testID={`feature-row-${f.screen}`}
             onPress={() => setScreen(f.screen)}
-            last={i === FEATURES.length - 1}
+            last={i === visibleFeatures.length - 1}
           />
         ))}
       </Card>

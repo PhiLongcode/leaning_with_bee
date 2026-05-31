@@ -1,11 +1,43 @@
 ---
-description: Map .feature → Playwright E2E
-globs:
+description: Bước 5 Automate — acceptance UI/API + integration (Screenplay, step defs)
+globs: tests/**/*,e2e/**/*
 alwaysApply: false
 ---
 
-> **File:** `.cursor/rules/04-ta-verify.mdc` · **Role:** map `.feature` → Playwright E2E (`data-testid`)  
-> **Related:** `docs/03_quality_assurance/e2e_playwright_rules.md`, `docs/01_specification/features/`
+> **File:** `.cursor/rules/04-ta-verify.mdc` · **Role:** Bước **5 Automate acceptance** (SIFI)  
+> **Related:** `13-spec-driven-bdd-ddd.mdc`, `14-performance-bdd.mdc`, `docs/03_quality_assurance/testing_strategy.md`
 
-# TA Verify
-Ở bước hoàn thiện, map các bước trong `.feature` thành kịch bản Playwright E2E (dùng `data-testid`).
+# Automate acceptance & integration
+
+## Điều kiện
+
+- Bước **3 Formulate**: `.feature` R3 (+ mirror R4).
+- Bước **4**: unit domain **xanh**.
+
+## Layers (Screenplay — UI `@ui`)
+
+```text
+Gherkin step → step-definitions → tasks → questions → page objects (tests/ui/pages/)
+```
+
+## Map theo tag
+
+| Tag | Pattern | Path |
+|-----|---------|------|
+| `@api` / domain | Step → domain/use case | `tests/step-definitions/fn##/` |
+| `@ui` | Screenplay + Playwright | `tests/ui/`, `tests/features/fn##/*_ui.feature` |
+| `@perf` | k6 + Gherkin gate | `tests/perf/k6/`, `@perf` (`14-performance-bdd.mdc`) |
+| `@smoke` / `@regression` | Subset CI | filter tag Cucumber |
+
+## UI (Expo Web)
+
+- `testID` → `data-testid`; deep link `/?e2e=1&screen=…`
+- `npm run test:bdd:ui`
+
+## Integration
+
+- `tests/integration/` — adapter thật (DB/API mock/staging).
+
+## Đầu ra
+
+Acceptance ổn định trên môi trường test → tick **Task 5** dev plan.

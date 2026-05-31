@@ -1,5 +1,9 @@
-export type { Vocabulary } from './domain/vocabulary';
-export { assertVocabularyHasContext, isValidVocabulary } from './domain/vocabulary';
+export type { Vocabulary, VocabularyDialogue, ExplanationNative } from './domain/vocabulary';
+export {
+  assertVocabularyHasContext,
+  isValidVocabulary,
+  isValidVocabularyWithDialogue,
+} from './domain/vocabulary';
 export { getVocabularyLesson, listLearningDays } from './application/getVocabularyLesson';
 export {
   createMockVocabularyRepository,

@@ -17,7 +17,14 @@
     "vocab:gen": "node scripts/gen-daily-vocab-ts.js",
     "db:reset:local": "npx supabase db reset",
     "db:start": "npx supabase start",
-    "db:stop": "npx supabase stop"
+    "test:bdd": "npm run test --prefix tests",
+    "test:bdd:fn17": "npm run test:fn17 --prefix tests",
+    "test:bdd:fn01": "npm run test:fn01 --prefix tests",
+    "test:bdd:fn02": "npm run test:fn02 --prefix tests",
+    "test:bdd:ui": "npm run mobile:build:web && npm run test:ui --prefix tests",
+    "test:bdd:fn01:ui": "npm run mobile:build:web && npm run test:fn01:ui --prefix tests",
+    "test:perf": "npm run test:perf --prefix tests",
+    "test:bdd:perf": "npm run test:perf:bdd --prefix tests"
   },
   "devDependencies": {
     "pg": "^8.21.0",

@@ -1,0 +1,143 @@
+---
+description: SSOT quy trình SIFI 7 bước — Speculate → Illustrate → Formulate → Design/TDD → Automate → CI → Release
+globs: src/fn**/*,tests/**/*,docs/01_specification/features/**/*
+alwaysApply: true
+---
+
+> **File:** `.cursor/rules/13-spec-driven-bdd-ddd.mdc` · **Role:** SSOT quy trình spec-driven tuần tự  
+> **Related:** `06-dev-plan-workflow.mdc`, `01-bdd-spec.mdc`, `03-tdd-execute.mdc`, `04-ta-verify.mdc`, `08-src-testing.mdc`, `14-performance-bdd.mdc`, `12-src-feature-docs.mdc`, `10-requirement-dedup.mdc`  
+> **Do-not:** Nhảy bước; sinh scenario/code không truy xuất requirement; code trước Formulate
+
+# Quy trình chuẩn SIFI (7 bước tuần tự)
+
+Mọi FN **bắt buộc** theo thứ tự dưới. Map vào `02_dev_plan_checklist.md` (Task 1–7). Chi tiết instance — **không** nhồi full prose vào checklist.
+
+---
+
+## Bước 1 — Speculate (định nghĩa mục tiêu & phạm vi)
+
+| Việc | Nội dung |
+|------|----------|
+| Mục tiêu | Business goal — 1–3 câu |
+| Actors | Persona chính |
+| Capability / Feature | Năng lực hệ thống; FN-XX |
+| SSOT | R0 `requirement_base` → R1 `00_requirement_business` → R2 `src/fn##/01_requirement.md` |
+
+**Đầu ra:** Backlog item — tiêu đề, mô tả ngắn, tiêu chí ưu tiên; § Goal, Actor, Capability, User story trong `01_requirement.md`.
+
+**Gate:** chưa Illustrate nếu thiếu Goal/Actor/Capability.
+
+---
+
+## Bước 2 — Illustrate (Three Amigos + Example Mapping)
+
+| Việc | Nội dung |
+|------|----------|
+| Workshop | BA + Dev + Tester (Three Amigos) |
+| Example Mapping | Rules · Examples (happy / edge / negative) · Questions |
+
+**Đầu ra:** Bảng examples + danh sách câu hỏi chưa rõ → `03_debate.md` hoặc [`example_mapping_template.md`](../process/templates/example_mapping_template.md). Questions **phải** resolve trước Formulate.
+
+**Gate:** không Formulate khi còn question blocker (trừ ghi defer trong `03_debate.md`).
+
+---
+
+## Bước 3 — Formulate (executable specifications)
+
+| Việc | Nội dung |
+|------|----------|
+| Gherkin | Chuyển examples → Given–When–Then |
+| AC | Đo lường được, gắn REQ/FN |
+| Tags | `@REQ-XX` `@FN-XX` + `@smoke` `@regression` `@ui` `@api` `@perf` (tuỳ scenario) |
+| DDD | Ubiquitous Language trong `01_requirement.md` = thuật ngữ Gherkin |
+
+**Đầu ra:** R3 `docs/01_specification/features/*.feature` — **chưa** bắt buộc step defs chạy pass.
+
+**Rule:** `01-bdd-spec.mdc`.
+
+---
+
+## Bước 4 — Design units + unit tests (TDD)
+
+| Việc | Nội dung |
+|------|----------|
+| Thiết kế | Domain / use case / ports (`02-clean-solid.mdc`) |
+| Unit test | `src/fn##/**/*.spec.ts` — logic cốt lõi, nhanh, isolated |
+| TDD | Red → Green → Refactor |
+
+**Đầu ra:** Unit suite xanh; coverage domain/use case cơ bản (≥80% mục tiêu — `08-src-testing.mdc`).
+
+**Rule:** `03-tdd-execute.mdc` § unit. **Trước** bước 5 Automate.
+
+---
+
+## Bước 5 — Automate acceptance & integration
+
+| Việc | Nội dung |
+|------|----------|
+| Mirror | R3 → R4 `tests/features/fn##/` |
+| Glue | Step defs → domain/use case (`tests/step-definitions/`) |
+| Pattern | **Screenplay** (Tasks → Questions → Page objects) cho `@ui`; service/domain cho `@api` |
+| Layers | steps → tasks → interactions → page objects (`tests/ui/`) |
+| Integration | `tests/integration/` khi cần adapter thật |
+
+**Đầu ra:** `npm run test:bdd` / `test:bdd:ui` / `test:bdd:perf` pass trên môi trường test.
+
+**Rules:** `04-ta-verify.mdc`, `14-performance-bdd.mdc`.
+
+Stack: Cucumber.js + Serenity/JS + Playwright (`@ui`) + k6 (`@perf`).
+
+---
+
+## Bước 6 — CI pipeline & quality gates
+
+**Thứ tự pipeline (fail fast):**
+
+1. Unit tests  
+2. Static analysis (lint/typecheck — theo repo)  
+3. Integration tests  
+4. Acceptance tests (`test:bdd`, `test:bdd:ui`, `test:bdd:perf` nếu có env)  
+5. Publish living documentation  
+
+**Đầu ra:** Build green; artifacts `tests/reports/cucumber-report.html`, `tests/reports/k6/`; **dừng pipeline** nếu unit fail.
+
+**Gate release:** không merge khi acceptance gate đỏ (trừ waiver ghi `03_debate.md`).
+
+---
+
+## Bước 7 — Release, monitor & feedback loop
+
+| Việc | Nội dung |
+|------|----------|
+| Deploy | Staging → production theo release policy |
+| Monitor | NFR: performance, error rate (`@perf`, observability) |
+| Feedback | Metrics/incidents → backlog; **quay lại bước 2 Illustrate** nếu AC sai/thiếu |
+
+**Đầu ra:** Metrics, incident notes, backlog cải tiến; cập nhật `05_lesson_learn.md` (gate `11`).
+
+---
+
+## SSOT artefact map
+
+| Bước | File chính |
+|------|------------|
+| 1 Speculate | `01_requirement.md`, R0/R1 |
+| 2 Illustrate | `03_debate.md`, example mapping |
+| 3 Formulate | `docs/01_specification/features/*.feature` |
+| 4 Design/TDD | `src/fn##/domain/`, `*.spec.ts` |
+| 5 Automate | `tests/features/`, `step-definitions/`, `tests/ui/` |
+| 6 CI | CI config, `tests/reports/` |
+| 7 Release | deploy runbook, monitor, `04_issue_log`, `05_lesson_learn` |
+
+Traceability: [`bdd_traceability_template.md`](../process/templates/bdd_traceability_template.md).
+
+---
+
+## AI — thứ tự bắt buộc
+
+1. Đọc R2 + example mapping trước khi viết Gherkin.  
+2. Formulate (R3) trước unit TDD và trước adapter/UI.  
+3. Unit xanh (bước 4) trước wire step defs acceptance (bước 5).  
+4. Tick `02_dev_plan_checklist.md` Task 1–7 tương ứng (`06-dev-plan-workflow.mdc` §5).
+
+**Cấm:** Implementation adapter/UI trước Formulate; acceptance automation trước unit domain (trừ spike `03_debate.md` hoặc user `bỏ qua TDD`).

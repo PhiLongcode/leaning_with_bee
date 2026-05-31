@@ -77,7 +77,21 @@
 |--|--|
 | **Input** | `01_requirement.md`, Gherkin REQ-08, `docs/02_system_design/*` |
 | **Output** | `.feature`: `docs/01_specification/features/speech_to_text.feature`; contract updated hoặc **no contract change — 2026-05-28** |
-| **Next step** | Task 3 — Implementation *(chỉ khi Todo gate xong)* |
+| **Next step** | Task 2.5 — TDD (Cucumber + Serenity) **trước** Task 3 |
+
+---
+
+## Task 2.5 — TDD (Cucumber.js + Serenity/JS) — **trước** Implementation
+
+**Quy tắc:** Viết `tests/features/fn08/*.feature` + step defs **trước** Task 3.
+
+**Checklist**
+
+- [ ] Mirror `docs/01_specification/features/speech_to_text.feature` → `tests/features/fn08/`
+- [ ] Step defs + Serenity actor: `tests/step-definitions/fn08/`
+- [ ] Domain/use case assertions pass
+- [ ] `npm run test:bdd` với tag `@FN-08`
+- [ ] CI hook `npm run test:bdd` (tuỳ pipeline)
 
 ---
 

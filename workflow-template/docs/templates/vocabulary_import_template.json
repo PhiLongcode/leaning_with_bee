@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "word": "deploy",
+      "meaning": "triển khai (phần mềm)",
+      "pronunciation": "/dɪˈplɔɪ/",
+      "partOfSpeech": "verb",
+      "topic": "Release & Deploy",
+      "difficultyLevel": 2,
+      "context": "We will deploy the hotfix after QA signs off.",
+      "example": "The team deploys every Friday during the release window.",
+      "dialogue": {
+        "scenario": "Release planning before client demo",
+        "workplaceRole": "PM, DEV",
+        "lines": [
+          { "speaker": "PM", "text": "Can we deploy the hotfix before the client demo at 3 PM?" },
+          { "speaker": "DEV", "text": "Yes, QA signed off — we'll deploy to staging first, then production." },
+          { "speaker": "PM", "text": "Great. Ping me once the deploy finishes so I can notify the customer." }
+        ]
+      }
+    }
+  ]
+}

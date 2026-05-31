@@ -15,7 +15,22 @@ export const DAILY_VOCABULARY_SEED: VocabularySeed[] = [
     "topic": "Agile / Scrum",
     "difficultyLevel": 2,
     "lessonDay": 1,
-    "lessonOrder": 1
+    "lessonOrder": 1,
+    "dialogue": {
+      "scenario": "Release planning before demo",
+      "workplaceRole": "PM, DEV",
+      "lines": [
+        { "speaker": "PM", "text": "Can we deploy the hotfix before the client demo at 3 PM?" },
+        { "speaker": "DEV", "text": "Yes, QA signed off — we'll deploy to staging first, then production." },
+        { "speaker": "PM", "text": "Great. Ping me once the deploy finishes so I can notify the customer." }
+      ]
+    },
+    "explanationNative": {
+      "language": "vi",
+      "summary": "Deploy = triển khai phần mềm lên môi trường chạy thật.",
+      "usageInContext": "Dùng khi nói về release, hotfix, staging/production.",
+      "grammarNotes": "Thường là động từ: deploy something to somewhere."
+    }
   },
   {
     "id": "day1-2",

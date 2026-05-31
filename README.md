@@ -1,4 +1,4 @@
-# Học cùng Bee
+# Cuder Học Tiếng
 
 Ứng dụng học tiếng Anh giao tiếp công việc (React Native + **Supabase only**). Khung workflow: `process/` (nghiệp vụ) và `docs/` (kỹ thuật + QA). Thiết kế: [UX](docs/02_system_design/sys_design_ux_ui.md) · [Tech stack](docs/02_system_design/sys_design_techstack.md) · [API](docs/02_system_design/api_specs/api_design.md).
 
@@ -14,7 +14,8 @@
 | `docs/04_delivery_tasks/` | Task implement |
 | `docs/05_engineering_standards/` | Chuẩn code |
 | `process/` | SSOT BDD tổng, prompt history, templates |
-| `apps/mobile/` | **Expo app** — Học cùng Bee (Splash, Home, theme, Supabase client) |
+| `brand/` | **SSOT bộ nhận diện** — logo, hình ảnh, âm thanh (SFX + nhắc học) |
+| `apps/mobile/` | **Expo app** — Cuder Học Tiếng (Splash, Home, theme, Supabase client) |
 | `supabase/` | Migrations SQL + Edge Functions (Supabase-only) |
 | `src/fn**/` | Module chức năng — **5 file doc** + code (rule `12`); app import qua `@hoc-cung-bee/features` |
 | `workflow-template/` | Pack template upstream (không sửa domain tại đây) |

@@ -14,12 +14,24 @@ import {
   createMockNotificationRepository,
   createSupabaseNotificationRepository,
   type NotificationRepository,
+  createMockBrandConfigRepository,
+  createSupabaseBrandConfigRepository,
+  type BrandConfigRepository,
+  createMockSystemConfigRepository,
+  createSupabaseSystemConfigRepository,
+  type SystemConfigRepository,
   createMockSentenceRepository,
   createSupabaseSentenceRepository,
   type SentenceRepository,
   createMockUserVocabularyRepository,
   createSupabaseUserVocabularyRepository,
   type UserVocabularyRepository,
+  createMockVocabEnrichRepository,
+  createSupabaseVocabEnrichRepository,
+  type VocabEnrichRepository,
+  createMockVocabularyWriteRepository,
+  createSupabaseVocabularyWriteRepository,
+  type VocabularyWriteRepository,
   type SupabaseLikeClient,
 } from '@hoc-cung-bee/features';
 import { isSupabaseConfigured, supabase } from './supabase';
@@ -37,6 +49,10 @@ let progress: LearningProgressRepository | null = null;
 let conversation: ConversationRepository | null = null;
 let dashboard: DashboardRepository | null = null;
 let notifications: NotificationRepository | null = null;
+let brandConfig: BrandConfigRepository | null = null;
+let systemConfig: SystemConfigRepository | null = null;
+let vocabEnrich: VocabEnrichRepository | null = null;
+let vocabularyWrite: VocabularyWriteRepository | null = null;
 
 export function getUserVocabularyRepository(): UserVocabularyRepository {
   if (!userVocab) {
@@ -97,4 +113,47 @@ export function getNotificationRepository(): NotificationRepository {
     );
   }
   return notifications;
+}
+
+export function getBrandConfigRepository(): BrandConfigRepository {
+  if (!brandConfig) {
+    brandConfig = pick(
+      createMockBrandConfigRepository(),
+      createSupabaseBrandConfigRepository,
+    );
+  }
+  return brandConfig;
+}
+
+export function getSystemConfigRepository(): SystemConfigRepository {
+  if (!systemConfig) {
+    systemConfig = pick(
+      createMockSystemConfigRepository(),
+      createSupabaseSystemConfigRepository,
+    );
+  }
+  return systemConfig;
+}
+
+export function getVocabEnrichRepository(deviceId: string): VocabEnrichRepository {
+  if (!isSupabaseConfigured) {
+    return createMockVocabEnrichRepository();
+  }
+  return createSupabaseVocabEnrichRepository(async (body) => {
+    const { data, error } = await supabase.functions.invoke('vocab-enrich', {
+      body,
+      headers: { 'X-Device-Id': deviceId },
+    });
+    return { data, error: error ?? null };
+  });
+}
+
+export function getVocabularyWriteRepository(): VocabularyWriteRepository {
+  if (!vocabularyWrite) {
+    vocabularyWrite = pick(
+      createMockVocabularyWriteRepository(),
+      createSupabaseVocabularyWriteRepository,
+    );
+  }
+  return vocabularyWrite;
 }

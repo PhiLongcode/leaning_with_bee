@@ -25,13 +25,17 @@ Mục tiêu: nhân bản **cấu trúc hai tầng** `process/` (quy trình + ngh
 
 | Thành phần | Ghi chú |
 |------------|---------|
-| `.cursor/rules/*.mdc` | Đồng bộ đường dẫn `docs/01_specification/…`, `02_system_design`, `03_quality_assurance`; **`07`** = bảo trì pack |
+| `.cursor/rules/*.mdc` | **`13`** = SSOT quy trình **SIFI 7 bước**; `01` Formulate, `03` unit TDD, `04` Automate, `06` dev plan Task 1–7 |
+| `process/templates/example_mapping_template.md` | Bước 2 Illustrate (Three Amigos) |
+| `process/templates/bdd_traceability_template.md` | Illustrate → Formulate → Automate |
+| `docs/03_quality_assurance/` | `testing_strategy.md`, `performance_testing.md` — domain, UI, **k6 perf** |
 | `TEMPLATE_PLAYBOOK.md` | Playbook A–E (bootstrap, sync, issue→template, gate, pull upstream) |
 | `ISSUES_TO_TEMPLATE.md` | Lesson/issue → tránh lặp khi fork |
 | `TEMPLATE_CHANGELOG.md` | Version pack |
 | `docs/README.md` | Pipeline A–F ngắn; chi tiết đầy đủ trên repo mẫu [`../docs/README.md`](../docs/README.md) |
 | `docs/00_input_raw/` | Placeholder cho input thô |
 | `docs/01_specification/features/README.md` | Gợi ý đặt `.feature` |
+| `docs/templates/` | Mẫu import CSV/JSON (vocabulary + dialogue) — tuỳ domain |
 | `process/BOOTSTRAP.md` | Checklist file meta cần copy từ repo mẫu |
 
 Không commit secret (`.env`, token). Không đặt **GISS** hay **lesson learn toàn dự án** vào `docs/`.

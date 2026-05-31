@@ -120,6 +120,8 @@ ISO 8601 UTC: `2026-05-28T10:00:00.000Z`.
 | example | text | |
 | topic | text | Software Development, … |
 | difficulty_level | int | 1–5 |
+| dialogue | jsonb | `{ scenario, workplaceRole, lines[] }` 2–5 câu |
+| explanation_native | jsonb | `{ language, summary, usageInContext, grammarNotes? }` |
 | created_at | timestamptz | |
 
 ### 4.2 `user_vocabulary`
@@ -253,9 +255,31 @@ Xóa khỏi sổ user (hoặc soft-delete catalog — ghi trong implement).
 
 **204** hoặc **200** `{ "deleted": true }`
 
----
+#### `POST /functions/v1/vocab-enrich` — **Edge** (FN-17)
 
-### 5.2 Sentences
+Sinh hội thoại + giải thích tiếng mẹ đẻ (preview — **không** auto-insert).
+
+**Headers:** `Authorization`, `X-Device-Id`
+
+**Body:**
+
+```json
+{
+  "mode": "full",
+  "word": "deploy",
+  "meaning": null,
+  "context": null,
+  "topic": "Release & Deploy",
+  "workplace_roles": ["PM", "DEV"],
+  "native_language": "vi"
+}
+```
+
+**200:** `VocabEnrichResult` (word, meaning, dialogue, explanationNative, …)
+
+**400:** `VALIDATION_ERROR` · **429:** `RATE_LIMITED`
+
+---
 
 #### `GET /sentences`
 
